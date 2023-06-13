@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
-const props = defineProps<{
-    size: string,
-    modelValue: string,
-}>();
+const props = withDefaults(
+    defineProps<{
+        size?: 'sm' | 'md' | 'lg',
+        modelValue: string | number | null,
+    }>(),
+    {
+        size: 'md',
+    }
+);
 
 defineEmits(['update:modelValue']);
 
@@ -20,9 +25,9 @@ defineExpose({ focus: () => input.value?.focus() });
 
 const sizeClasses = computed(() => {
     switch (props.size) {
-        case 'sm': return 'px-3 py-1'
-        case 'lg': return 'px-3 py-3'
-        default: return 'px-3 py-2'
+        case 'sm': return 'px-3 py-1';
+        case 'lg': return 'px-3 py-3';
+        default: return 'px-3 py-2';
     }
 });
 </script>

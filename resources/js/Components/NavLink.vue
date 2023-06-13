@@ -5,8 +5,8 @@ import { Link } from '@inertiajs/vue3';
 const props = defineProps<{
     name: string,
     icon: string,
-    href: string;
-    active?: boolean;
+    href: string,
+    active?: boolean,
 }>();
 
 const classes = computed(() =>

@@ -2,7 +2,7 @@
 import { Head, useForm } from "@inertiajs/vue3";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import Button from "@/Components/Button.vue";
-import { FormCheckbox, FormInput, FormError, FormLabel } from "@/Components/Forms/Index.vue";
+import { FormCheckbox, FormInput, FormError, FormLabel } from "@/Components/Form.vue";
 
 const form = useForm({
     email: '',

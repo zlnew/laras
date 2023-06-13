@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use App\Http\Controllers\ProyekController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,9 +25,12 @@ Route::middleware('auth')->group(function() {
         return Inertia::render('Dashboard');
     })->name('dashboard');
     
-    Route::get('/proyek', function() {
-        return Inertia::render('Proyek');
-    })->name('proyek');
+    Route::prefix('proyek')->group(function() {
+        Route::get('/', [ProyekController::class, 'index'])->name('proyek');
+        Route::post('/', [ProyekController::class,'store'])->name('proyek.store');
+        Route::patch('/{proyek}', [ProyekController::class, 'update'])->name('proyek.update');
+        Route::delete('/{proyek}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

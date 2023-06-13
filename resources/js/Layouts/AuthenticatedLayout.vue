@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import NavLink from '@/Components/NavLink.vue';
+import ButtonLink from '@/Components/ButtonLink.vue';
+import { ModalWindow } from '@/Components/Modal.vue';
 
 const fullYear: number = new Date().getFullYear();
 </script>
@@ -48,8 +50,8 @@ const fullYear: number = new Date().getFullYear();
 
                 <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                     <li class="flex items-center">
-                        <Link :href="route('logout')" method="post" as="button" class="block px-0 py-2 text-sm font-semibold transition-all ease-nav-brand text-danger">
-                            <FasIcon icon="fa-solid fa-sign-out-alt" class="mr-2" /> <span class="hidden sm:inline">Logout</span>
+                        <Link :href="route('logout')" method="post" as="button">
+                            <ButtonLink color="danger"><FasIcon icon="fa-solid fa-sign-out-alt" class="mr-2" /> Logout</ButtonLink>
                         </Link>
                     </li>
                 </ul>
@@ -73,4 +75,6 @@ const fullYear: number = new Date().getFullYear();
             </footer>
         </div>
     </main>
+
+    <ModalWindow />
 </template>
