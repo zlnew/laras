@@ -16,8 +16,8 @@ import DeleteModalWindow from '@/Pages/Proyek/Modals/Delete.m.vue';
 // utils
 import { toRupiah } from '@/utilities/number';
 import { ll } from "@/utilities/date";
-import { Toastify } from "@/utilities/toastify";
 import { Modal } from "@/utilities/modal"
+import { Toast } from "@/utilities/toastify";
 
 // vue
 import { computed, onUpdated } from 'vue';
@@ -72,7 +72,7 @@ function PopDeleteModal(id_proyek: string) {
 }
 
 onUpdated(() => {
-    if (props.flash.success) Toastify(props.flash.success, 'success');
+    if (props.flash.success) Toast.success(props.flash.success);
 });
 </script>
 
@@ -94,7 +94,7 @@ onUpdated(() => {
                     </div>
                 </CardHeader>
 
-                <CardBody :isContentTable="true">
+                <CardBody table>
                     <TableLayout>
                         <THead>
                             <TRow>

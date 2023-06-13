@@ -3,15 +3,15 @@ import { computed } from 'vue';
 
 const props = withDefaults(
     defineProps<{
-        isContentTable?: boolean
+        table?: boolean
     }>(),
     {
-        isContentTable: false,
+        table: false,
     }
 )
 
 const spacingClasses = computed(() => {
-    return props.isContentTable ? 'p-0 pt-3' : 'px-6 py-3';
+    return props.table ? 'p-0 pt-3' : 'px-6 py-3';
 });
 </script>
 

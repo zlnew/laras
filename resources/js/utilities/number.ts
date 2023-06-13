@@ -10,6 +10,7 @@ export const toRupiah = (amount: number | null) => {
 export const fromRupiah = (formattedAmount: string | null) => {
     if (formattedAmount) {
         const cleanedAmount = formattedAmount.replace(/[^\d,-]/g, "").replace(",", ".");
+        
         return parseFloat(cleanedAmount);
     }
 }
