@@ -9,7 +9,6 @@ import { CardLayout, CardHeader, CardBody } from "@/Components/Card.vue";
 import { TableLayout, THead, TBody, TRow, THeadCell, TBodyCell } from '@/Components/Table.vue';
 
 // modal
-import useModalStore from '@/stores/useModalStore';
 import CreateModalWindow from '@/Pages/Proyek/Modals/Create.m.vue';
 import EditModalWindow from '@/Pages/Proyek/Modals/Edit.m.vue';
 import DeleteModalWindow from '@/Pages/Proyek/Modals/Delete.m.vue';
@@ -17,6 +16,8 @@ import DeleteModalWindow from '@/Pages/Proyek/Modals/Delete.m.vue';
 // utils
 import { toRupiah } from '@/utilities/number';
 import { ll } from "@/utilities/date";
+import { Toastify } from "@/utilities/toastify";
+import { Modal } from "@/utilities/modal"
 
 // vue
 import { computed, onUpdated } from 'vue';
@@ -36,14 +37,11 @@ interface Proyek {
 
 const props = defineProps<{
     daftarProyek: Array<Proyek>,
-    errors: Object,
     flash: {
-        success: string | boolean,
-        error: string | boolean,
+        success: string | null,
+        error: string | null,
     },
 }>();
-
-const modal = useModalStore();
 
 const computed__daftarProyek = computed(() => {
     return props.daftarProyek.map(proyek => {
@@ -61,54 +59,25 @@ const computed__daftarProyek = computed(() => {
     });
 });
 
-function openCreateModal() {
-    modal.open({ component: CreateModalWindow,
-        props: {
-            errors: props.errors,
-        }
-    });
+function PopCreateModal() {
+    Modal.pop(CreateModalWindow)
 }
 
-function openEditModal(proyek: Object) {
-    modal.open({ component: EditModalWindow,
-        props: {
-            proyek: proyek,
-            errors: props.errors,
-        }
-    });
+function PopEditModal(proyek: Object) {
+    Modal.pop(EditModalWindow, { proyek });
 }
 
-function openDeleteModal(id_proyek: string) {
-    modal.open({ component: DeleteModalWindow,
-        props: {
-            id_proyek: id_proyek,
-        }
-    });
+function PopDeleteModal(id_proyek: string) {
+    Modal.pop(DeleteModalWindow, { id_proyek });
 }
 
 onUpdated(() => {
-    if (Object.keys(props.errors).length) {
-        modal.$patch((res) => {
-            if (res.state.props) res.state.props.errors = props.errors;
-        });
-    } else modal.$reset();
-
-    if (props.flash.success) {
-        setTimeout(() => {
-            props.flash.success = false;
-        }, 5000);
-    }
+    if (props.flash.success) Toastify(props.flash.success, 'success');
 });
 </script>
 
 <template>
     <Head title="Daftar Proyek" />
-
-    <Teleport to="body">
-        <div v-if="flash.success" class="fixed bottom-5 right-5 bg-success text-white px-4 py-2 rounded-lg shadow-soft-lg">
-            <FasIcon icon="fa-solid fa-check-circle" class="mr-2" /> {{ flash.success }}
-        </div>
-    </Teleport>
     
     <AuthenticatedLayout>
         <template v-slot:breadcrumb>
@@ -120,7 +89,7 @@ onUpdated(() => {
             <CardLayout>
                 <CardHeader>
                     <div class="flex justify-between items-center">
-                        <Button @click="openCreateModal" type="button"><FasIcon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru</Button>
+                        <Button @click="PopCreateModal" type="button"><FasIcon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru</Button>
                         <Button type="button" color="transparent"><FasIcon icon="fa-solid fa-search" class="mr-1" /> Cari</Button>
                     </div>
                 </CardHeader>
@@ -164,8 +133,8 @@ onUpdated(() => {
                                 </TBodyCell>
                                 <TBodyCell whitespace="nowrap">
                                     <div class="flex space-x-4">
-                                        <ButtonLink @click="openEditModal(proyek)" color="secondary">Edit</ButtonLink>
-                                        <ButtonLink @click="openDeleteModal(proyek.id_proyek)" color="danger">Delete</ButtonLink>
+                                        <ButtonLink @click="PopEditModal(proyek)" color="secondary">Edit</ButtonLink>
+                                        <ButtonLink @click="PopDeleteModal(proyek.id_proyek)" color="danger">Delete</ButtonLink>
                                     </div>
                                 </TBodyCell>
                             </TRow>

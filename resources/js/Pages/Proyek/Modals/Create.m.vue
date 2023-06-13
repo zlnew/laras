@@ -6,22 +6,6 @@ import { useForm } from "@inertiajs/vue3";
 import { FormInput, FormLabel, FormError } from "@/Components/Form.vue";
 import { toRupiah } from "@/utilities/number";
 
-interface ErrorBag<T = string> {
-    StoreProyekRequest?: {
-        nama_proyek: T;
-        tahun_anggaran: T;
-        pengguna_jasa: T;
-        waktu_mulai: T,
-        waktu_selesai: T,
-        nilai_kontrak: T,
-        pic: T;
-    },
-}
-
-defineProps<{
-    errors: ErrorBag,
-}>();
-
 const modal = useModalStore();
 
 const form = useForm({
@@ -35,7 +19,11 @@ const form = useForm({
 });
 
 function submit() {
-    form.post(route('proyek.store'));
+    form.post(route('proyek.store'), {
+        onSuccess: () => {
+            modal.close();
+        }
+    });
 }
 </script>
 
@@ -50,7 +38,7 @@ function submit() {
                     type: 'text', id: 'nama_proyek', size: 'lg', autocomplete: 'off', placeholder: 'Nama Proyek'
                 }" />
     
-                <FormError class="mt-2" :message="errors.StoreProyekRequest?.nama_proyek" />
+                <FormError class="mt-2" :message="form.errors.nama_proyek" />
             </div>
 
             <div class="w-full mb-4 grid grid-cols-3 gap-4">
@@ -60,7 +48,7 @@ function submit() {
                         type: 'text', id: 'pengguna_jasa', size: 'lg', autocomplete: 'off', placeholder: 'Pengguna Jasa'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.StoreProyekRequest?.pengguna_jasa" />
+                    <FormError class="mt-2" :message="form.errors.pengguna_jasa" />
                 </div>
                 <div>
                     <FormLabel for="tahun_anggaran" value="Tahun Anggaran" />
@@ -68,7 +56,7 @@ function submit() {
                         type: 'text', id: 'tahun_anggaran', size: 'lg', autocomplete: 'off', placeholder: 'Tahun Anggaran'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.StoreProyekRequest?.tahun_anggaran" />
+                    <FormError class="mt-2" :message="form.errors.tahun_anggaran" />
                 </div>
             </div>
 
@@ -79,7 +67,7 @@ function submit() {
                         type: 'date', id: 'waktu_mulai', size: 'lg', autocomplete: 'off', placeholder: 'Tanggal Mulai'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.StoreProyekRequest?.waktu_mulai" />
+                    <FormError class="mt-2" :message="form.errors.waktu_mulai" />
                 </div>
                 <div>
                     <FormLabel for="waktu_selesai" value="Tanggal Selesai" />
@@ -87,7 +75,7 @@ function submit() {
                         type: 'date', id: 'waktu_selesai', size: 'lg', autocomplete: 'off', placeholder: 'Tanggal Selesai'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.StoreProyekRequest?.waktu_selesai" />
+                    <FormError class="mt-2" :message="form.errors.waktu_selesai" />
                 </div>
             </div>
 
@@ -99,7 +87,7 @@ function submit() {
                         type: 'number', id: 'nilai_kontrak', size: 'lg', autocomplete: 'off', placeholder: 'Nilai Kontrak'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.StoreProyekRequest?.nilai_kontrak" />
+                    <FormError class="mt-2" :message="form.errors.nilai_kontrak" />
                 </div>
                 <div>
                     <FormLabel for="pic" value="Penanggung Jawab" />
@@ -107,14 +95,16 @@ function submit() {
                         type: 'text', id: 'pic', size: 'lg', autocomplete: 'off', placeholder: 'Penanggung Jawab'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.StoreProyekRequest?.pic" />
+                    <FormError class="mt-2" :message="form.errors.pic" />
                 </div>
             </div>
         </ModalBody>
         
         <ModalFooter>
             <Button @click="modal.close" type="button" color="light">Close</Button>
-            <Button @click.prevent="submit" type="submit" color="primary">Submit</Button>
+            <Button @click.prevent="submit" v-bind="{
+                type:'submit', color: 'primary', loading:form.processing
+            }">Submit</Button>
         </ModalFooter>
     </ModalLayout>
 </template>

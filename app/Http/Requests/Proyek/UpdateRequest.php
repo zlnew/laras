@@ -7,8 +7,6 @@ use Illuminate\Support\Str;
 
 class UpdateRequest extends FormRequest
 {
-    protected $errorBag = 'UpdateProyekRequest';
-
     /**
      * Determine if the user is authorized to make this request.
      */

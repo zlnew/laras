@@ -19,21 +19,8 @@ interface Proyek<T = string> {
     pic: T,
 };
 
-interface ErrorBag<T = string> {
-    UpdateProyekRequest?: {
-        nama_proyek: T;
-        tahun_anggaran: T;
-        pengguna_jasa: T;
-        waktu_mulai: T,
-        waktu_selesai: T,
-        nilai_kontrak: T,
-        pic: T;
-    },
-}
-
 const props = defineProps<{
     proyek: Proyek,
-    errors: ErrorBag,
 }>();
 
 const sanitized__proyek = computed(() => {
@@ -63,7 +50,11 @@ const form = useForm({
 });
 
 function update() {
-    form.patch(route('proyek.update', props.proyek.id_proyek));
+    form.patch(route('proyek.update', props.proyek.id_proyek), {
+        onSuccess:() => {
+            modal.close();
+        }
+    });
 }
 </script>
 
@@ -78,7 +69,7 @@ function update() {
                     type: 'text', id: 'nama_proyek', size: 'lg', autocomplete: 'off', placeholder: 'Nama Proyek'
                 }" />
     
-                <FormError class="mt-2" :message="errors.UpdateProyekRequest?.nama_proyek" />
+                <FormError class="mt-2" :message="form.errors.nama_proyek" />
             </div>
 
             <div class="w-full mb-4 grid grid-cols-3 gap-4">
@@ -88,7 +79,7 @@ function update() {
                         type: 'text', id: 'pengguna_jasa', size: 'lg', autocomplete: 'off', placeholder: 'Pengguna Jasa'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.UpdateProyekRequest?.pengguna_jasa" />
+                    <FormError class="mt-2" :message="form.errors.pengguna_jasa" />
                 </div>
                 <div>
                     <FormLabel for="tahun_anggaran" value="Tahun Anggaran" />
@@ -96,7 +87,7 @@ function update() {
                         type: 'text', id: 'tahun_anggaran', size: 'lg', autocomplete: 'off', placeholder: 'Tahun Anggaran'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.UpdateProyekRequest?.tahun_anggaran" />
+                    <FormError class="mt-2" :message="form.errors.tahun_anggaran" />
                 </div>
             </div>
 
@@ -107,7 +98,7 @@ function update() {
                         type: 'date', id: 'waktu_mulai', size: 'lg', autocomplete: 'off', placeholder: 'Tanggal Mulai'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.UpdateProyekRequest?.waktu_mulai" />
+                    <FormError class="mt-2" :message="form.errors.waktu_mulai" />
                 </div>
                 <div>
                     <FormLabel for="waktu_selesai" value="Tanggal Selesai" />
@@ -115,7 +106,7 @@ function update() {
                         type: 'date', id: 'waktu_selesai', size: 'lg', autocomplete: 'off', placeholder: 'Tanggal Selesai'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.UpdateProyekRequest?.waktu_selesai" />
+                    <FormError class="mt-2" :message="form.errors.waktu_selesai" />
                 </div>
             </div>
 
@@ -127,7 +118,7 @@ function update() {
                         type: 'number', id: 'nilai_kontrak', size: 'lg', autocomplete: 'off', placeholder: 'Nilai Kontrak'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.UpdateProyekRequest?.nilai_kontrak" />
+                    <FormError class="mt-2" :message="form.errors.nilai_kontrak" />
                 </div>
                 <div>
                     <FormLabel for="pic" value="Penanggung Jawab" />
@@ -135,14 +126,16 @@ function update() {
                         type: 'text', id: 'pic', size: 'lg', autocomplete: 'off', placeholder: 'Penanggung Jawab'
                     }" />
         
-                    <FormError class="mt-2" :message="errors.UpdateProyekRequest?.pic" />
+                    <FormError class="mt-2" :message="form.errors.pic" />
                 </div>
             </div>
         </ModalBody>
         
         <ModalFooter>
             <Button @click="modal.close" type="button" color="light">Close</Button>
-            <Button @click.prevent="update" type="submit" color="secondary">Update</Button>
+            <Button @click.prevent="update" v-bind="{
+                type:'submit', color: 'secondary', loading:form.processing
+            }">Update</Button>
         </ModalFooter>
     </ModalLayout>
 </template>

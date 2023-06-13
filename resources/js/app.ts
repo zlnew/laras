@@ -23,8 +23,8 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue, Ziggy)
-            .use(pinia)
             .component('FasIcon', FontAwesomeIcon)
+            .use(pinia)
             .mount(el);
     },
     progress: {

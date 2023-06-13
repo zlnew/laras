@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import NavLink from '@/Components/NavLink.vue';
 import ButtonLink from '@/Components/ButtonLink.vue';
 import { ModalWindow } from '@/Components/Modal.vue';
+import Toast from '@/Components/Toast.vue';
 
 const fullYear: number = new Date().getFullYear();
 </script>
@@ -77,4 +78,5 @@ const fullYear: number = new Date().getFullYear();
     </main>
 
     <ModalWindow />
+    <Toast />
 </template>

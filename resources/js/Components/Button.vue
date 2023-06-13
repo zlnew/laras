@@ -6,6 +6,8 @@ const props = withDefaults(
         type?: 'button' | 'submit' | 'reset',
         size?: 'sm' | 'base' | 'lg',
         color?: 'primary' | 'secondary' | 'danger' | 'success' | 'light' | 'transparent',
+        disabled?: boolean
+        loading?: boolean,
     }>(),
     {
         type: 'submit',
@@ -35,8 +37,9 @@ const colorClasses = computed(() => {
 </script>
 
 <template>
-    <button :type="type" :class="[sizeClasses, colorClasses]"
-        class="inline-block align-middle rounded-lg transition-all ease-in-out uppercase font-bold text-center hover:opacity-90">
+    <button :type="type"
+        :class="[sizeClasses, colorClasses]" :disabled="loading"
+        class="inline-block align-middle rounded-lg transition-all ease-in-out uppercase font-bold text-center hover:opacity-90 disabled:cursor-wait disabled:opacity-50">
         <slot></slot>
     </button>
 </template>

@@ -13,7 +13,11 @@ const modal = useModalStore();
 const form = useForm({});
 
 function destroy() {
-    form.delete(route('proyek.destroy', props.id_proyek));
+    form.delete(route('proyek.destroy', props.id_proyek), {
+        onSuccess: () => {
+            modal.close();
+        }
+    });
 }
 </script>
 
@@ -27,7 +31,9 @@ function destroy() {
         
         <ModalFooter>
             <Button @click="modal.close" type="button" color="light">Close</Button>
-            <Button @click.prevent="destroy" type="submit" color="danger">Delete</Button>
+            <Button @click.prevent="destroy" v-bind="{
+                type:'submit', color: 'danger', loading:form.processing
+            }">Delete</Button>
         </ModalFooter>
     </ModalLayout>
 </template>

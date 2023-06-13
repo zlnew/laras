@@ -34,7 +34,11 @@ const sizeClasses = computed(() => {
 
 <template>
     <input
-        :class="sizeClasses" class="ease-soft block w-full transition-all rounded-lg shadow-sm font-normal text-sm text-gray-700 bg-white border border-solid border-light focus:drop-shadow focus:border-primary"
+        :class="sizeClasses"
+        class="ease-soft block w-full transition-all rounded-lg shadow-sm
+            font-normal text-sm text-gray-700 bg-white
+            border border-solid border-light
+            focus:drop-shadow focus:border-primary"
         :value="modelValue" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" ref="input"
     />
 </template>
