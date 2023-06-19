@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ModalLayout, ModalHead, ModalBody, ModalFooter } from "@/Components/Modal.vue";
-import Button from "@/Components/Button.vue";
-import useModalStore from "@/stores/useModalStore";
 import { useForm } from "@inertiajs/vue3";
 import { FormInput, FormLabel, FormError } from "@/Components/Form.vue";
 import { toRupiah, fromRupiah } from "@/utilities/number";
 import { computed } from "vue";
 import { revertDate } from "@/utilities/date";
+import useModalStore from "@/stores/useModalStore";
 
 interface Proyek<T = string> {
     id_proyek: T,
@@ -132,10 +131,15 @@ function update() {
         </ModalBody>
         
         <ModalFooter>
-            <Button @click="modal.close" type="button" color="light">Close</Button>
-            <Button @click.prevent="update" v-bind="{
-                type:'submit', color: 'secondary', loading:form.processing
-            }">Update</Button>
+            <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
+            <EaseButton @click.prevent="update" v-bind="{
+                type: 'submit',
+                text: 'Update',
+                loading: form.processing,
+                onLoading: () => ({
+                    text: 'Updating data...',
+                })
+            }" />
         </ModalFooter>
     </ModalLayout>
 </template>

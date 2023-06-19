@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ModalLayout, ModalHead, ModalBody, ModalFooter } from "@/Components/Modal.vue";
-import Button from "@/Components/Button.vue";
-import useModalStore from "@/stores/useModalStore";
 import { useForm } from "@inertiajs/vue3";
+import useModalStore from "@/stores/useModalStore";
 
 const props = defineProps<{
     id_proyek: string,
@@ -30,10 +29,16 @@ function destroy() {
         </ModalBody>
         
         <ModalFooter>
-            <Button @click="modal.close" type="button" color="light">Close</Button>
-            <Button @click.prevent="destroy" v-bind="{
-                type:'submit', color: 'danger', loading:form.processing
-            }">Delete</Button>
+            <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
+            <EaseButton @click.prevent="destroy" v-bind="{
+                type: 'submit',
+                variant: 'danger-transparent',
+                text: 'Yes, delete it!',
+                loading: form.processing,
+                onLoading: () => ({
+                    text: 'Deleting data...',
+                })
+            }" />
         </ModalFooter>
     </ModalLayout>
 </template>

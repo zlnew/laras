@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import NavLink from '@/Components/NavLink.vue';
-import ButtonLink from '@/Components/ButtonLink.vue';
 import { ModalWindow } from '@/Components/Modal.vue';
 import Toast from '@/Components/Toast.vue';
 
@@ -52,7 +51,9 @@ const fullYear: number = new Date().getFullYear();
                 <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                     <li class="flex items-center">
                         <Link :href="route('logout')" method="post" as="button">
-                            <ButtonLink color="danger"><FasIcon icon="fa-solid fa-sign-out-alt" class="mr-2" /> Logout</ButtonLink>
+                            <EaseButton variant="danger-transparent" slotted>
+                                <FasIcon icon="fa-solid fa-sign-out-alt" class="mr-2" /> Logout
+                            </EaseButton>
                         </Link>
                     </li>
                 </ul>

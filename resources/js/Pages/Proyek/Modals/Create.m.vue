@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ModalLayout, ModalHead, ModalBody, ModalFooter } from "@/Components/Modal.vue";
-import Button from "@/Components/Button.vue";
 import useModalStore from "@/stores/useModalStore";
 import { useForm } from "@inertiajs/vue3";
 import { FormInput, FormLabel, FormError } from "@/Components/Form.vue";
@@ -101,10 +100,15 @@ function submit() {
         </ModalBody>
         
         <ModalFooter>
-            <Button @click="modal.close" type="button" color="light">Close</Button>
-            <Button @click.prevent="submit" v-bind="{
-                type:'submit', color: 'primary', loading:form.processing
-            }">Submit</Button>
+            <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
+            <EaseButton @click.prevent="submit" v-bind="{
+                type: 'submit',
+                text: 'Create',
+                loading: form.processing,
+                onLoading: () => ({
+                    text: 'Creating data...',
+                })
+            }" />
         </ModalFooter>
     </ModalLayout>
 </template>

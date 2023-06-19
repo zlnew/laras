@@ -1,8 +1,6 @@
 <script setup lang="ts">
 // component
 import Breadrumb from '@/Components/Breadrumb.vue';
-import Button from '@/Components/Button.vue';
-import ButtonLink from '@/Components/ButtonLink.vue';
 import ContentLayout from '@/Components/Content.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { CardLayout, CardHeader, CardBody } from "@/Components/Card.vue";
@@ -47,7 +45,7 @@ const computed__daftarProyek = computed(() => {
     return props.daftarProyek.map(proyek => {
         const computed__waktu_mulai = ll(proyek.waktu_mulai);
         const computed__waktu_selesai = ll(proyek.waktu_selesai);
-        const computed__status_proyek = (proyek.status_proyek === 100) ? 'Closed' : 'On Progress';
+        const computed__status_proyek = proyek.status_proyek == 400 ? 'Closed' : 'On Progress';
         const computed__nilai_kontrak = toRupiah(proyek.nilai_kontrak);        
 
         return { ...proyek,
@@ -55,6 +53,7 @@ const computed__daftarProyek = computed(() => {
             waktu_selesai: computed__waktu_selesai,
             status_proyek: computed__status_proyek,
             nilai_kontrak: computed__nilai_kontrak,
+            status_proyek_code: proyek.status_proyek,
         };
     });
 });
@@ -89,8 +88,12 @@ onUpdated(() => {
             <CardLayout>
                 <CardHeader>
                     <div class="flex justify-between items-center">
-                        <Button @click="PopCreateModal" type="button"><FasIcon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru</Button>
-                        <Button type="button" color="transparent"><FasIcon icon="fa-solid fa-search" class="mr-1" /> Cari</Button>
+                        <EaseButton @click="PopCreateModal" slotted>
+                            <FasIcon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru
+                        </EaseButton>
+                        <EaseButton variant="transparent" slotted>
+                            <FasIcon icon="fa-solid fa-search" class="mr-1" /> Pencarian
+                        </EaseButton>
                     </div>
                 </CardHeader>
 
@@ -104,8 +107,8 @@ onUpdated(() => {
                                 <THeadCell textAlign="center" value="Waktu Mulai" />
                                 <THeadCell textAlign="center" value="Waktu Selesai" />
                                 <THeadCell textAlign="right" value="Nilai Kontrak" />
-                                <THeadCell value="Status" />
-                                <THeadCell value="Aksi" />
+                                <THeadCell textAlign="center" value="Status" />
+                                <THeadCell textAlign="center" value="" />
                             </TRow>
                         </THead>
                         <TBody>
@@ -116,9 +119,9 @@ onUpdated(() => {
 
                                 <TBodyCell>
                                     <Link href="#">
-                                        <ButtonLink color="secondary" class="text-left">
+                                        <EaseButton variant="link" class="text-left" slotted>
                                             <p class="line-clamp-2 hover:line-clamp-none">{{ proyek.nama_proyek }}</p>
-                                        </ButtonLink>
+                                        </EaseButton>
                                     </Link>
                                 </TBodyCell>
                                 <TBodyCell whitespace="nowrap">{{ proyek.tahun_anggaran }}</TBodyCell>
@@ -126,15 +129,18 @@ onUpdated(() => {
                                 <TBodyCell whitespace="nowrap" textAlign="center">{{ proyek.waktu_mulai }}</TBodyCell>
                                 <TBodyCell whitespace="nowrap" textAlign="center">{{ proyek.waktu_selesai }}</TBodyCell>
                                 <TBodyCell whitespace="nowrap" textAlign="right">{{ proyek.nilai_kontrak }}</TBodyCell>
-                                <TBodyCell whitespace="nowrap">
-                                    <ButtonLink v-bind="{
-                                        color: (proyek.status_proyek === 'Closed') ? 'danger' : 'success',
-                                    }">{{ proyek.status_proyek }}</ButtonLink>
+                                <TBodyCell whitespace="nowrap" textAlign="center">
+                                    <EaseButton v-bind="{
+                                        text: proyek.status_proyek,
+                                        variant: proyek.status_proyek_code == 400 ? 'danger-transparent' : 'transparent'
+                                    }" />
                                 </TBodyCell>
                                 <TBodyCell whitespace="nowrap">
-                                    <div class="flex space-x-4">
-                                        <ButtonLink @click="PopEditModal(proyek)" color="secondary">Edit</ButtonLink>
-                                        <ButtonLink @click="PopDeleteModal(proyek.id_proyek)" color="danger">Delete</ButtonLink>
+                                    <div class="flex">
+                                        <EaseButton @click="PopEditModal(proyek)" text="Edit" variant="link" />
+                                        <EaseButton @click="PopDeleteModal(proyek.id_proyek)" variant="link" slotted>
+                                            <span class="text-danger">Delete</span>
+                                        </EaseButton>
                                     </div>
                                 </TBodyCell>
                             </TRow>

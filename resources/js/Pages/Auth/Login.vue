@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Head, useForm } from "@inertiajs/vue3";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
-import Button from "@/Components/Button.vue";
 import { FormCheckbox, FormInput, FormError, FormLabel } from "@/Components/Form.vue";
 
 const form = useForm({
@@ -57,7 +56,18 @@ const submit = () => {
                                         </div>
     
                                         <div class="text-center">
-                                            <Button class="w-full mt-6 mb-0">Log in</Button>
+                                            <EaseButton
+                                                v-bind="{
+                                                    type: 'submit',
+                                                    variant: 'primary',
+                                                    text: 'Log in',
+                                                    class: 'w-full',
+                                                    loading: form.processing,
+                                                    onLoading: () => ({
+                                                        text: 'Verifying user',
+                                                    })
+                                                }"
+                                            />
                                         </div>
                                     </form>
                                 </div>
