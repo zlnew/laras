@@ -8,7 +8,7 @@ import { Head } from '@inertiajs/vue3';
 
 
 <template>
-  <Head title="Daftar Proyek" />
+  <Head title="Dashboard" />
   
   <AuthenticatedLayout>
     <template v-slot:breadcrumb>
@@ -19,7 +19,7 @@ import { Head } from '@inertiajs/vue3';
       <CardLayout>
 				<CardHeader>
           <div class="flex justify-between items-center">
-						<h5>Dashboard</h5>
+						<h5 class="font-bold text-xl">Dashboard</h5>
           </div>
         </CardHeader>
 				<CardBody>

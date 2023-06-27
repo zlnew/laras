@@ -31,23 +31,23 @@ const form = useForm({
 });
 
 function search() {
-  form.get(route('rab.search'));
+  form.get(route('rap.search'));
 }
 </script>
 
 <template>
-  <Head title="Pencarian RAB" />
+  <Head title="Pencarian RAP" />
 
   <AuthenticatedLayout>
     <template v-slot:breadcrumb>
-      <Breadrumb v-slot:breadcrumb v-bind="{ second: 'RAB', current: 'Search' }" />
+      <Breadrumb v-slot:breadcrumb v-bind="{ second: 'RAP', current: 'Search' }" />
     </template>
 
     <ContentLayout>
       <CardLayout>
 				<CardHeader>
           <div class="flex justify-between items-center">
-						<h5 class="font-bold text-xl">Cari RAB Proyek</h5>
+						<h5 class="font-bold text-xl">Cari RAP Proyek</h5>
           </div>
         </CardHeader>
 				<CardBody>
@@ -89,7 +89,7 @@ function search() {
                 v-bind="{ last: index === computed__daftarProyek.length - 1 }"
               >
                 <TBodyCell>
-                  <Link :href="route('rab.detail', proyek.rab.id_rab)">
+                  <Link :href="route('rap.detail', proyek.rap.id_rap)">
                     <EaseButton variant="link" class="text-left" slotted>
                       <span class="line-clamp-2 hover:line-clamp-none">{{ proyek.nama_proyek }}</span>
                     </EaseButton>

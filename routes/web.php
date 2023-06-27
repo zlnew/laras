@@ -5,6 +5,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\RABController;
+use App\Http\Controllers\RAPController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,14 @@ Route::middleware('auth')->group(function() {
         Route::patch('/detail/{DetailRAB}', [RABController::class, 'update'])->name('rab.update');
         Route::delete('/detail/{DetailRAB}', [RABController::class, 'destroy'])->name('rab.destroy');
         Route::patch('/tax/{RAB}', [RABController::class, 'update_tax'])->name('rab.update_tax');
+    });
+
+    Route::prefix('rap')->group(function() {
+        Route::get('/search', [RAPController::class, 'search'])->name('rap.search');
+        Route::get('/detail/{RAP}', [RAPController::class, 'detail'])->name('rap.detail');
+        Route::post('/detail/{RAP}', [RAPController::class,'store'])->name('rap.store');
+        Route::patch('/detail/{DetailRAP}', [RAPController::class, 'update'])->name('rap.update');
+        Route::delete('/detail/{DetailRAP}', [RAPController::class, 'destroy'])->name('rap.destroy');
     });
 });
 

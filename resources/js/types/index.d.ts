@@ -18,6 +18,7 @@ export interface Proyek {
     created_at: Date;
     updated_at: Date;
     rab: RAB;
+    rap: RAP;
 };
 
 export interface RAB {
@@ -43,6 +44,31 @@ export interface DetailRAB {
     updated_at: Date;
     deleted_at: Date;
     rab: RAB;
+    satuan: Satuan;
+};
+
+export interface RAP {
+    id_rap: string;
+    id_proyek: string;
+    created_at: Date;
+    updated_at: Date;
+    proyek: Proyek;
+    detail: Array<DetailRAP>;
+}
+
+export interface DetailRAP {
+    id_detail_rap: number;
+    id_rap: string;
+    id_satuan: string;
+    uraian: string;
+    volume: number;
+    harga_satuan: number;
+    keterangan: string;
+    status_uraian: string;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
+    rap: RAP;
     satuan: Satuan;
 };
 
