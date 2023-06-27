@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Proyek;
 use App\Models\RAB;
+use App\Models\RAP;
 
 class ProyekObserver
 {
@@ -13,6 +14,7 @@ class ProyekObserver
     public function created(Proyek $proyek): void
     {
         RAB::create(['id_proyek' => $proyek->id_proyek]);
+        RAP::create(['id_proyek' => $proyek->id_proyek]);
     }
 
     /**

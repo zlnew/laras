@@ -43,6 +43,13 @@ const url = window.location.href;
                         :href="route('rab.search')" :active="route().current('rab.search') || route().current('rab.detail')"
                     />
                 </li>
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="RAPP"
+                        icon="fa-solid fa-diagram-project"
+                        :href="route('rap.search')" :active="route().current('rap.search') || route().current('rap.detail')"
+                    />
+                </li>
             </ul>
         </div>
     </aside>

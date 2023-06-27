@@ -32,4 +32,9 @@ class Proyek extends Model
     {
         return $this->hasOne(RAB::class, 'id_proyek', 'id_proyek');
     }
+
+    public function RAP(): HasOne
+    {
+        return $this->hasOne(RAP::class, 'id_proyek', 'id_proyek');
+    }
 }
