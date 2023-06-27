@@ -74,7 +74,7 @@ const submit = () => {
             </div>
             <div class="w-full max-w-full px-3 lg:flex-0 shrink-0 md:w-6/12">
               <div class="absolute top-0 hidden w-3/5 h-full -mr-32 -right-40 md:block">
-                <div class="absolute inset-x-0 top-0 z-0 h-full -ml-16 bg-cover overflow-hidden -skew-x-10 rounded-bl-xl" style="background-image: url('../../../../storage/login_bg.jpg')"></div>
+                <div class="absolute inset-x-0 top-0 z-0 h-full -ml-16 bg-cover overflow-hidden -skew-x-10 rounded-bl-xl bg-login"></div>
                   <img src="../../../../storage/app//public/logo.png" class="absolute w-1/2 bg-white p-2 bottom-20 mr-40 right-40" alt="Laras Sembada Logo">
                   <div class="absolute bottom-6 mr-40 right-40">
                     <h4 class="text-[25.7px] text-white font-outline-1 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
@@ -89,3 +89,9 @@ const submit = () => {
     </section>
   </GuestLayout>
 </template>
+
+<style scoped>
+.bg-login {
+  background-image: url('../../../../storage/app/public/login_bg.jpg');
+}
+</style>
