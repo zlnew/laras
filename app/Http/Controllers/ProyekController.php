@@ -16,11 +16,56 @@ class ProyekController extends Controller
     public function index(Request $request): Response
     {
         $daftarProyek = Proyek::query();
-        $daftarProyek = $daftarProyek->latest('id_proyek')->get();
+
+        if ($request->isMethod('get') && $request->all()) {
+            $daftarProyek = $this->filter($request, $daftarProyek);
+        }
+
+        $daftarProyek = $daftarProyek->latest('id_proyek')->paginate();
 
         return Inertia::render('Proyek/Index', [
             'daftarProyek' => $daftarProyek,
         ]);
+    }
+
+    public function filter($searchRequest, $daftarProyek) {
+        $daftarProyek->when($searchRequest->get('nama_proyek'), function($query, $input) {
+            $query->where('nama_proyek', 'like', $input . '%');
+        });
+
+        $daftarProyek->when($searchRequest->get('tahun_anggaran'), function($query, $input) {
+            $query->where('tahun_anggaran', $input);
+        });
+        
+        $daftarProyek->when($searchRequest->get('pengguna_jasa'), function($query, $input) {
+            $query->where('pengguna_jasa', 'like', $input. '%');
+        });
+
+        $daftarProyek->when($searchRequest->get('waktu_mulai'), function($query, $input) {
+            $query->where('waktu_mulai', '>=', $input);
+        });
+
+        $daftarProyek->when($searchRequest->get('waktu_selesai'), function($query, $input) {
+            $query->where('waktu_selesai', '<=', $input);
+        });
+
+        $daftarProyek->when($searchRequest->get('nilai_kontrak_min'), function($query, $input) {
+            $query->where('nilai_kontrak', '>=', $input);
+        });
+
+        $daftarProyek->when($searchRequest->get('nilai_kontrak_max'), function($query, $input) {
+            $query->where('nilai_kontrak', '<=', $input);
+        });
+
+        $daftarProyek->when($searchRequest->get('pic'), function($query, $input) {
+            $query->where('pic', $input);
+        });
+
+        $daftarProyek->when($searchRequest->get('status_proyek'), function($query, $input) {
+            $query->where('status_proyek', $input);
+        });
+
+        return $daftarProyek;
     }
 
     public function store(StoreRequest $request): RedirectResponse

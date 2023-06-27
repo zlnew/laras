@@ -27,6 +27,7 @@ function submit() {
 </script>
 
 <template>
+    <form @submit.prevent="submit">
     <ModalLayout size="5xl">
         <ModalHead title="Form Tambah Proyek Baru" />
     
@@ -100,8 +101,12 @@ function submit() {
         </ModalBody>
         
         <ModalFooter>
-            <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
-            <EaseButton @click.prevent="submit" v-bind="{
+            <EaseButton @click="modal.close" v-bind="{
+                variant: 'transparent',
+                type: 'button',
+                text: 'Close',
+            }" />
+            <EaseButton v-bind="{
                 type: 'submit',
                 text: 'Create',
                 loading: form.processing,
@@ -111,4 +116,5 @@ function submit() {
             }" />
         </ModalFooter>
     </ModalLayout>
+    </form>
 </template>

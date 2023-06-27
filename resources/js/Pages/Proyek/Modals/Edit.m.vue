@@ -58,6 +58,7 @@ function update() {
 </script>
 
 <template>
+    <form @submit.prevent="update">
     <ModalLayout size="5xl">
         <ModalHead title="Form Edit Proyek" />
     
@@ -132,7 +133,7 @@ function update() {
         
         <ModalFooter>
             <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
-            <EaseButton @click.prevent="update" v-bind="{
+            <EaseButton v-bind="{
                 type: 'submit',
                 text: 'Update',
                 loading: form.processing,
@@ -142,4 +143,5 @@ function update() {
             }" />
         </ModalFooter>
     </ModalLayout>
+    </form>
 </template>
