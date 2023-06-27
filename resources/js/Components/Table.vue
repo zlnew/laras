@@ -1,6 +1,7 @@
 <script lang="ts">
 export { default as THead } from "@/Components/TablePartials/Head.vue";
 export { default as TBody } from "@/Components/TablePartials/Body.vue";
+export { default as TFoot } from "@/Components/TablePartials/Foot.vue";
 export { default as TRow } from "@/Components/TablePartials/Row.vue";
 export { default as THeadCell } from "@/Components/TablePartials/HeadCell.vue";
 export { default as TBodyCell } from "@/Components/TablePartials/BodyCell.vue";

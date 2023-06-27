@@ -17,26 +17,11 @@ import { Toast } from "@/utilities/toastify";
 
 import { computed, onUpdated } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
-
-interface Proyek {
-  data: [
-    {
-      id_proyek: string,
-      nama_proyek: string,
-      tahun_anggaran: string,
-      pengguna_jasa: string,
-      waktu_mulai: Date,
-      waktu_selesai: Date,
-      nilai_kontrak: number,
-      status_proyek: 100 | 400,
-      pic: string,
-    }
-  ]
-};
+import { Proyek } from '@/types';
 
 const props = defineProps<{
   daftarProyek: {
-    data: Proyek['data'],
+    data: Array<Proyek>,
   },
   flash: {
     success: string | null,
@@ -49,7 +34,7 @@ const computed__daftarProyek = computed(() => {
     const computed__waktu_mulai = ll(proyek.waktu_mulai);
     const computed__waktu_selesai = ll(proyek.waktu_selesai);
     const computed__status_proyek = proyek.status_proyek == 400 ? 'Closed' : 'On Progress';
-    const computed__nilai_kontrak = toRupiah(proyek.nilai_kontrak);        
+    const computed__nilai_kontrak = toRupiah(proyek.nilai_kontrak);
 
     return { ...proyek,
       waktu_mulai: computed__waktu_mulai,

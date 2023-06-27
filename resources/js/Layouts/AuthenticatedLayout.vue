@@ -5,6 +5,7 @@ import { ModalWindow } from '@/Components/Modal.vue';
 import Toast from '@/Components/Toast.vue';
 
 const fullYear: number = new Date().getFullYear();
+const url = window.location.href;
 </script>
 
 <template>
@@ -33,6 +34,13 @@ const fullYear: number = new Date().getFullYear();
                         name="Proyek"
                         icon="fa-solid fa-diagram-project"
                         :href="route('proyek')" :active="route().current('proyek')"
+                    />
+                </li>
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="RAB"
+                        icon="fa-solid fa-diagram-project"
+                        :href="route('rab.search')" :active="route().current('rab.search') || route().current('rab.detail')"
                     />
                 </li>
             </ul>

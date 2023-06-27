@@ -50,7 +50,12 @@ createInertiaApp({
             'danger-transparent': {
                 color: '#ef4444',
                 bgColor: 'transparent',
-            }
+            },
+            'danger-link': {
+                color: '#ef4444',
+                bgColor: 'variant="link"',
+                textDecoration: 'underline',
+            },
         });
     },
     progress: { color: '#172554' },
