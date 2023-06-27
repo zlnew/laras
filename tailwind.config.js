@@ -25,7 +25,7 @@ export default {
                 'danger': '#ef4444',
                 'dark': '#1e293b',
                 'light': '#d1d5db',
-              },
+            },
         },
     },
 

@@ -2,6 +2,7 @@
 import Breadrumb from '@/Components/Breadrumb.vue';
 import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import ContentLayout from '@/Components/Content.vue';
 import { Head } from '@inertiajs/vue3';
 </script>
 
