@@ -5,19 +5,18 @@ import { ModalWindow } from '@/Components/Modal.vue';
 import Toast from '@/Components/Toast.vue';
 
 const fullYear: number = new Date().getFullYear();
-const url = window.location.href;
 </script>
 
 <template>
     <aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent">
         <div class="h-19.5">
-            <a class="block px-8 py-6 m-0 text-sm whitespace-nowrap text-slate-700" href="" target="_blank">
-                <img src="" class="inline h-full max-w-full transition-all duration-200 ease-nav-brand max-h-8" alt="main_logo" />
+            <a class="block px-4 py-4 m-0 text-sm whitespace-nowrap text-slate-700" href="#">
+                <img src="../../../storage/app//public/logo.png" class="inline h-full max-w-full transition-all duration-200 ease-nav-brand border border-primary" alt="main_logo" />
                 <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand"></span>
             </a>
         </div>
 
-        <hr class="h-px mt-0 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent" />
+        <hr class="h-px mt-4 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent" />
 
         <div class="items-center block w-auto max-h-screen overflow-auto h-sidenav grow basis-full">
             <ul class="flex flex-col pl-0 mb-0">
@@ -29,6 +28,10 @@ const url = window.location.href;
                     />
                 </li>
 
+                <li class="w-full mt-8 mb-2">
+                    <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Main</h6>
+                </li>
+
                 <li class="mt-0.5 w-full">
                     <NavLink
                         name="Proyek"
@@ -36,18 +39,56 @@ const url = window.location.href;
                         :href="route('proyek')" :active="route().current('proyek')"
                     />
                 </li>
+
                 <li class="mt-0.5 w-full">
                     <NavLink
                         name="RAB"
-                        icon="fa-solid fa-diagram-project"
+                        icon="fa-solid fa-window-restore"
                         :href="route('rab.search')" :active="route().current('rab.search') || route().current('rab.detail')"
                     />
                 </li>
+
                 <li class="mt-0.5 w-full">
                     <NavLink
                         name="RAPP"
-                        icon="fa-solid fa-diagram-project"
+                        icon="fa-solid fa-window-restore"
                         :href="route('rap.search')" :active="route().current('rap.search') || route().current('rap.detail')"
+                    />
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Keuangan"
+                        icon="fa-solid fa-money-bill"
+                        :href="route('rap.search')"
+                    />
+                </li>
+
+                <li class="w-full mt-8 mb-2">
+                    <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Reports</h6>
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Pengajuan Dana"
+                        icon="fa-solid fa-file-lines"
+                        :href="route('proyek')"
+                    />
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Penagihan/Invoice"
+                        icon="fa-solid fa-file-lines"
+                        :href="route('proyek')"
+                    />
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Evaluasi Proyek"
+                        icon="fa-solid fa-file-lines"
+                        :href="route('proyek')"
                     />
                 </li>
             </ul>
