@@ -92,7 +92,7 @@ const submit = () => {
 
 <style scoped>
 .laras-logo {
-  src: url('../../../../storage/app/public/login_bg.jpg');
+  src: url('../../../../storage/app/public/logo.png');
 }
 .bg-login {
   background-image: url('../../../../storage/app/public/login_bg.jpg');
