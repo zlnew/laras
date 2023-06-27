@@ -11,7 +11,7 @@ const fullYear: number = new Date().getFullYear();
     <aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent">
         <div class="h-19.5">
             <a class="block px-4 py-4 m-0 text-sm whitespace-nowrap text-slate-700" href="#">
-                <img class="laras-logo inline h-full max-w-full transition-all duration-200 ease-nav-brand border border-primary" alt="main_logo" />
+                <img src="/storage/logo.png" class="inline h-full max-w-full transition-all duration-200 ease-nav-brand border border-primary" alt="main_logo" />
                 <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand"></span>
             </a>
         </div>
@@ -137,9 +137,3 @@ const fullYear: number = new Date().getFullYear();
     <ModalWindow />
     <Toast />
 </template>
-
-<style scoped>
-.laras-logo {
-    src: url('../../../storage/app/public/logo.png');
-}
-</style>
