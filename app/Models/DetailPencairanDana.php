@@ -11,9 +11,9 @@ class DetailPencairanDana extends Model
 {
     use HasFactory, SoftDeletes;
 
-    private $table = 'detail_pencairan_dana';
-    private $primaryKey = 'id_detail_pencairan_dana';
-    private $fillable = [
+    protected $table = 'detail_pencairan_dana';
+    protected $primaryKey = 'id_detail_pencairan_dana';
+    protected $fillable = [
         'id_pencairan_dana',
         'id_detail_pengajuan_dana',
         'jumlah_pencairan'

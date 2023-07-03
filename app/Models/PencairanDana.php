@@ -12,9 +12,9 @@ class PencairanDana extends Model
 {
     use HasFactory, HasUlids, SoftDeletes;
 
-    private $table = 'pencairan_dana';
-    private $primaryKey = 'id_pencairan_dana';
-    private $fillable = [
+    protected $table = 'pencairan_dana';
+    protected $primaryKey = 'id_pencairan_dana';
+    protected $fillable = [
         'id_pengajuan_dana',
         'keterangan',
         'status_pencairan'

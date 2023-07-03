@@ -10,9 +10,9 @@ class Persetujuan extends Model
 {
     use HasFactory, SoftDeletes;
 
-    private $table = 'persetujuan';
-    private $primaryKey = 'id_persetujuan';
-    private $fillable = [
+    protected $table = 'persetujuan';
+    protected $primaryKey = 'id_persetujuan';
+    protected $fillable = [
         'user_id',
         'model_id',
         'model_type',

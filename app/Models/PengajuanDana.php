@@ -13,9 +13,9 @@ class PengajuanDana extends Model
 {
     use HasFactory, HasUlids, SoftDeletes;
 
-    private $table = 'pengajuan_dana';
-    private $primaryKey = 'id_pengajuan_dana';
-    private $fillable = [
+    protected $table = 'pengajuan_dana';
+    protected $primaryKey = 'id_pengajuan_dana';
+    protected $fillable = [
         'id_rap',
         'keterangan',
         'status_pengajuan',
