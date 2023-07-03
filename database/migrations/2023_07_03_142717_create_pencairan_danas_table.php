@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pencairan_dana', function (Blueprint $table) {
             $table->ulid('id_pencairan_dana')->primary();
             $table->foreignUlid('id_pengajuan_dana');
+            $table->string('keterangan');
             $table->enum('status_pencairan', [100, 400])->default(100);
             $table->timestamps();
             $table->softDeletes();

@@ -16,6 +16,7 @@ class PencairanDana extends Model
     private $primaryKey = 'id_pencairan_dana';
     private $fillable = [
         'id_pengajuan_dana',
+        'keterangan',
         'status_pencairan'
     ];
     public $autoIncrement = false;

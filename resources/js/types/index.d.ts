@@ -82,6 +82,7 @@ export interface DetailRAP {
 export interface PengajuanDana {
     id_pengajuan_dana: string;
     id_rap: string;
+    keterangan: string;
     status_pengajuan: 100 | 400;
     created_at: Date;
     updated_at: Date;
@@ -110,6 +111,7 @@ export interface DetailPengajuanDana {
 export interface PencairanDana {
     id_pencairan_dana: string;
     id_pengajuan_dana: string;
+    keterangan: string;
     status_pencairan: 100 | 400;
     created_at: Date;
     updated_at: Date;

@@ -17,6 +17,7 @@ class PengajuanDana extends Model
     private $primaryKey = 'id_pengajuan_dana';
     private $fillable = [
         'id_rap',
+        'keterangan',
         'status_pengajuan',
     ];
     public $autoIncrement = false;
