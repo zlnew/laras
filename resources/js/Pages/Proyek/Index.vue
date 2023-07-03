@@ -16,8 +16,11 @@ import { Modal } from "@/utilities/modal"
 import { Toast } from "@/utilities/toastify";
 
 import { computed, onUpdated } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Proyek } from '@/types';
+
+const page = usePage();
+const permissions = computed(() => page.props.permissions);
 
 const props = defineProps<{
   daftarProyek: {
@@ -79,9 +82,11 @@ onUpdated(() => {
       <CardLayout>
         <CardHeader>
           <div class="flex justify-between items-center">
-            <EaseButton @click="PopCreateModal" slotted>
-              <FasIcon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru
-            </EaseButton>
+            <div>
+              <EaseButton v-if="permissions.includes('create proyek')" @click="PopCreateModal" slotted>
+                <FasIcon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru
+              </EaseButton>
+            </div>
             <EaseButton @click="PopSearchModal()" variant="transparent" slotted>
               <FasIcon icon="fa-solid fa-search" class="mr-1" /> Pencarian
             </EaseButton>
@@ -126,7 +131,9 @@ onUpdated(() => {
                     variant: proyek.status_proyek_code == 400 ? 'danger-transparent' : 'transparent'
                   }" />
                 </TBodyCell>
-                <TBodyCell whitespace="nowrap">
+                <TBodyCell
+                  v-if="permissions.includes('update proyek') && permissions.includes('delete proyek')"
+                  whitespace="nowrap">
                   <div class="flex">
                     <EaseButton @click="PopEditModal(proyek)" text="Edit" variant="link" />
                     <EaseButton @click="PopDeleteModal(proyek.id_proyek)" variant="link" slotted>

@@ -34,6 +34,14 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'permissions' => function () use ($request) {
+                if ($request->user()) {
+                    $permissionsViaRoles = $request->user()->getPermissionsViaRoles();
+                    $directPermissions = $request->user()->getDirectPermissions();
+                    
+                    return $permissionsViaRoles->merge($directPermissions)->pluck('name')->toArray();
+                }
+            },
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
