@@ -18,6 +18,7 @@ class RAB extends Model
         'id_proyek',
         'tax',
         'additional_tax',
+        'status_rab'
     ];
     public $autoIncrement = false;
 

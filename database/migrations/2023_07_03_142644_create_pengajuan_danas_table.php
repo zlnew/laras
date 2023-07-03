@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rap', function (Blueprint $table) {
-            $table->ulid('id_rap')->primary();
-            $table->foreignUlid('id_proyek');
-            $table->enum('status_rap', [100, 400])->default(100);
+        Schema::create('pengajuan_dana', function (Blueprint $table) {
+            $table->ulid('id_pengajuan_dana')->primary();
+            $table->foreignUlid('id_rap');
+            $table->enum('status_pengajuan', [100, 400])->default(100);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rap');
+        Schema::dropIfExists('pengajuan_dana');
     }
 };

@@ -31,6 +31,7 @@ export interface RAB {
     id_proyek: string;
     tax: number;
     additional_tax: number;
+    status_rab: 100 | 400;
     created_at: Date;
     updated_at: Date;
     proyek: Proyek;
@@ -55,6 +56,7 @@ export interface DetailRAB {
 export interface RAP {
     id_rap: string;
     id_proyek: string;
+    status_rap: 100 | 400;
     created_at: Date;
     updated_at: Date;
     proyek: Proyek;
@@ -75,6 +77,68 @@ export interface DetailRAP {
     deleted_at: Date;
     rap: RAP;
     satuan: Satuan;
+};
+
+export interface PengajuanDana {
+    id_pengajuan_dana: string;
+    id_rap: string;
+    status_pengajuan: 100 | 400;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
+    rap: RAP;
+    detail: Array<DetailPengajuanDana>;
+};
+
+export interface DetailPengajuanDana {
+    id_detail_pengajuan_dana: number;
+    id_pengajuan_dana: string;
+    id_detail_rap: number;
+    uraian: string;
+    jumlah_pengajuan: number;
+    jenis_pembayaran: string;
+    nama_rekening: string;
+    nomor_rekening: string;
+    nama_bank: string;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
+    pengajuan_dana: PengajuanDana;
+    detail_rap: DetailRAP;
+};
+
+export interface PencairanDana {
+    id_pencairan_dana: string;
+    id_pengajuan_dana: string;
+    status_pencairan: 100 | 400;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
+    pengajuan_dana: PengajuanDana;
+    detail: Array<DetailPencairanDana>;
+};
+
+export interface DetailPencairanDana {
+    id_detail_pencairan_dana: number;
+    id_pencairan_dana: string;
+    id_detail_pengajuan_dana: number;
+    jumlah_pencairan: number;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
+    pencairan_dana: PencairanDana;
+    detail_pengajuan_dana: DetailPengajuanDana;
+};
+
+export interface Persetujuan {
+    id_persetujuan: number;
+    user_id: number;
+    model_id: string;
+    model_type: string;
+    catatan:string;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
 };
 
 export interface Satuan {
