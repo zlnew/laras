@@ -3,9 +3,9 @@ import Breadrumb from '@/Components/Breadrumb.vue';
 import ContentLayout from '@/Components/Content.vue';
 import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { TableLayout, THead, TBody, TFoot, TRow, THeadCell, TBodyCell } from '@/Components/Table.vue';
-import { computed, onUpdated, ref } from 'vue';
+import { computed, onUpdated } from 'vue';
 import { DetailRAB, RAB, Satuan } from '@/types';
 import { toRupiah } from '@/utilities/number';
 import { Modal } from '@/utilities/modal';
@@ -14,6 +14,9 @@ import CreateModalWindow from '@/Pages/RAB/Modals/Create.m.vue';
 import UpdateModalWindow from '@/Pages/RAB/Modals/Update.m.vue';
 import DeleteModalWindow from '@/Pages/RAB/Modals/Delete.m.vue';
 import { FormInput } from '@/Components/Form.vue';
+
+const page = usePage();
+const permissions = computed(() => page.props.permissions);
 
 const props = defineProps<{
   rab: RAB,
@@ -96,7 +99,7 @@ onUpdated(() => {
 				<CardHeader>
           <div class="flex justify-between items-center">
 						<h5 class="font-bold text-xl">Rencana Anggaran Biaya</h5>
-            <EaseButton @click="OpenCreateModal" slotted>
+            <EaseButton v-if="permissions.includes('create rab')" @click="OpenCreateModal" slotted>
               <FasIcon icon="fa-solid fa-plus" class="mr-1" /> Tambah Uraian
             </EaseButton>
           </div>
@@ -127,7 +130,9 @@ onUpdated(() => {
                 <TBodyCell whitespace="nowrap" text-align="center">{{ items.volume }}</TBodyCell>
                 <TBodyCell whitespace="nowrap" text-align="right">{{ items.computed__total_harga }}</TBodyCell>
                 <TBodyCell>{{ items.keterangan }}</TBodyCell>
-                <TBodyCell whitespace="nowrap">
+                <TBodyCell
+                  v-if="permissions.includes('update rab') && permissions.includes('delete rab')"
+                  whitespace="nowrap">
                   <div class="flex">
                     <EaseButton @click="OpenUpdateModal(items)" variant="link" text="Edit" />
                     <EaseButton @click="OpenDeleteModal(items.id_detail_rab)" variant="danger-link" text="Delete" />
@@ -142,13 +147,15 @@ onUpdated(() => {
               <TRow last>
                 <TBodyCell text-align="right" colspan="4" class="font-semibold">PPN</TBodyCell>
                 <TBodyCell colspan="1" class="font-semibold">
-                  <FormInput @input="updateTax" type="number" v-model="rab.tax" min="0" max="100" />
+                  <FormInput v-if="permissions.includes('update rab')" @input="updateTax" type="number" v-model="rab.tax" min="0" max="100" />
+                  <span v-else>{{ rab.tax }}%</span>
                 </TBodyCell>
               </TRow>
               <TRow last>
                 <TBodyCell text-align="right" colspan="4" class="font-semibold">Additional Tax</TBodyCell>
                 <TBodyCell colspan="1" class="font-semibold">
-                  <FormInput @input="updateTax" type="number" v-model="rab.additional_tax" min="0" max="100" />
+                  <FormInput v-if="permissions.includes('update rab')" @input="updateTax" type="number" v-model="rab.additional_tax" min="0" max="100" />
+                  <span v-else>{{ rab.additional_tax }}%</span>
                 </TBodyCell>
               </TRow>
               <TRow last>

@@ -3,7 +3,7 @@ import Breadrumb from '@/Components/Breadrumb.vue';
 import ContentLayout from '@/Components/Content.vue';
 import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { TableLayout, THead, TBody, TFoot, TRow, THeadCell, TBodyCell } from '@/Components/Table.vue';
 import { computed, onUpdated, ref } from 'vue';
 import { DetailRAP, RAP, Satuan } from '@/types';
@@ -13,6 +13,9 @@ import { Toast } from '@/utilities/toastify';
 import CreateModalWindow from '@/Pages/RAP/Modals/Create.m.vue';
 import UpdateModalWindow from '@/Pages/RAP/Modals/Update.m.vue';
 import DeleteModalWindow from '@/Pages/RAP/Modals/Delete.m.vue';
+
+const page = usePage();
+const permissions = computed(() => page.props.permissions);
 
 const props = defineProps<{
   rap: RAP,
@@ -84,7 +87,7 @@ onUpdated(() => {
 				<CardHeader>
           <div class="flex justify-between items-center">
 						<h5 class="font-bold text-xl">Rencana Anggaran Proyek</h5>
-            <EaseButton @click="OpenCreateModal" slotted>
+            <EaseButton v-if="permissions.includes('create rap')" @click="OpenCreateModal" slotted>
               <FasIcon icon="fa-solid fa-plus" class="mr-1" /> Tambah Uraian
             </EaseButton>
           </div>
@@ -117,7 +120,9 @@ onUpdated(() => {
                 <TBodyCell whitespace="nowrap" text-align="right">{{ items.computed__total_harga }}</TBodyCell>
                 <TBodyCell whitespace="nowrap">{{ items.status_uraian }}</TBodyCell>
                 <TBodyCell>{{ items.keterangan }}</TBodyCell>
-                <TBodyCell whitespace="nowrap">
+                <TBodyCell
+                  v-if="permissions.includes('update rap') && permissions.includes('delete rap')"
+                  whitespace="nowrap">
                   <div class="flex">
                     <EaseButton @click="OpenUpdateModal(items)" variant="link" text="Edit" />
                     <EaseButton @click="OpenDeleteModal(items.id_detail_rap)" variant="danger-link" text="Delete" />

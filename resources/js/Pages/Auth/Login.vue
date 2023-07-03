@@ -32,10 +32,10 @@ const submit = () => {
                 </div>
                 <div class="flex-auto p-6">
                   <form @submit.prevent="submit">
-                    <FormLabel for="username" value="Username" />
+                    <FormLabel for="email" value="Email" />
                     <div class="mb-4">
                       <FormInput v-model="form.email" v-bind="{
-                        type: 'text', id: 'username', size: 'lg', autocomplete: 'off', placeholder: 'Username'
+                        type: 'text', id: 'email', size: 'lg', autocomplete: 'off', placeholder: 'Email'
                       }" />
 
                       <FormError class="mt-2" :message="form.errors.email" />

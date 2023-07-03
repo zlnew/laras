@@ -5,6 +5,11 @@ export interface User {
     email_verified_at: string;
 }
 
+export interface Flash {
+    success: string;
+    error: string;
+}
+
 export interface Proyek {
     id_proyek: string;
     nama_proyek: string;
@@ -81,4 +86,6 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     auth: {
         user: User;
     };
+    permissions: string[];
+    flash: Flash;
 };
