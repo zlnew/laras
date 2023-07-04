@@ -24,6 +24,7 @@ export interface Proyek {
     updated_at: Date;
     rab: RAB;
     rap: RAP;
+    [key: string]: string | number;
 };
 
 export interface RAB {
@@ -89,6 +90,7 @@ export interface PengajuanDana {
     deleted_at: Date;
     rap: RAP;
     detail: Array<DetailPengajuanDana>;
+    [key: string]: string | number;
 };
 
 export interface DetailPengajuanDana {
