@@ -3,7 +3,7 @@ withDefaults(
     defineProps<{
         first?: string,
         second: string,
-        current: string,
+        current: string | number,
     }>(),
     {
         first: 'Pages',

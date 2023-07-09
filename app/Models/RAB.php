@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class RAB extends Model
 {
-    use HasFactory, HasUlids;
+    use HasFactory, SoftDeletes, HasUlids;
 
     protected $table = 'rab';
     protected $primaryKey = 'id_rab';
@@ -18,17 +17,9 @@ class RAB extends Model
         'id_proyek',
         'tax',
         'additional_tax',
-        'status_rab'
+        'status_rab',
+        'status_aktivitas'
     ];
+    
     public $autoIncrement = false;
-
-    public function proyek(): HasOne
-    {
-        return $this->hasOne(Proyek::class, 'id_proyek', 'id_proyek');
-    }
-
-    public function uraian(): HasMany
-    {
-        return $this->hasMany(DetailRAB::class, 'id_rab', 'id_rab');
-    }
 }

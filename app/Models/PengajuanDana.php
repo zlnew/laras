@@ -5,8 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PengajuanDana extends Model
@@ -16,19 +14,10 @@ class PengajuanDana extends Model
     protected $table = 'pengajuan_dana';
     protected $primaryKey = 'id_pengajuan_dana';
     protected $fillable = [
-        'id_rap',
-        'keterangan',
+        'id_keuangan',
         'status_pengajuan',
+        'status_aktivitas'
     ];
+    
     public $autoIncrement = false;
-
-    public function detail(): HasMany
-    {
-        return $this->hasMany(DetailPengajuanDana::class, 'id_pengajuan_dana', 'id_pengajuan_dana');
-    }
-
-    public function rap(): HasOne
-    {
-        return $this->hasOne(RAP::class, 'id_rap', 'id_rap');
-    }
 }

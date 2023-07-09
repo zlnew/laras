@@ -7,16 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class RAP extends Model
+class Keuangan extends Model
 {
-    use HasFactory, SoftDeletes, HasUlids;
+    use HasFactory, HasUlids, SoftDeletes;
 
-    protected $table = 'rap';
-    protected $primaryKey = 'id_rap';
+    protected $table = 'keuangan';
+    protected $primaryKey = 'id_keuangan';
     protected $fillable = [
         'id_proyek',
-        'status_rap',
-        'status_aktivitas'
+        'keperluan',
     ];
     
     public $autoIncrement = false;

@@ -99,6 +99,12 @@ Route::middleware('auth')->group(function() {
                 Route::post('/detail/{PengajuanDana}', [PengajuanDanaController::class,'store'])->name('pengajuan_dana.store');
                 Route::patch('/detail/{DetailPengajuanDana}', [PengajuanDanaController::class, 'update'])->name('pengajuan_dana.update');
                 Route::delete('/detail/{DetailPengajuanDana}', [PengajuanDanaController::class, 'destroy'])->name('pengajuan_dana.destroy');
+                Route::post('/detail/{PengajuanDana}/submit', [PengajuanDanaController::class, 'submit'])->name('pengajuan_dana.submit');
+            });
+
+            Route::middleware(['permission:approve pengajuan dana'])->group(function() {
+                Route::post('/detail/{PengajuanDana}/approve', [PengajuanDanaController::class, 'approve'])->name('pengajuan_dana.approve');
+                Route::post('/detail/{PengajuanDana}/reject', [PengajuanDanaController::class, 'reject'])->name('pengajuan_dana.reject');
             });
         });
     

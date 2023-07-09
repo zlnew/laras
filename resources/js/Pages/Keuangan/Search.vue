@@ -11,9 +11,9 @@ import { PengajuanDana, Proyek } from '@/types';
 import { ll } from '@/utilities/date';
 import { Modal } from '@/utilities/modal';
 
-import CreateModal from './Modals/Create.m.vue';
-import UpdateModal from './Modals/Update.m.vue';
-import DeleteModal from './Modals/Delete.m.vue';
+import CreateModalWindow from './Modals/Create.m.vue';
+import UpdateModalWindow from './Modals/Update.m.vue';
+import DeleteModalWindow from './Modals/Delete.m.vue';
 import { Toast } from '@/utilities/toastify';
 import { onUpdated } from 'vue';
 
@@ -49,20 +49,20 @@ function search() {
 }
 
 function openCreateModal() {
-  Modal.pop(CreateModal, {
+  Modal.pop(CreateModalWindow, {
     proyek: props.proyek
   });
 }
 
 function openUpdateModal(pengajuan_dana: Partial<PengajuanDana>) {
-  Modal.pop(UpdateModal, {
+  Modal.pop(UpdateModalWindow, {
     pengajuan_dana: pengajuan_dana,
     proyek: props.proyek
   });
 }
 
 function openDeleteModal(id_pengajuan_dana: PengajuanDana['id_pengajuan_dana']) {
-  Modal.pop(DeleteModal, {
+  Modal.pop(DeleteModalWindow, {
     id_pengajuan_dana: id_pengajuan_dana
   });
 }
@@ -116,9 +116,9 @@ onUpdated(() => {
               <TRow>
                 <THeadCell value="Nama Proyek" />
                 <THeadCell value="Keterangan" />
-                <THeadCell value="Tanggal Pengajuan Dana" />
-                <THeadCell textAlign="center" value="Status" />
-                <THeadCell textAlign="center" value="" />
+                <THeadCell value="Pengajuan Dana" />
+                <THeadCell value="Pencairan Dana" />
+                <THeadCell text-align="center" value="" />
               </TRow>
             </THead>
             <TBody>
@@ -128,19 +128,26 @@ onUpdated(() => {
                 v-bind="{ last: index === pengajuan_dana.length - 1 }"
               >
                 <TBodyCell>
-                  <Link :href="route('rap.detail', pengajuan.id_rap)">
-                    <EaseButton variant="link" class="text-left" slotted>
-                      <span class="line-clamp-2 hover:line-clamp-none">{{ pengajuan.nama_proyek }}</span>
-                    </EaseButton>
+                  <Link
+                    class="link"
+                    href="#"
+                    ><span class="line-clamp-2 hover:line-clamp-none">{{ pengajuan.nama_proyek }}</span>
                   </Link>
                 </TBodyCell>
                 <TBodyCell whitespace="nowrap">{{ pengajuan.keterangan }}</TBodyCell>
-                <TBodyCell whitespace="nowrap">{{ pengajuan.tanggal_pengajuan }}</TBodyCell>
-                <TBodyCell whitespace="nowrap" textAlign="center">
-                  <EaseButton v-bind="{
-                    text: pengajuan.status_pengajuan_text,
-                    variant: pengajuan.status_pengajuan == 400 ? 'danger-transparent' : 'transparent'
-                  }" />
+                <TBodyCell whitespace="nowrap">
+                  <Link
+                    class="text-xs link"
+                    :href="route('pengajuan_dana.detail', pengajuan.id_pengajuan_dana)"
+                    >Lihat
+                  </Link>
+                </TBodyCell>
+                <TBodyCell whitespace="nowrap">
+                  <Link
+                    class="text-xs link"
+                    :href="route('pengajuan_dana.detail', pengajuan.id_pengajuan_dana)"
+                    >Lihat
+                  </Link>
                 </TBodyCell>
                 <TBodyCell whitespace="nowrap">
                   <div class="flex">

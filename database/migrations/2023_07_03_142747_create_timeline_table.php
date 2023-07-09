@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('persetujuan', function (Blueprint $table) {
-            $table->id('id_persetujuan');
+        Schema::create('timeline', function (Blueprint $table) {
+            $table->id('id_timeline');
             $table->foreignId('user_id');
             $table->foreignUlid('model_id');
             $table->string('model_type');
             $table->string('catatan')->nullable();
+            $table->string('status_aktivitas');
             $table->timestamps();
             $table->softDeletes();
         });

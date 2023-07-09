@@ -60,7 +60,7 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="Keuangan"
                         icon="fa-solid fa-money-bill"
-                        :href="route('keuangan.search')" :active="route().current('keuangan.search')"
+                        :href="route('keuangan.search')" :active="route().current('keuangan.search') || route().current('pengajuan_dana.detail')"
                     />
                 </li>
 

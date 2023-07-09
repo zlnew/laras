@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('tax', 3, 0)->default(11);
             $table->decimal('additional_tax', 3, 0)->default(4);
             $table->enum('status_rab', [100, 400])->default(100);
+            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Disetujui'])->default('Dibuat');
             $table->timestamps();
         });
     }

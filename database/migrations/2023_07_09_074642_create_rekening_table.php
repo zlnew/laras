@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pencairan_dana', function (Blueprint $table) {
-            $table->ulid('id_pencairan_dana')->primary();
-            $table->foreignUlid('id_keuangan');
-            $table->enum('status_pencairan', [100, 400])->default(100);
-            $table->enum('status_aktivitas', ['Dibuat', 'Dibayar', 'Diterima'])->default('Dibuat');
+        Schema::create('rekening', function (Blueprint $table) {
+            $table->ulid('id_rekening')->primary();
+            $table->string('nama');
+            $table->string('jabatan');
+            $table->string('nama_bank');
+            $table->string('nomor_rekening');
+            $table->string('nama_rekening');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pencairan_dana');
+        Schema::dropIfExists('rekening');
     }
 };

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Keuangan\StoreRequest;
 use App\Http\Requests\Keuangan\UpdateRequest;
 use App\Models\PengajuanDana;
+use App\Models\Persetujuan;
 use App\Models\Proyek;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,6 +18,7 @@ class KeuanganController extends Controller
     public function search(Request $request): Response
     {
         $pengajuanDana = DB::table('pengajuan_dana');
+
         $proyek = Proyek::select('rap.id_rap', 'proyek.nama_proyek', 'proyek.tahun_anggaran')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
             ->where('rap.status_rap', '400')
@@ -42,6 +44,7 @@ class KeuanganController extends Controller
                 'pd.created_at',
             )
             ->where('pd.deleted_at', NULL)
+            ->groupBy('pd.id_pengajuan_dana')
             ->latest('id_pengajuan_dana')->paginate(10);
 
         return Inertia::render('Keuangan/Search', [
@@ -61,14 +64,13 @@ class KeuanganController extends Controller
     public function store(StoreRequest $request): RedirectResponse
     {
         $validated = $request->safe();
-
         $pengajuanDana = new PengajuanDana;
 
         $pengajuanDana->fill([
             'id_rap' => $validated->id_rap,
             'keterangan' => $validated->keterangan,
         ]);
-
+        
         $pengajuanDana->save();
 
         return redirect()->back()->with('success', 'Keuangan Proyek berhasil dibuat!');

@@ -34,6 +34,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'role' => function () use ($request) {
+                if ($request->user()) {
+                    $roleName = $request->user()->roles->first()->name;
+                    return $roleName;
+                }
+            },
             'permissions' => function () use ($request) {
                 if ($request->user()) {
                     $permissionsViaRoles = $request->user()->getPermissionsViaRoles();
