@@ -48,6 +48,9 @@ class HandleInertiaRequests extends Middleware
                     return $permissionsViaRoles->merge($directPermissions)->pluck('name')->toArray();
                 }
             },
+            'query' => function () use ($request) {
+                return $request->query();
+            },
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),

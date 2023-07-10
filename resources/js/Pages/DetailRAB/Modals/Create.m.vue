@@ -4,25 +4,25 @@ import useModalStore from "@/stores/useModalStore";
 import { useForm } from "@inertiajs/vue3";
 import { FormInput, FormLabel, FormError, FormSelect, FormTextarea } from "@/Components/Form.vue";
 import { toRupiah } from "@/utilities/number";
-import { DetailRAB, Satuan } from "@/types";
+import { RAB, Satuan } from "@/types";
 
 const props = defineProps<{
-  detail_rab: DetailRAB;
+  id_rab: RAB['id_rab'],
   satuan: Array<Satuan>;
 }>();
 
 const modal = useModalStore();
 
 const form = useForm({
-  uraian: props.detail_rab.uraian,
-  id_satuan: props.detail_rab.id_satuan,
-  volume: props.detail_rab.volume,
-  harga_satuan: props.detail_rab.harga_satuan,
-  keterangan: props.detail_rab.keterangan,
+  uraian: null,
+  id_satuan: null,
+  volume: 0,
+  harga_satuan: 0,
+  keterangan: null,
 });
 
 function submit() {
-  form.patch(route('rab.update', props.detail_rab.id_detail_rab), {
+  form.post(route('detail_rab.store', props.id_rab), {
     onSuccess: () => {
       modal.close();
     }
@@ -33,7 +33,7 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <ModalLayout size="lg">
-      <ModalHead title="Form Edit Uraian RAB" />
+      <ModalHead title="Form Tambah Uraian RAB" />
 
       <ModalBody>
         <div class="w-full mb-4">
@@ -99,10 +99,10 @@ function submit() {
         }" />
         <EaseButton v-bind="{
           type: 'submit',
-          text: 'Update',
+          text: 'Create',
           loading: form.processing,
           onLoading: () => ({
-              text: 'Updating data...',
+              text: 'Creating data...',
           })
         }" />
       </ModalFooter>

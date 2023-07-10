@@ -13,18 +13,6 @@ class UpdateRequest extends FormRequest
     {
         return true;
     }
-    
-    /**
-     * Set the attributes for the request
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'id_satuan' => 'satuan',
-        ];
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -34,12 +22,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_satuan' => ['required', 'exists:satuan,id_satuan'],
-            'uraian' => ['required', 'string', 'max:255'],
-            'volume' => ['required', 'numeric', 'min:1', 'max:999'],
-            'harga_satuan' => ['required', 'numeric', 'min:1'],
-            'keterangan' => ['nullable', 'string', 'max:255'],
-            'status_uraian' => ['required', 'string'],
+            'id_proyek' => ['required', 'string', 'exists:proyek,id_proyek']
         ];
     }
 }

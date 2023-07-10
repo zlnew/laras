@@ -57,7 +57,7 @@ export interface RAP {
     id_rap: string;
     id_proyek: Proyek['id_proyek'];
     status_rap: 100 | 400;
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diperiksa' | 'Disetujui';
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
@@ -175,5 +175,6 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     auth: { user: User };
     role: 'admin' | 'manajer proyek' | 'kepala divisi' | 'direktur utama' | 'keuangan'; 
     permissions: string[];
+    query: Object;
     flash: Flash;
 };

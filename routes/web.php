@@ -6,9 +6,12 @@ use Inertia\Inertia;
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\RABController;
 use App\Http\Controllers\RAPController;
+use App\Http\Controllers\DetailRABController;
+use App\Http\Controllers\DetailRAPController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\PengajuanDanaController;
 use App\Http\Controllers\PencairanDanaController;
+use App\Models\DetaiLRAB;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,53 +42,73 @@ Route::middleware('auth')->group(function() {
             'permission:create proyek|update proyek|delete proyek'
         ]], function () {
             Route::post('/', [ProyekController::class,'store'])->name('proyek.store');
-            Route::patch('/{proyek}', [ProyekController::class, 'update'])->name('proyek.update');
-            Route::delete('/{proyek}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
+            Route::patch('/{Proyek}', [ProyekController::class, 'update'])->name('proyek.update');
+            Route::delete('/{Proyek}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
         });
     });
 
     Route::prefix('rab')->group(function() {
         Route::group(['middleware' => ['permission:view rab']], function () {
-            Route::get('/search', [RABController::class, 'search'])->name('rab.search');
-            Route::get('/detail/{RAB}', [RABController::class, 'detail'])->name('rab.detail');
+            Route::get('/', [RABController::class, 'index'])->name('rab');
+            Route::get('/detail/{RAB}', [DetaiLRABController::class, 'index'])->name('detail_rab');
         });
 
         Route::group(['middleware' => [
             'permission:create rab|update rab|delete rab'
         ]], function () {
-            Route::post('/detail/{RAB}', [RABController::class,'store'])->name('rab.store');
-            Route::patch('/detail/{DetailRAB}', [RABController::class, 'update'])->name('rab.update');
-            Route::delete('/detail/{DetailRAB}', [RABController::class, 'destroy'])->name('rab.destroy');
+            Route::post('/', [RABController::class, 'store'])->name('rab.store');
+            Route::patch('/{RAB}', [RABController::class, 'update'])->name('rab.update');
             Route::patch('/tax/{RAB}', [RABController::class, 'update_tax'])->name('rab.update_tax');
+            Route::delete('/{RAB}', [RABController::class, 'destroy'])->name('rab.destroy');
+            Route::post('/submit/{RAB}', [RABController::class, 'submit'])->name('rab.submit');
+
+            Route::post('/detail/{RAB}', [DetailRABController::class,'store'])->name('detail_rab.store');
+            Route::patch('/detail/{DetailRAB}', [DetailRABController::class, 'update'])->name('detail_rab.update');
+            Route::delete('/detail/{DetailRAB}', [DetailRABController::class, 'destroy'])->name('detail_rab.destroy');
+        });
+
+        Route::group(['middleware' => ['permission:approve rab']], function () {
+            Route::post('/approve/{RAB}', [RABController::class, 'approve'])->name('rab.approve');
+            Route::post('/refuse/{RAB}', [RABController::class, 'refuse'])->name('rab.refuse');
         });
     });
 
     Route::prefix('rap')->group(function() {
         Route::group(['middleware' => ['permission:view rap']], function () {
-            Route::get('/search', [RAPController::class, 'search'])->name('rap.search');
-            Route::get('/detail/{RAP}', [RAPController::class, 'detail'])->name('rap.detail');
+            Route::get('/', [RAPController::class, 'index'])->name('rap');
+            Route::get('/detail/{RAP}', [DetailRAPController::class, 'index'])->name('detail_rap');
         });
 
         Route::group(['middleware' => [
             'permission:create rap|update rap|delete rap'
         ]], function () {
-            Route::post('/detail/{RAP}', [RAPController::class,'store'])->name('rap.store');
-            Route::patch('/detail/{DetailRAP}', [RAPController::class, 'update'])->name('rap.update');
-            Route::delete('/detail/{DetailRAP}', [RAPController::class, 'destroy'])->name('rap.destroy');
+            Route::post('/', [RAPController::class, 'store'])->name('rap.store');
+            Route::patch('/{RAP}', [RAPController::class, 'update'])->name('rap.update');
+            Route::delete('/{RAP}', [RAPController::class, 'destroy'])->name('rap.destroy');
+            Route::post('/submit/{RAP}', [RAPController::class, 'submit'])->name('rap.submit');
+
+            Route::post('/detail/{RAP}', [DetailRAPController::class,'store'])->name('detail_rap.store');
+            Route::patch('/detail/{DetailRAP}', [DetailRAPController::class, 'update'])->name('detail_rap.update');
+            Route::delete('/detail/{DetailRAP}', [DetailRAPController::class, 'destroy'])->name('detail_rap.destroy');
+        });
+
+        Route::group(['middleware' => ['permission:approve rap']], function () {
+            Route::post('/approve/{RAP}', [RAPController::class, 'approve'])->name('rap.approve');
+            Route::post('/refuse/{RAP}', [RAPController::class, 'refuse'])->name('rap.refuse');
         });
     });
 
     Route::prefix('keuangan')->group(function () {
         Route::group(['middleware' => ['permission:view pengajuan dana']], function () {
-            Route::get('/search', [KeuanganController::class, 'search'])->name('keuangan.search');
+            Route::get('/', [KeuanganController::class, 'index'])->name('keuangan');
         });
 
         Route::group(['middleware' => [
             'permission:create pengajuan dana|update pengajuan dana|delete pengajuan dana'
         ]], function () {
             Route::post('/', [KeuanganController::class, 'store'])->name('keuangan.store');
-            Route::patch('/{PengajuanDana}', [KeuanganController::class, 'update'])->name('keuangan.update');
-            Route::delete('/{PengajuanDana}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
+            Route::patch('/{Keuangan}', [KeuanganController::class, 'update'])->name('keuangan.update');
+            Route::delete('/{Keuangan}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
         });
 
         Route::prefix('pengajuan-dana')->group(function() {

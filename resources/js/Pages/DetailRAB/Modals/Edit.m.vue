@@ -4,28 +4,25 @@ import useModalStore from "@/stores/useModalStore";
 import { useForm } from "@inertiajs/vue3";
 import { FormInput, FormLabel, FormError, FormSelect, FormTextarea } from "@/Components/Form.vue";
 import { toRupiah } from "@/utilities/number";
-import { DetailRAP, Satuan } from "@/types";
+import { DetailRAB, Satuan } from "@/types";
 
 const props = defineProps<{
-  detail_rap: DetailRAP;
+  detail_rab: DetailRAB;
   satuan: Array<Satuan>;
 }>();
 
 const modal = useModalStore();
 
 const form = useForm({
-  uraian: props.detail_rap.uraian,
-  id_satuan: props.detail_rap.id_satuan,
-  volume: props.detail_rap.volume,
-  harga_satuan: props.detail_rap.harga_satuan,
-  keterangan: props.detail_rap.keterangan,
-  status_uraian: props.detail_rap.status_uraian,
+  uraian: props.detail_rab.uraian,
+  id_satuan: props.detail_rab.id_satuan,
+  volume: props.detail_rab.volume,
+  harga_satuan: props.detail_rab.harga_satuan,
+  keterangan: props.detail_rab.keterangan,
 });
 
-const status_uraian = ['Gaji', 'Sewa', 'Beli', 'Subkon/Vendor'];
-
 function submit() {
-  form.patch(route('rap.update', props.detail_rap.id_detail_rap), {
+  form.patch(route('detail_rab.update', props.detail_rab.id_detail_rab), {
     onSuccess: () => {
       modal.close();
     }
@@ -36,7 +33,7 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <ModalLayout size="lg">
-      <ModalHead title="Form Edit Uraian RAP" />
+      <ModalHead title="Form Edit Uraian RAB" />
 
       <ModalBody>
         <div class="w-full mb-4">
@@ -83,17 +80,6 @@ function submit() {
             type: 'number', id: 'harga_satuan', size: 'lg', autocomplete: 'off', placeholder: 'Harga Satuan'
           }" />
           <FormError class="mt-2" :message="form.errors.harga_satuan" />
-        </div>
-
-        <div class="w-full mb-4">
-          <FormLabel for="status_uraian" value="Status" />
-          <FormSelect v-model="form.status_uraian" v-bind="{
-            id: 'status_uraian', size: 'lg'
-          }">
-            <option value="">Pilih Status</option>
-            <option v-for="status in status_uraian" :value="status">{{ status }}</option>
-          </FormSelect>
-          <FormError class="mt-2" :message="form.errors.status_uraian" />
         </div>
         
         <div class="w-full">

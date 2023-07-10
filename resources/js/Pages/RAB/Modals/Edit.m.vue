@@ -3,20 +3,23 @@ import { ModalLayout, ModalHead, ModalBody, ModalFooter } from "@/Components/Mod
 import { useForm } from "@inertiajs/vue3";
 import { FormSelect, FormLabel, FormError } from "@/Components/Form.vue";
 import useModalStore from "@/stores/useModalStore";
-import { Proyek } from "@/types";
+import { Proyek, RAB } from "@/types";
 
 const modal = useModalStore();
 
-defineProps<{
+const props = defineProps<{
+  id_rab: RAB['id_rab'],
+  id_proyek: Proyek['id_proyek'],
+  nama_proyek: Proyek['nama_proyek'],
   daftar_proyek: Array<Proyek>;
 }>();
 
 const form = useForm({
-  id_proyek: null,
+  id_proyek: props.id_proyek,
 });
 
 function submit() {
-  form.post(route('rap.store'), {
+  form.patch(route('rab.update', props.id_rab), {
     onSuccess: () => {
       modal.close();
     }
@@ -27,7 +30,7 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <modal-layout size="5xl">
-      <modal-head title="Form Tambah RAP" />
+      <modal-head title="Form Ubah RAB" />
   
       <modal-body>
         <div class="w-full mb-4">
@@ -39,6 +42,7 @@ function submit() {
               size: 'lg'
             }">
             <option value="">Pilih</option>
+            <option :value="id_proyek">{{ nama_proyek }}</option>
             <option
               v-for="proyek in daftar_proyek"
               :value="proyek.id_proyek">
@@ -62,10 +66,10 @@ function submit() {
           <ease-button
             v-bind="{
               type: 'submit',
-              text: 'Create',
+              text: 'Update',
               loading: form.processing,
               onLoading: () => ({
-                  text: 'Creating data...',
+                  text: 'Updating data...',
               })
             }"
           />

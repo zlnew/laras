@@ -4,105 +4,172 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RAP\StoreRequest;
 use App\Http\Requests\RAP\UpdateRequest;
-use App\Models\DetailRAP;
 use App\Models\Proyek;
 use App\Models\RAP;
-use App\Models\Satuan;
+use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class RAPController extends Controller
 {
-    public function search(Request $request): Response
+    public function index(Request $request): Response
     {
-        $daftarProyek = Proyek::query();
+        $RAP = DB::table('rap');
+
+        $RAPQuery = $RAP->leftJoin('proyek', 'proyek.id_proyek', '=', 'rap.id_proyek');
 
         if ($request->isMethod('get') && $request->all()) {
-            $daftarProyek = $this->filter($request, $daftarProyek);
+            $RAPQuery = $this->filter($request, $RAPQuery);
         }
 
-        $daftarProyek = $daftarProyek
-            ->with('rap:id_proyek,id_rap')
-            ->select('id_proyek', 'nama_proyek', 'tahun_anggaran', 'pengguna_jasa', 'status_proyek')
-            ->latest('id_proyek')->take(5)->get();
+        $RAP = $RAPQuery->select(
+            'rap.id_rap',
+            'rap.status_rap',
+            'proyek.id_proyek',
+            'proyek.nama_proyek',
+            'proyek.tahun_anggaran',
+            'proyek.pengguna_jasa',
+        )
+        ->where('rap.deleted_at', NULL)
+        ->latest('rap.id_rap')->paginate(10);
 
-        return Inertia::render('RAP/Search', [
-            'daftarProyek' => $daftarProyek,
+        $Proyek = Proyek::query()
+            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek',
+                'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+        ->where('rab.status_rab', '400')
+        ->where('rap.id_rap', null)
+        ->get();
+            
+        return Inertia::render('RAP/Index', [
+            'rap' => $RAP,
+            'proyek' => $Proyek
         ]);
     }
 
-    public function filter($searchRequest, $daftarProyek) {
-        $daftarProyek->when($searchRequest->get('nama_proyek'), function($query, $input) {
-            $query->where('nama_proyek', 'like', $input . '%');
+    public function filter($searchRequest, $RAPQuery) {
+        $RAPQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
+            $query->where('proyek.nama_proyek', 'like', $input . '%');
         });
 
-        return $daftarProyek;
+        return $RAPQuery;
     }
 
-    public function detail(RAP $RAP): Response {
-        $RAP = RAP::with('proyek:id_proyek,nama_proyek')
-            ->select('id_proyek', 'id_rap')
-            ->where('id_rap', $RAP->id_rap)
-            ->first();
+    public function store(StoreRequest $request): RedirectResponse
+    {
+        DB::transaction(function () use ($request) {
+            $validated = $request->safe();
 
-        $detailRAP = DetailRAP::with('satuan:id_satuan,nama_satuan')
-            ->where('id_rap', $RAP->id_rap)
-            ->orderBy('id_detail_rap', 'asc')->get();
+            $RAP = new RAP;
+            $RAP->id_proyek = $validated->id_proyek;
+            $RAP->save();
+            
+            $Timeline = new Timeline;
+            $Timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $RAP->id_rap,
+                'model_type' => get_class($RAP),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Dibuat'
+            ]);
+            $Timeline->save();
+        });
 
-        $satuan = Satuan::select('id_satuan', 'nama_satuan')->get();
-
-        return Inertia::render('RAP/Detail', [
-            'rap' => $RAP,
-            'detail_rap' => $detailRAP,
-            'satuan' => $satuan
-        ]);
+        return redirect()->back()->with('success', 'RAB berhasil dibuat!');
     }
 
-    public function store(StoreRequest $request, RAP $RAP): RedirectResponse
+    public function update(UpdateRequest $request, RAP $RAP): RedirectResponse
     {
         $validated = $request->safe();
 
-        $DetailRAP = new DetailRAP;
+        $RAP->id_proyek = $validated->id_proyek;
+        $RAP->save();
 
-        $DetailRAP->fill([
-            'id_rap' => $RAP->id_rap,
-            'id_satuan' => $validated->id_satuan,
-            'uraian' => $validated->uraian,
-            'volume' => $validated->volume,
-            'harga_satuan' => $validated->harga_satuan,
-            'keterangan' => $validated->keterangan,
-            'status_uraian' => $validated->status_uraian,
-        ]);
-
-        $DetailRAP->save();
-
-        return redirect()->back()->with('success', 'Uraian RAP berhasil dibuat!');
+        return redirect()->back()->with('success', 'RAP berhasil diperbarui!');
     }
 
-    public function update(UpdateRequest $request, DetailRAP $DetailRAP): RedirectResponse
+    public function destroy(RAP $RAP): RedirectResponse
     {
-        $validated = $request->safe();
+        $RAP->delete();
 
-        $DetailRAP->fill([
-            'id_satuan' => $validated->id_satuan,
-            'uraian' => $validated->uraian,
-            'volume' => $validated->volume,
-            'harga_satuan' => $validated->harga_satuan,
-            'keterangan' => $validated->keterangan,
-            'status_uraian' => $validated->status_uraian,
-        ]);
-
-        $DetailRAP->save();
-
-        return redirect()->back()->with('success', 'Uraian RAP berhasil diperbarui!');
+        return redirect()->back()->with('success', 'RAP berhasil dihapus!');
     }
 
-    public function destroy(DetailRAP $DetailRAP): RedirectResponse
+    public function submit(Request $request, RAP $RAP): RedirectResponse
     {
-        $DetailRAP->delete();
+        DB::transaction(function () use ($request, $RAP) {
+            $RAP->status_aktivitas = 'Diajukan';
+            $RAP->save();
+            
+            $Timeline = new Timeline;
+            $Timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $RAP->id_rap,
+                'model_type' => get_class($RAP),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Diajukan'
+            ]);
+            $Timeline->save();
+        });
 
-        return redirect()->back()->with('success', 'Uraian RAP berhasil dihapus!');
+        return redirect()->back()->with('success', 'RAP berhasil diajukan!');
+    }
+
+    public function approve(Request $request, RAP $RAP): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $RAP) {
+            $role = $request->user()->roles->first()->name;
+
+            if ($role === 'kepala divisi') {
+                $status_rap = '100';
+                $status_aktivitas_rap = 'Diperiksa';
+            } else if ($role === 'direktur utama' || $role === 'admin') {
+                $status_rap = '400';
+                $status_aktivitas_rap = 'Disetujui';
+            }
+
+            $RAP->status_rap = $status_rap;
+            $RAP->status_aktivitas = $status_aktivitas_rap;
+            $RAP->save();
+            
+            $Timeline = new Timeline;
+            $Timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $RAP->id_rap,
+                'model_type' => get_class($RAP),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Disetujui'
+            ]);
+            $Timeline->save();
+        });
+
+        return redirect()->back()->with('success', 'RAP berhasil disetujui!');
+    }
+
+    public function refuse(Request $request, RAP $RAP): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $RAP) {
+            $RAP->status_aktivitas = 'Dibuat';
+            $RAP->save();
+            
+            $Timeline = new Timeline;
+            $Timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $RAP->id_rap,
+                'model_type' => get_class($RAP),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Ditolak'
+            ]);
+            $Timeline->save();
+        });
+
+        return redirect()->back()->with('success', 'RAP berhasil ditolak!');
     }
 }

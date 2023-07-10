@@ -44,7 +44,7 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="RAB"
                         icon="fa-solid fa-window-restore"
-                        :href="route('rab.search')" :active="route().current('rab.search') || route().current('rab.detail')"
+                        :href="route('rab')" :active="route().current('rab') || route().current('detail_rab')"
                     />
                 </li>
 
@@ -52,7 +52,7 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="RAPP"
                         icon="fa-solid fa-window-restore"
-                        :href="route('rap.search')" :active="route().current('rap.search') || route().current('rap.detail')"
+                        :href="route('rap')" :active="route().current('rap') || route().current('detail_rap')"
                     />
                 </li>
 
@@ -60,7 +60,7 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="Keuangan"
                         icon="fa-solid fa-money-bill"
-                        :href="route('keuangan.search')" :active="route().current('keuangan.search') || route().current('pengajuan_dana.detail')"
+                        :href="route('keuangan')" :active="route().current('keuangan') || route().current('pengajuan_dana.detail') || route().current('pencairan_dana.detail')"
                     />
                 </li>
 
@@ -106,6 +106,7 @@ const fullYear: number = new Date().getFullYear();
 
                 <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                     <li class="flex items-center">
+                        <strong class="capitalize text-sm">{{ $page.props.role }}</strong>
                         <Link :href="route('logout')" method="post" as="button">
                             <EaseButton variant="danger-transparent" slotted>
                                 <FasIcon icon="fa-solid fa-sign-out-alt" class="mr-2" /> Logout
