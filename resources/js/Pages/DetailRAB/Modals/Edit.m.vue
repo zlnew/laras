@@ -32,80 +32,127 @@ function submit() {
 
 <template>
   <form @submit.prevent="submit">
-    <ModalLayout size="lg">
-      <ModalHead title="Form Edit Uraian RAB" />
+    <modal-layout size="lg">
+      <modal-head title="Form Edit Uraian RAB" />
 
-      <ModalBody>
+      <modal-body>
         <div class="w-full mb-4">
-          <FormLabel for="uraian" value="Uraian" />
-          <FormInput v-model="form.uraian" v-bind="{
-            type: 'text', id: 'uraian', size: 'lg', autocomplete: 'off', placeholder: 'Uraian'
-          }" />
-          <FormError class="mt-2" :message="form.errors.uraian" />
+          <form-label for="uraian" value="Uraian" />
+
+          <form-input v-model="form.uraian"
+            v-bind="{
+              type: 'text',
+              id: 'uraian',
+              size: 'lg',
+              autocomplete: 'off',
+              placeholder: 'Uraian'
+            }"
+          />
+
+          <form-error class="mt-2" :message="form.errors.uraian" />
         </div>
 
         <div class="w-full mb-4 grid grid-cols-2 gap-4">
           <div>
-            <FormLabel for="volume" value="Volume" />
-            <FormInput v-model="form.volume" v-bind="{
-              type: 'number', id: 'volume', size: 'lg', autocomplete: 'off', placeholder: 'Volume'
-            }" />
-            <FormError class="mt-2" :message="form.errors.volume" />
+            <form-label for="volume" value="Volume" />
+
+            <form-input v-model="form.volume"
+              v-bind="{
+                type: 'number',
+                id: 'volume',
+                size: 'lg',
+                autocomplete: 'off',
+                placeholder: 'Volume'
+              }"
+            />
+
+            <form-error class="mt-2" :message="form.errors.volume" />
           </div>
           <div>
-            <FormLabel for="id_satuan" value="Satuan" />
-            <FormSelect v-model="form.id_satuan" v-bind="{
-              id: 'id_satuan', size: 'lg'
-            }">
+            <form-label for="id_satuan" value="Satuan" />
+
+            <form-select v-model="form.id_satuan"
+              v-bind="{
+                id: 'id_satuan',
+                size: 'lg'
+              }">
               <option value="">Pilih Satuan</option>
-              <option v-for="unit in satuan" :value="unit.id_satuan">{{ unit.nama_satuan }}</option>
-            </FormSelect>
-            <FormError class="mt-2" :message="form.errors.id_satuan" />
+              <option
+                v-for="unit in satuan"
+                :value="unit.id_satuan">
+                {{ unit.nama_satuan }}
+              </option>
+            </form-select>
+
+            <form-error class="mt-2" :message="form.errors.id_satuan" />
           </div>
         </div>
 
         <div class="w-full mb-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <FormLabel for="harga_satuan" value="Harga Satuan" />
-              <small class="ml-1" v-show="form.harga_satuan">: {{ toRupiah(form.harga_satuan) }}</small>
+              <form-label for="harga_satuan" value="Harga Satuan" />
+              <small class="ml-1" v-show="form.harga_satuan">
+                : {{ toRupiah(form.harga_satuan) }}
+              </small>
             </div>
             <div v-show="form.harga_satuan">
-              <FormLabel for="harga_satuan" value="Harga Total" />
-              <small class="ml-1">: {{ toRupiah(form.harga_satuan * form.volume) }}</small>
+              <form-label for="harga_satuan" value="Harga Total" />
+              <small class="ml-1">:
+                {{ toRupiah(form.harga_satuan * form.volume) }}
+              </small>
             </div>
           </div>
 
-          <FormInput v-model="form.harga_satuan" v-bind="{
-            type: 'number', id: 'harga_satuan', size: 'lg', autocomplete: 'off', placeholder: 'Harga Satuan'
-          }" />
-          <FormError class="mt-2" :message="form.errors.harga_satuan" />
+          <form-input v-model="form.harga_satuan"
+            v-bind="{
+              type: 'number',
+              id: 'harga_satuan',
+              size: 'lg',
+              autocomplete: 'off',
+              placeholder: 'Harga Satuan'
+            }"
+          />
+          <form-error class="mt-2" :message="form.errors.harga_satuan" />
         </div>
         
         <div class="w-full">
-          <FormLabel for="keterangan" value="Keterangan" />
-          <FormTextarea v-model="form.keterangan" v-bind="{
-            type: 'text', id: 'keterangan', size: 'lg', autocomplete: 'off', placeholder: 'Keterangan'
-          }" />
-          <FormError class="mt-2" :message="form.errors.keterangan" />
+          <form-label for="keterangan" value="Keterangan" />
+
+          <form-textarea v-model="form.keterangan"
+            v-bind="{
+              type: 'text',
+              id: 'keterangan',
+              size: 'lg',
+              autocomplete: 'off',
+              placeholder: 'Keterangan'
+            }"
+          />
+
+          <form-error class="mt-2" :message="form.errors.keterangan" />
         </div>
-      </ModalBody>
+      </modal-body>
         
-      <ModalFooter>
-        <EaseButton @click="modal.close" v-bind="{
-          variant: 'transparent',
-          type: 'button',
-          text: 'Close',
-        }" />
-        <EaseButton v-bind="{
-          type: 'submit',
-          text: 'Update',
-          loading: form.processing,
-          onLoading: () => ({
-              text: 'Updating data...',
-          })
-        }" />
-      </ModalFooter>
-    </ModalLayout>
+      <modal-footer>
+        <ease-button
+          @click="modal.close"
+          v-bind="{
+            variant: 'transparent',
+            type: 'button',
+            text: 'Close',
+          }"
+        />
+        <ease-button
+          v-bind="{
+            type: 'submit',
+            text: 'Update',
+            loading: form.processing,
+            onLoading: () => ({
+                text: 'Updating data...',
+            })
+          }"
+        />
+      </modal-footer>
+    </modal-layout>
   </form>
 </template>

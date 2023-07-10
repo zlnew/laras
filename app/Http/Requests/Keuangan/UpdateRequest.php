@@ -15,18 +15,6 @@ class UpdateRequest extends FormRequest
     }
 
     /**
-     * Set the attributes for the request
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return [
-            'id_rap' => 'proyek',
-        ];
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
@@ -34,8 +22,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_rap' => ['required', 'exists:rap,id_rap'],
-            'keterangan' => ['required', 'string', 'max:255'],
+            'keperluan' => ['required', 'string', 'max:255'],
         ];
     }
 }

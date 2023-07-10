@@ -22,24 +22,34 @@ function destroy() {
 </script>
 
 <template>
-  <ModalLayout size="md">
-    <ModalHead title="Konfirmasi Penghapusan Uraian RAB" />
+  <modal-layout size="md">
+    <modal-layout title="Konfirmasi Penghapusan Uraian RAB" />
 
-    <ModalBody>
+    <modal-body>
       <p>Apakah anda yakin ingin menghapus Uraian RAP ini? Semua data yang berkaitan dengan uraian ini akan hilang.</p>
-    </ModalBody>
+    </modal-body>
     
-    <ModalFooter>
-      <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
-      <EaseButton @click.prevent="destroy" v-bind="{
-        type: 'submit',
-        variant: 'danger-transparent',
-        text: 'Yes, delete it!',
-        loading: form.processing,
-        onLoading: () => ({
-            text: 'Deleting data...',
-        })
-      }" />
-    </ModalFooter>
-  </ModalLayout>
+    <modal-footer>
+      <ease-button
+        @click="modal.close"
+        v-bind="{
+          type: 'button',
+          text: 'Close',
+          variant: 'transparent'
+        }"
+      />
+      <ease-button
+        @click.prevent="destroy"
+        v-bind="{
+          type: 'submit',
+          variant: 'danger-transparent',
+          text: 'Yes, delete it!',
+          loading: form.processing,
+          onLoading: () => ({
+              text: 'Deleting data...',
+          })
+        }"
+      />
+    </modal-footer>
+  </modal-layout>
 </template>

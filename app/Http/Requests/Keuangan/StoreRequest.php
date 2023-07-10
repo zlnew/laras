@@ -22,7 +22,7 @@ class StoreRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'id_rap' => 'proyek',
+            'id_proyek' => 'proyek',
         ];
     }
 
@@ -34,8 +34,8 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_rap' => ['required', 'exists:rap,id_rap'],
-            'keterangan' => ['required', 'string', 'max:255'],
+            'id_proyek' => ['required', 'exists:proyek,id_proyek'],
+            'keperluan' => ['required', 'string', 'max:255'],
         ];
     }
 }

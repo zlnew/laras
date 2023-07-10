@@ -8,7 +8,7 @@ import { FormInput } from '@/Components/Form.vue';
 
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed, onUpdated } from 'vue';
-import { Proyek, RAB } from '@/types';
+import { Keuangan, Proyek } from '@/types';
 import { Modal } from '@/utilities/modal';
 import { Toast } from '@/utilities/toastify';
 
@@ -24,9 +24,9 @@ const queryParams = page.props.query as Proyek;
 
 const CRUDPermission = computed(() => {
   if (
-    permissions.includes('create rab')
-    && permissions.includes('update rab')
-    && permissions.includes('delete rab')
+    permissions.includes('create pengajuan dana')
+    && permissions.includes('update pengajuan dana')
+    && permissions.includes('delete pengajuan dana')
   ) {
     return true;
   }
@@ -35,25 +35,11 @@ const CRUDPermission = computed(() => {
 });
 
 const props = defineProps<{
-  rab: {
-    data: Array<RAB>;
+  keuangan: {
+    data: Array<Keuangan>;
   },
   proyek: Array<Proyek>;
 }>();
-
-const rab = computed(() => {
-  const data = props.rab.data.map((rab) => {
-    const status_rab_in_string = rab.status_rab == 400
-      ? 'Closed'
-      : 'On Progress';      
-
-    return { ...rab,
-      status_rab_in_string: status_rab_in_string,
-    };
-  });
-
-  return { data };
-});
 
 const form = useForm({
   nama_proyek: queryParams.nama_proyek,
@@ -65,23 +51,21 @@ function PopCreateModal() {
   });
 }
 
-function PopEditModal(rab: Partial<RAB>) {
+function PopEditModal(keuangan: Partial<Keuangan>) {
   Modal.pop(EditModalWindow, {
-    id_rab: rab.id_rap,
-    id_proyek: rab.id_proyek,
-    nama_proyek: rab.nama_proyek,
-    daftar_proyek: props.proyek
+    id_keuangan: keuangan.id_keuangan,
+    keperluan: keuangan.keperluan
   });
 }
 
-function PopDeleteModal(id_rab: RAB['id_rab']) {
+function PopDeleteModal(id_keuangan: Keuangan['id_keuangan']) {
   Modal.pop(DeleteModalWindow, {
-    id_rab: id_rab
+    id_keuangan: id_keuangan
   });
 }
 
 function search() {
-  form.get(route('rab'));
+  form.get(route('keuangan'));
 }
 
 onUpdated(() => {
@@ -91,15 +75,15 @@ onUpdated(() => {
 </script>
 
 <template>
-  <Head title="RAP" />
+  <Head title="Keuangan" />
 
   <authenticated-layout>
     <template v-slot:breadcrumb>
       <Breadrumb
         v-slot:breadcrumb
         v-bind="{
-          second: 'RAB',
-          current: 'Rencana Anggaran Biaya'
+          second: 'Keuangan',
+          current: 'Keuangan Proyek'
         }"
       />
     </template>
@@ -108,13 +92,13 @@ onUpdated(() => {
       <card-layout>
 				<card-header class="mb-4">
           <div class="grid grid-cols-2 gap-4">
-            <div>
+            <div class="space-x-2">
               <ease-button
-              v-if="CRUDPermission"
-              @click="PopCreateModal"
-              slotted>
-              <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Buat RAB Proyek
-            </ease-button>
+                v-if="CRUDPermission"
+                @click="PopCreateModal"
+                slotted>
+                <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Tambah Keuangan Proyek
+              </ease-button>
             </div>
             <form @submit.prevent="search">
               <div class="flex justify-between items-center space-x-2">
@@ -147,19 +131,19 @@ onUpdated(() => {
               <t-row>
                 <t-head-cell value="Nama Proyek" />
                 <t-head-cell value="Tahun Anggaran" />
-                <t-head-cell value="Pengguna Jasa" />
-                <t-head-cell text-align="center" value="Status" />
+                <t-head-cell value="Keperluan" />
+                <t-head-cell value="Pengajuan Dana" />
                 <t-head-cell />
               </t-row>
             </t-head>
             <t-body>
               <t-row
-                v-if="rab.data.length"
-                v-for="(proyek, index) in rab.data" :key="proyek.id_proyek"
-                v-bind="{ last: index === rab.data.length - 1 }">
+                v-if="keuangan.data.length"
+                v-for="(proyek, index) in keuangan.data" :key="proyek.id_proyek"
+                v-bind="{ last: index === keuangan.data.length - 1 }">
                 
                 <t-body-cell>
-                  <Link class="link" :href="route('detail_rab', proyek.id_rab)">
+                  <Link class="link" :href="'#'">
                     <span class="line-clamp-2 hover:line-clamp-none">{{ proyek.nama_proyek }}</span>
                   </Link>
                 </t-body-cell>
@@ -171,21 +155,17 @@ onUpdated(() => {
                 
                 <t-body-cell
                   whitespace="nowrap">
-                  {{ proyek.pengguna_jasa }}
+                  <span class="font-semibold text-primary">
+                    {{ proyek.keperluan }}
+                  </span>
                 </t-body-cell>
 
                 <t-body-cell
-                  whitespace="nowrap"
-                  text-align="center">
-                  <Link :href="route('detail_rab', proyek.id_rab)">
-                    <EaseButton
-                      v-bind="{
-                        text: proyek.status_rab_in_string,
-                        variant: proyek.status_rab == 400
-                          ? 'danger-transparent'
-                          : 'transparent'
-                      }"
-                    />
+                  whitespace="nowrap">
+                  <Link
+                    class="link text-xs"
+                    :href="route('pengajuan_dana.detail', proyek.id_pengajuan_dana)">
+                    Lihat
                   </Link>
                 </t-body-cell>
 
@@ -199,7 +179,7 @@ onUpdated(() => {
                       text="Edit"
                     />
                     <ease-button
-                      @click="PopDeleteModal(proyek.id_rab)"
+                      @click="PopDeleteModal(proyek.id_keuangan)"
                       variant="danger-link"
                       text="Delete"
                     />
@@ -213,7 +193,7 @@ onUpdated(() => {
                 <t-body-cell
                   colspan="5"
                   text-align="center">
-                  RAB tidak ditemukan
+                  Keuangan proyek tidak ditemukan
                 </t-body-cell>
               
               </TRow>

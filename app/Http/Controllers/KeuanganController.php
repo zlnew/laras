@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Keuangan\StoreRequest;
 use App\Http\Requests\Keuangan\UpdateRequest;
+use App\Models\Keuangan;
 use App\Models\PengajuanDana;
-use App\Models\Persetujuan;
 use App\Models\Proyek;
+use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,84 +16,101 @@ use Inertia\Response;
 
 class KeuanganController extends Controller
 {
-    public function search(Request $request): Response
+    public function index(Request $request): Response
     {
-        $pengajuanDana = DB::table('pengajuan_dana');
+        $Keuangan = DB::table('keuangan');
 
-        $proyek = Proyek::select('rap.id_rap', 'proyek.nama_proyek', 'proyek.tahun_anggaran')
-            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
-            ->where('rap.status_rap', '400')
-            ->latest('proyek.id_proyek')->get();
-
-        $pengajuanDana = $pengajuanDana
-            ->from('pengajuan_dana as pd')
-            ->leftJoin('detail_pengajuan_dana as d_pd', 'd_pd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
-            ->leftJoin('rap', 'rap.id_rap', '=', 'pd.id_rap')
-            ->leftJoin('proyek as pry', 'pry.id_proyek', '=', 'rap.id_proyek');
+        $KeuanganQuery = $Keuangan
+            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'keuangan.id_proyek')
+            ->leftJoin('pengajuan_dana as pd', 'pd.id_keuangan', '=', 'keuangan.id_keuangan');
 
         if ($request->isMethod('get') && $request->all()) {
-            $pengajuanDana = $this->filter($request, $pengajuanDana);
+            $KeuanganQuery = $this->filter($request, $KeuanganQuery);
         }
 
-        $pengajuanDana = $pengajuanDana
-            ->select(
-                'pd.id_pengajuan_dana',
-                'pd.id_rap',
-                'pry.nama_proyek',
-                'pd.keterangan',
-                'pd.status_pengajuan',
-                'pd.created_at',
-            )
-            ->where('pd.deleted_at', NULL)
-            ->groupBy('pd.id_pengajuan_dana')
-            ->latest('id_pengajuan_dana')->paginate(10);
+        $Keuangan = $KeuanganQuery->select(
+            'keuangan.id_keuangan',
+            'keuangan.keperluan',
+            'proyek.id_proyek',
+            'proyek.nama_proyek',
+            'proyek.tahun_anggaran',
+            'proyek.pengguna_jasa',
+            'pd.id_pengajuan_dana'
+        )
+        ->where('keuangan.deleted_at', NULL)
+        ->latest('keuangan.id_keuangan')->paginate(10);
 
-        return Inertia::render('Keuangan/Search', [
-            'pengajuan_dana' => $pengajuanDana,
-            'proyek' => $proyek
+        $Proyek = Proyek::query()
+            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek',
+                'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+        ->where('rab.status_rab', '400')
+        ->where('rap.status_rap', '400')
+        ->get();
+            
+        return Inertia::render('Keuangan/Index', [
+            'keuangan' => $Keuangan,
+            'proyek' => $Proyek
         ]);
     }
 
-    public function filter($searchRequest, $pengajuanDana) {
-        $pengajuanDana->when($searchRequest->get('nama_proyek'), function($query, $input) {
-            $query->where('pry.nama_proyek', 'like', $input . '%');
+    public function filter($searchRequest, $KeuanganQuery) {
+        $KeuanganQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
+            $query->where('proyek.nama_proyek', 'like', $input . '%');
         });
 
-        return $pengajuanDana;
+        return $KeuanganQuery;
     }
 
     public function store(StoreRequest $request): RedirectResponse
     {
-        $validated = $request->safe();
-        $pengajuanDana = new PengajuanDana;
+        DB::transaction(function() use ($request) {
+            $validated = $request->safe();
+    
+            $Keuangan = new Keuangan;
+            $Keuangan->fill([
+                'id_proyek' => $validated->id_proyek,
+                'keperluan' => $validated->keperluan,
+            ]);
+            $Keuangan->save();
 
-        $pengajuanDana->fill([
-            'id_rap' => $validated->id_rap,
-            'keterangan' => $validated->keterangan,
-        ]);
-        
-        $pengajuanDana->save();
+            $PengajuanDana = new PengajuanDana;
+            $PengajuanDana->id_keuangan = $Keuangan->id_keuangan;
+            $PengajuanDana->save();
+
+            $Timeline = new Timeline;
+            $Timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $PengajuanDana->id_pengajuan_dana,
+                'model_type' => get_class($PengajuanDana),
+                'status_aktivitas' => 'Dibuat'
+            ]);
+            $Timeline->save();
+        });
 
         return redirect()->back()->with('success', 'Keuangan Proyek berhasil dibuat!');
     }
 
-    public function update(UpdateRequest $request, PengajuanDana $PengajuanDana): RedirectResponse
+    public function update(UpdateRequest $request, Keuangan $Keuangan): RedirectResponse
     {
         $validated = $request->safe();
 
-        $PengajuanDana->fill([
-            'id_rap' => $validated->id_rap,
-            'keterangan' => $validated->keterangan,
+        $Keuangan->fill([
+            'keperluan' => $validated->keperluan,
         ]);
 
-        $PengajuanDana->save();
+        $Keuangan->save();
 
         return redirect()->back()->with('success', 'Keuangan Proyek berhasil diperbarui!');
     }
 
-    public function destroy(PengajuanDana $PengajuanDana): RedirectResponse
+    public function destroy(Keuangan $Keuangan): RedirectResponse
     {
-        $PengajuanDana->delete();
+        $Keuangan->delete();
 
         return redirect()->back()->with('success', 'Keuangan Proyek berhasil dihapus!');
     }

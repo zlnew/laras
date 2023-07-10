@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue';
 const props = withDefaults(
     defineProps<{
         size?: 'sm' | 'md' | 'lg',
-        modelValue: string | number | null | undefined,
+        modelValue: string | number | null | boolean | undefined,
     }>(),
     {
         size: 'md',

@@ -2,18 +2,18 @@
 import { ModalLayout, ModalHead, ModalBody, ModalFooter } from "@/Components/Modal.vue";
 import { useForm } from "@inertiajs/vue3";
 import useModalStore from "@/stores/useModalStore";
-import { PengajuanDana } from "@/types";
-
-const props = defineProps<{
-  id_pengajuan_dana: PengajuanDana['id_pengajuan_dana'],
-}>();
+import { Keuangan } from "@/types";
 
 const modal = useModalStore();
+
+const props = defineProps<{
+  id_keuangan: Keuangan['id_keuangan'],
+}>();
 
 const form = useForm({});
 
 function destroy() {
-  form.delete(route('keuangan.destroy', props.id_pengajuan_dana), {
+  form.delete(route('keuangan.destroy', props.id_keuangan), {
     onSuccess: () => {
       modal.close();
     }
@@ -22,24 +22,34 @@ function destroy() {
 </script>
 
 <template>
-  <ModalLayout size="md">
-    <ModalHead title="Konfirmasi Penghapusan Keuangan Proyek" />
+  <modal-layout size="md">
+    <modal-head title="Konfirmasi Penghapusan Keuangan Proyek" />
 
-    <ModalBody>
-      <p>Apakah anda yakin ingin menghapus Keuangan Proyek ini? Semua data yang berkaitan dengan keuangan ini akan hilang.</p>
-    </ModalBody>
+    <modal-body>
+      <p>Apakah anda yakin ingin menghapus Keuangan proyek ini? Semua data yang berkaitan dengan Keuangan ini akan hilang.</p>
+    </modal-body>
     
-    <ModalFooter>
-      <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
-      <EaseButton @click.prevent="destroy" v-bind="{
-        type: 'submit',
-        variant: 'danger-transparent',
-        text: 'Yes, delete it!',
-        loading: form.processing,
-        onLoading: () => ({
+    <modal-footer>
+      <ease-button
+        @click="modal.close"
+        v-bind="{
+          type: 'button',
+          text: 'Close',
+          variant: 'transparent'
+        }"
+      />
+      <ease-button
+        @click.prevent="destroy"
+        v-bind="{
+          variant: 'danger-transparent',
+          type: 'submit',
+          text: 'Yes, delete it!',
+          loading: form.processing,
+          onLoading: () => ({
             text: 'Deleting data...',
-        })
-      }" />
-    </ModalFooter>
-  </ModalLayout>
+          })
+        }"
+      />
+    </modal-footer>
+  </modal-layout>
 </template>
