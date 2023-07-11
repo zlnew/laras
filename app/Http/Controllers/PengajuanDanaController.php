@@ -169,6 +169,7 @@ class PengajuanDanaController extends Controller
 
             $DetailPengajuanDana = new DetailPengajuanDana;
             $DetailPengajuanDana
+                ->where('id_pengajuan_dana', $PengajuanDana->id_pengajuan_dana)
                 ->whereNotIn(
                     'id_detail_pengajuan_dana',
                     $request->post('group_of_id_detail_pengajuan_dana'

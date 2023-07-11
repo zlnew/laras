@@ -9,9 +9,9 @@ use App\Http\Controllers\RAPController;
 use App\Http\Controllers\DetailRABController;
 use App\Http\Controllers\DetailRAPController;
 use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengajuanDanaController;
 use App\Http\Controllers\PencairanDanaController;
-use App\Models\DetaiLRAB;
 
 /*
 |--------------------------------------------------------------------------
@@ -140,8 +140,6 @@ Route::middleware('auth')->group(function() {
                 'permission:create pencairan dana|update pencairan dana|delete pencairan dana'
             ]], function () {
                 Route::post('/detail/{PencairanDana}', [PencairanDanaController::class,'store'])->name('pencairan_dana.store');
-                Route::patch('/detail/{DetailPencairanDana}', [PencairanDanaController::class, 'update'])->name('pencairan_dana.update');
-                Route::delete('/detail/{DetailPencairanDana}', [PencairanDanaController::class, 'destroy'])->name('pencairan_dana.destroy');
                 Route::post('/detail/{PencairanDana}/submit', [PencairanDanaController::class, 'submit'])->name('pencairan_dana.submit');
             });
 
@@ -150,6 +148,11 @@ Route::middleware('auth')->group(function() {
                 Route::post('/detail/{PencairanDana}/reject', [PencairanDanaController::class, 'reject'])->name('pencairan_dana.reject');
             });
         });
+    });
+
+    Route::prefix('laporan')->group(function () {
+        Route::get('/pengajuan-dana', [LaporanController::class, 'pengajuan_dana'])->name('laporan.pengajuan_dana');
+        Route::get('/pencairan-dana', [LaporanController::class, 'pencairan_dana'])->name('laporan.pencairan_dana');
     });
 });
 
