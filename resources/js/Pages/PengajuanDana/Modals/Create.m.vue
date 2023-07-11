@@ -4,11 +4,12 @@ import useModalStore from "@/stores/useModalStore";
 import { useForm } from "@inertiajs/vue3";
 import { FormInput, FormLabel, FormError, FormSelect } from "@/Components/Form.vue";
 import { toRupiah } from "@/utilities/number";
-import { DetailRAP, PengajuanDana } from "@/types";
+import { DetailRAP, PengajuanDana, Rekening } from "@/types";
 
 const props = defineProps<{
   id_pengajuan_dana: PengajuanDana['id_pengajuan_dana'];
   detail_rap: Array<DetailRAP>;
+  rekening: Array<Rekening>;
 }>();
 
 const modal = useModalStore();
@@ -16,10 +17,8 @@ const modal = useModalStore();
 const form = useForm({
   uraian: null,
   id_detail_rap: null,
+  id_rekening: null,
   jenis_pembayaran: null,
-  nama_rekening: null,
-  nomor_rekening: null,
-  nama_bank: null,
   jumlah_pengajuan: 0,
 });
 
@@ -59,11 +58,11 @@ function submit() {
               id: 'id_detail_rap',
               size: 'lg'
             }">
-            <option value="">Pilih Uraian RAP</option>
+            <option value="">Pilih Uraian</option>
             <option
               v-for="detail in detail_rap"
-              :value="detail.id_detail_rap"
-              >{{ detail.uraian }}
+              :value="detail.id_detail_rap">
+              {{ detail.uraian }}
             </option>
           </form-select>
 
@@ -73,13 +72,15 @@ function submit() {
         <div class="w-full mb-4">
           <form-label for="uraian" value="Uraian Pengajuan Dana" />
 
-          <form-input v-model="form.uraian" v-bind="{
-            type: 'text',
-            id: 'uraian',
-            size: 'lg',
-            autocomplete: 'off',
-            placeholder: 'Uraian Pengajuan Dana'
-          }" />
+          <form-input v-model="form.uraian"
+            v-bind="{
+              type: 'text',
+              id: 'uraian',
+              size: 'lg',
+              autocomplete: 'off',
+              placeholder: 'Uraian Pengajuan Dana'
+            }"
+          />
 
           <form-error class="mt-2" :message="form.errors.uraian" />
         </div>
@@ -88,72 +89,53 @@ function submit() {
           <div>
             <form-label for="jenis_pembayaran" value="Jenis Pembayaran" />
 
-            <form-select v-model="form.jenis_pembayaran" id="jenis_pembayaran" size="lg" >
+            <form-select v-model="form.jenis_pembayaran"
+              id="jenis_pembayaran"
+              size="lg">
               <option value="">Pilih Jenis Pembayaran</option>
-              <option v-for="jenis in jenis_pembayaran" :value="jenis">{{ jenis }}</option>
+              <option
+                v-for="jenis in jenis_pembayaran"
+                :value="jenis">
+                {{ jenis }}
+              </option>
             </form-select>
 
             <form-error class="mt-2" :message="form.errors.jenis_pembayaran" />
           </div>
 
           <div>
-            <form-label for="nama_bank" value="Nama Bank" />
+            <form-label for="jumlah_pengajuan" value="Jumlah Pengajuan" />
+            <small class="ml-1" v-show="form.jumlah_pengajuan">: {{ toRupiah(form.jumlah_pengajuan) }}</small>
 
-            <form-input v-model="form.nama_bank" v-bind="{
-              type: 'text',
-              id: 'nama_bank',
-              size: 'lg',
-              autocomplete: 'off',
-              placeholder: 'Nama Bank'
-            }" />
+            <form-input v-model="form.jumlah_pengajuan"
+              v-bind="{
+                type: 'number',
+                id: 'jumlah_pengajuan',
+                size: 'lg',
+                autocomplete: 'off',
+                placeholder: 'Jumlah Pengajuan'
+              }"
+            />
 
-            <form-error class="mt-2" :message="form.errors.nama_bank" />
-          </div>
-        </div>
-
-        <div class="w-full mb-4 grid grid-cols-2 gap-4">
-          <div>
-            <form-label for="nomor_rekening" value="Nomor Rekening" />
-
-            <form-input v-model="form.nomor_rekening" v-bind="{
-              type: 'number',
-              id: 'nomor_rekening',
-              size: 'lg',
-              autocomplete: 'off',
-              placeholder: 'Nomor Rekening'
-            }" />
-
-            <form-error class="mt-2" :message="form.errors.nomor_rekening" />
-          </div>
-
-          <div>
-            <form-label for="nama_rekening" value="Nama Rekening" />
-
-            <form-input v-model="form.nama_rekening" v-bind="{
-              type: 'text',
-              id: 'nama_rekening',
-              size: 'lg',
-              autocomplete: 'off',
-              placeholder: 'Nama Rekening'
-            }" />
-
-            <form-error class="mt-2" :message="form.errors.nama_rekening" />
+            <form-error class="mt-2" :message="form.errors.jumlah_pengajuan" />
           </div>
         </div>
 
         <div class="w-full mb-4">
-          <form-label for="jumlah_pengajuan" value="Jumlah Pengajuan" />
-          <small class="ml-1" v-show="form.jumlah_pengajuan">: {{ toRupiah(form.jumlah_pengajuan) }}</small>
+          <form-label for="id_rekening" value="Rekening" />
 
-          <form-input v-model="form.jumlah_pengajuan" v-bind="{
-            type: 'number',
-            id: 'jumlah_pengajuan',
-            size: 'lg',
-            autocomplete: 'off',
-            placeholder: 'Jumlah Pengajuan'
-          }" />
+          <form-select v-model="form.id_rekening"
+            id="id_rekening"
+            size="lg" >
+            <option value="">Pilih Rekening</option>
+            <option
+              v-for="rek in rekening"
+              :value="rek.id_rekening">
+              {{ rek.nama_bank }} | {{ rek.nomor_rekening }} - {{ rek.nama_rekening }}
+            </option>
+          </form-select>
 
-          <form-error class="mt-2" :message="form.errors.jumlah_pengajuan" />
+          <form-error class="mt-2" :message="form.errors.id_rekening" />
         </div>
       </modal-body>
         
@@ -169,7 +151,7 @@ function submit() {
           text: 'Create',
           loading: form.processing,
           onLoading: () => ({
-              text: 'Creating data...',
+            text: 'Creating data...',
           })
         }" />
       </modal-footer>

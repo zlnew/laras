@@ -6,61 +6,79 @@ import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { TableLayout, THead, TBody, TFoot, TRow, THeadCell, TBodyCell } from '@/Components/Table.vue';
 import { computed, onUpdated } from 'vue';
-import { DetailPengajuanDana, DetailRAP, PengajuanDana, Persetujuan, Proyek } from '@/types';
+import { DetailPengajuanDana, DetailRAP, PengajuanDana, Timeline, Keuangan, Rekening } from '@/types';
 import { fromRupiah, toRupiah } from '@/utilities/number';
 import { Modal } from '@/utilities/modal';
 import { Toast } from '@/utilities/toastify';
-import { ll } from '@/utilities/date';
 import { ref } from 'vue';
 
 import CreateModalWindow from './Modals/Create.m.vue';
 import UpdateModalWindow from './Modals/Update.m.vue';
 import DeleteModalWindow from './Modals/Delete.m.vue';
-import TimelinePengajuan from './Partials/Timeline.vue';
-import PersetujuanPengajuan from './Partials/Persetujuan.vue';
-import KonfirmasiPengajuan from './Partials/Konfirmasi.vue';
+
+import InformasiSection from './Partials/Informasi.p.vue';
+import TimelineSection from './Partials/Timeline.p.vue';
+import PersetujuanSection from './Partials/Persetujuan.p.vue';
+import PengajuanSection from './Partials/Pengajuan.p.vue';
 
 const page = usePage();
 
-const role = computed(() => page.props.role);
-const permissions = computed(() => page.props.permissions);
+const role = page.props.role;
+const permissions = page.props.permissions;
 
 const props = defineProps<{
-  proyek: Proyek;
-  pengajuan_dana: PengajuanDana;
+  keuangan: Keuangan;
   detail_pengajuan_dana: Array<DetailPengajuanDana>;
+  pengajuan_dana: PengajuanDana;
   detail_rap: Array<DetailRAP>;
-  persetujuan: Array<Persetujuan>;
+  timeline: Array<Timeline>;
+  rekening: Array<Rekening>;
 }>();
 
-const submitPermissions = computed(() => {
-  const status_persetujuan = props.pengajuan_dana.status_persetujuan;
+const CRUDPermission = computed(() => {
+  if (role === 'admin') {
+    return true;
+  }
 
-  if (role.value === 'admin' || role.value === 'manajer proyek' && status_persetujuan === null) {
+  if (
+    permissions.includes('create pengajuan dana')
+    && permissions.includes('update pengajuan dana')
+    && permissions.includes('delete pengajuan dana')
+  ) {
     return true;
   }
 
   return false;
 });
 
-const approvalPermission = computed(() => {
-  const status_persetujuan = props.pengajuan_dana.status_persetujuan;
+const pengajuanPermission = computed(() => {
+  const status_aktivitas = props.pengajuan_dana.status_aktivitas;
+
+  if (status_aktivitas === 'Dibuat') {
+    return true;
+  }
+
+  return false;
+});
+
+const persetujuanPermission = computed(() => {
+  const status_aktivitas = props.pengajuan_dana.status_aktivitas;
   
-  if (permissions.value.includes('approve pengajuan dana')) {
-    if (role.value === 'admin') {
+  if (permissions.includes('approve pengajuan dana')) {
+    if (role === 'admin') {
       return true;
     }
   
-    if (role.value === 'kepala divisi') {
-      switch (status_persetujuan) {
-        case 'Dibuat': return true;
+    if (role === 'kepala divisi') {
+      switch (status_aktivitas) {
+        case 'Diajukan': return true;
         default: return false
       }
     }
   
-    if (role.value === 'direktur utama') {
-      switch (status_persetujuan) {
-        case 'Diperiksa': return true;
+    if (role === 'direktur utama') {
+      switch (status_aktivitas) {
+        case 'Dievaluasi': return true;
         default: return false
       }
     }
@@ -167,14 +185,16 @@ function sumTotalDitolak() {
 function OpenCreateModal() {
   Modal.pop(CreateModalWindow, {
     id_pengajuan_dana: props.pengajuan_dana.id_pengajuan_dana,
-    detail_rap: props.detail_rap
+    detail_rap: props.detail_rap,
+    rekening: props.rekening
   });
 }
 
 function OpenUpdateModal(detail_pengajuan_dana: DetailPengajuanDana) {
   Modal.pop(UpdateModalWindow, {
     detail_pengajuan_dana: detail_pengajuan_dana,
-    detail_rap: props.detail_rap
+    detail_rap: props.detail_rap,
+    rekening: props.rekening
   });
 }
 
@@ -191,60 +211,37 @@ onUpdated(() => {
 </script>
 
 <template>
-  <Head title="Detail RAP" />
+  <Head title="Pengajuan Dana" />
 
   <authenticated-layout>
     <template v-slot:breadcrumb>
       <Breadrumb v-slot:breadcrumb v-bind="{
         second: 'Keuangan',
-        current: props.proyek.nama_proyek
+        current: props.keuangan.nama_proyek
       }" />
     </template>
 
     <ContentLayout>
-      <card-layout class="w-fit">
-        <card-header class="mb-2">
-          <div class="flex justify-between items-center">
-            <h5 class="font-bold text-xl">Detail Pengajuan</h5>
-          </div>
-        </card-header>
-        <card-body>
-          <table>
-            <tbody>
-              <tr>
-                <td>Proyek</td>
-                <td class="pl-6 pr-3">:</td>
-                <td><strong>{{ props.proyek.nama_proyek }}</strong></td>
-              </tr>
-              <tr>
-                <td>Keperluan</td>
-                <td class="pl-6 pr-3">:</td>
-                <td><strong>{{ props.pengajuan_dana.keterangan }}</strong></td>
-              </tr>
-              <tr>
-                <td>Tanggal Pengajuan</td>
-                <td class="pl-6 pr-3">:</td>
-                <td><strong>{{ ll(props.pengajuan_dana.created_at) }}</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </card-body>
-      </card-layout>
+      <informasi-section
+        v-bind="{
+          keuangan: keuangan,
+          pengajuan_dana: pengajuan_dana
+        }"
+      />
 
       <card-layout>
 				<card-header>
           <div class="flex justify-between items-center">
 						<h5 class="font-bold text-xl">List Pengajuan Dana</h5>
             <ease-button
-              v-if="
-                permissions.includes('create pengajuan dana')
-                && pengajuan_dana.status_persetujuan === null"
+              v-if="CRUDPermission && pengajuanPermission"
               @click="OpenCreateModal"
               slotted>
               <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Tambah Uraian
             </ease-button>
           </div>
         </card-header>
+
         <card-body table>
           <table-layout>
             <t-head>
@@ -256,36 +253,55 @@ onUpdated(() => {
                 <t-head-cell value="Rekening" />
                 <t-head-cell value="Bank" />
                 <t-head-cell text-align="right" value="Jumlah Pengajuan" />
-                <t-head-cell
-                  v-if="approvalPermission"
-                  value="Persetujuan"
-                />
-                <t-head-cell
-                  v-if="
-                    permissions.includes('update pengajuan dana')
-                    && permissions.includes('delete pengajuan dana')
-                    && pengajuan_dana.status_persetujuan !== 'Dibuat'"
-                  text-align="center"
-                  value=""
-                />
+                <t-head-cell v-if="persetujuanPermission" value="Persetujuan" />
+                <t-head-cell v-if="CRUDPermission && pengajuanPermission" />
               </t-row>
             </t-head>
+
             <t-body>
               <t-row
                   v-if="detail_pengajuan_dana.length"
                   v-for="(item, index) in detail_pengajuan_dana"
-                  :key="item.id_detail_pengajuan_dana"
-                >
-                <t-body-cell>{{ index + 1 }}</t-body-cell>
-                <t-body-cell whitespace="nowrap" class="font-semibold text-primary">{{ item.uraian }}</t-body-cell>
-                <t-body-cell whitespace="nowrap">{{ item.uraian_rap }}</t-body-cell>
-                <t-body-cell whitespace="nowrap">{{ item.jenis_pembayaran }}</t-body-cell>
-                <t-body-cell whitespace="nowrap">{{ item.nomor_rekening }} - {{ item.nama_rekening }}</t-body-cell>
-                <t-body-cell whitespace="nowrap">{{ item.nama_bank }}</t-body-cell>
-                <t-body-cell whitespace="nowrap" text-align="right">{{ item.jumlah_pengajuan_in_rupiah }}</t-body-cell>
+                  :key="item.id_detail_pengajuan_dana">
+
+                <t-body-cell>
+                  {{ index + 1 }}
+                </t-body-cell>
+                
                 <t-body-cell
-                  v-if="approvalPermission"
-                  ><input
+                  whitespace="nowrap"
+                  class="font-semibold text-primary">
+                  {{ item.uraian }}
+                </t-body-cell>
+                
+                <t-body-cell
+                  whitespace="nowrap">
+                  {{ item.uraian_rap }}
+                </t-body-cell>
+                
+                <t-body-cell
+                  whitespace="nowrap">
+                  {{ item.jenis_pembayaran }}
+                </t-body-cell>
+                
+                <t-body-cell
+                  whitespace="nowrap">
+                  {{ item.nomor_rekening }} - {{ item.nama_rekening }}
+                </t-body-cell>
+                
+                <t-body-cell
+                  whitespace="nowrap">{{ item.nama_bank }}
+                </t-body-cell>
+                
+                <t-body-cell
+                  whitespace="nowrap"
+                  text-align="right">
+                  {{ item.jumlah_pengajuan_in_rupiah }}
+                </t-body-cell>
+                
+                <t-body-cell
+                  v-if="persetujuanPermission">
+                  <input
                     @change="sumTotal"
                     v-bind="{
                     type: 'checkbox',
@@ -295,13 +311,11 @@ onUpdated(() => {
                     }"
                   />
                 </t-body-cell>
+
                 <t-body-cell
-                  v-if="
-                    permissions.includes('update pengajuan dana')
-                    && permissions.includes('delete pengajuan dana')
-                    && pengajuan_dana.status_persetujuan === null"
-                  whitespace="nowrap"
-                  ><div class="flex">
+                  v-if="CRUDPermission && pengajuanPermission"
+                  whitespace="nowrap">
+                  <div class="flex">
                     <ease-button
                       variant="link"
                       text="Edit"
@@ -314,37 +328,85 @@ onUpdated(() => {
                     />
                   </div>
                 </t-body-cell>
+
               </t-row>
+
               <t-row v-else last>
-                <t-body-cell colspan="8" textAlign="center">Uraian tidak ditemukan</t-body-cell>
+                <t-body-cell
+                  colspan="8"
+                  text-align="center">
+                  Uraian tidak ditemukan
+                </t-body-cell>
               </t-row>
             </t-body>
-            <t-foot>
+
+            <t-foot v-if="detail_pengajuan_dana.length">
               <t-row
-                v-if="approvalPermission"
-                last
-                ><t-body-cell colspan="6"></t-body-cell>
-                <t-body-cell text-align="right">Setujui Semua</t-body-cell>
-                <t-body-cell><input @change="checkAll($event)" type="checkbox" title="Setujui semua"></t-body-cell>
+                v-if="persetujuanPermission"
+                last>
+                <t-body-cell colspan="6"></t-body-cell>
+                
+                <t-body-cell
+                  text-align="right">
+                  Setujui Semua
+                </t-body-cell>
+                
+                <t-body-cell>
+                  <input
+                    @change="checkAll($event)"
+                    type="checkbox"
+                    title="Setujui semua"
+                  />
+                </t-body-cell>
               </t-row>
+
               <t-row last>
                 <t-body-cell colspan="5"></t-body-cell>
-                <t-body-cell class="font-semibold">Total Pengajuan</t-body-cell>
-                <t-body-cell text-align="right" class="font-semibold">{{ total_amount.pengajuan_dana }}</t-body-cell>
+                
+                <t-body-cell
+                  class="font-semibold">
+                  Total Pengajuan
+                </t-body-cell>
+                
+                <t-body-cell
+                  text-align="right"
+                  class="font-semibold">
+                  {{ total_amount.pengajuan_dana }}
+                </t-body-cell>
               </t-row>
+
               <t-row
-                v-if="approvalPermission"
-                last
-                ><t-body-cell colspan="5"></t-body-cell>
-                <t-body-cell class="font-semibold">Disetujui</t-body-cell>
-                <t-body-cell text-align="right" class="font-semibold">{{ total_amount.disetujui }}</t-body-cell>
+                v-if="persetujuanPermission"
+                last>
+                <t-body-cell colspan="5"></t-body-cell>
+                
+                <t-body-cell
+                  class="font-semibold">
+                  Disetujui
+                </t-body-cell>
+                
+                <t-body-cell
+                  text-align="right"
+                  class="font-semibold">
+                  {{ total_amount.disetujui }}
+                </t-body-cell>
               </t-row>
+
               <t-row
-                v-if="approvalPermission"
-                last
-                ><t-body-cell colspan="5"></t-body-cell>
-                <t-body-cell class="font-semibold">Tidak Disetujui</t-body-cell>
-                <t-body-cell text-align="right" class="font-semibold">{{ total_amount.ditolak }}</t-body-cell>
+                v-if="persetujuanPermission"
+                last>
+                <t-body-cell colspan="5"></t-body-cell>
+                
+                <t-body-cell
+                  class="font-semibold">
+                  Tidak Disetujui
+                </t-body-cell>
+                
+                <t-body-cell
+                  text-align="right"
+                  class="font-semibold">
+                  {{ total_amount.ditolak }}
+                </t-body-cell>
               </t-row>
             </t-foot>
           </table-layout>
@@ -353,26 +415,25 @@ onUpdated(() => {
 
       <div class="grid grid-cols-3 gap-6">
         <div class="col-span-2">
-          <timeline-pengajuan v-bind="{
-            persetujuan: persetujuan
+          <timeline-section v-bind="{
+            timeline: timeline
           }" />
         </div>
 
-        <konfirmasi-pengajuan
-          v-if="submitPermissions"
+        <pengajuan-section
+          v-if="CRUDPermission && pengajuanPermission"
           v-bind="{
             id_pengajuan_dana: pengajuan_dana.id_pengajuan_dana,
             detail_pengajuan_dana_length: detail_pengajuan_dana.length
           }"
         />
 
-        <persetujuan-pengajuan
-          v-if="approvalPermission"
+        <persetujuan-section
+          v-if="persetujuanPermission"
           v-bind="{
             id_pengajuan_dana: pengajuan_dana.id_pengajuan_dana,
             group_of_id_detail_pengajuan_dana: group_of_checked_id,
             total_amount: total_amount,
-            persetujuan: persetujuan
           }"
         />
       </div>

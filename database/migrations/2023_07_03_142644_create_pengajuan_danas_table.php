@@ -15,7 +15,7 @@ return new class extends Migration
             $table->ulid('id_pengajuan_dana')->primary();
             $table->foreignUlid('id_keuangan');
             $table->enum('status_pengajuan', [100, 400])->default(100);
-            $table->enum('status_aktivitas', ['Dibuat', 'Dievaluasi', 'Disetujui'])->default('Dibuat');
+            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Dievaluasi', 'Disetujui'])->default('Dibuat');
             $table->timestamps();
             $table->softDeletes();
         });

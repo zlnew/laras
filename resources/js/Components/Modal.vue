@@ -41,7 +41,7 @@ onUnmounted(() => {
 <template>
     <Teleport to="body">
         <Transition name="modal-fade">
-            <div @click.self="modal.close" v-if="modal.state?.component" class="absolute z-[999] h-full inset-0 flex justify-center items-start bg-gray-600/50">
+            <div @click.self="modal.close" v-if="modal.state?.component" class="fixed z-[999] h-full inset-0 flex justify-center items-start bg-gray-600/50">
                 <component
                     :is="modal.state?.component"
                     v-bind="modal.state?.props"

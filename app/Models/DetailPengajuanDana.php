@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DetailPengajuanDana extends Model
@@ -16,21 +15,10 @@ class DetailPengajuanDana extends Model
     protected $fillable = [
         'id_pengajuan_dana',
         'id_detail_rap',
+        'id_rekening',
         'uraian',
         'jumlah_pengajuan',
         'jenis_pembayaran',
-        'nama_rekening',
-        'nomor_rekening',
-        'nama_bank'
+        'tanggal_pengajuan'
     ];
-
-    public function pengajuan_dana(): HasOne
-    {
-        return $this->hasOne(PengajuanDana::class, 'id_pengajuan_dana', 'id_pengajuan_dana');
-    }
-
-    public function detail_rap(): HasOne
-    {
-        return $this->hasOne(DetailRAP::class, 'id_detail_rap', 'id_detail_rap');
-    }
 }

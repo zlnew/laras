@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\PengajuanDana;
+namespace App\Http\Requests\PencairanDana;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,8 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_detail_rap' => ['required', 'exists:detail_rap,id_detail_rap'],
-            'id_rekening' => ['required', 'exists:rekening,id_rekening'],
-            'uraian' => ['required', 'string', 'max:255'],
-            'jumlah_pengajuan' => ['required', 'numeric', 'min:1'],
-            'jenis_pembayaran' => ['required', 'string'],
+            'id_detail_pengajuan_dana' => ['required', 'exists:detail_pengajuan_dana,id_detail_pengajuan_dana'],
+            'jumlah_pencairan' => ['required', 'numeric', 'min:1'],
         ];
     }
 }

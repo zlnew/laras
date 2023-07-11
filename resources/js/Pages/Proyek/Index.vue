@@ -101,12 +101,14 @@ onUpdated(() => {
       <card-layout>
         <card-header>
           <div class="flex justify-between items-center">
-            <ease-button
-              v-if="CRUDPermission"
-              @click="PopCreateModal"
-              slotted>
-              <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru
-            </ease-button>
+            <div>
+              <ease-button
+                v-if="CRUDPermission"
+                @click="PopCreateModal"
+                slotted>
+                <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru
+              </ease-button>
+            </div>
             <ease-button
               @click="PopSearchModal()"
               variant="transparent"

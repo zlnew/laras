@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
 import { FormLabel, FormTextarea } from '@/Components/Form.vue';
-import { PengajuanDana } from '@/types';
+import { PencairanDana } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
-  id_pengajuan_dana: PengajuanDana['id_pengajuan_dana'];
-  detail_pengajuan_dana_length: number;
+  id_pencairan_dana: PencairanDana['id_pencairan_dana'];
 }>();
 
 const form = useForm({
@@ -14,7 +13,7 @@ const form = useForm({
 });
 
 function submit() {
-  form.post(route('pengajuan_dana.submit', props.id_pengajuan_dana));
+  form.post(route('pencairan_dana.submit', props.id_pencairan_dana));
 }
 </script>
 
@@ -22,7 +21,7 @@ function submit() {
   <card-layout class="h-fit">
     <card-header class="mb-2">
       <div class="flex justify-between items-center">
-        <h5 class="font-bold text-xl">Konfirmasi Pengajuan</h5>
+        <h5 class="font-bold text-xl">Submit Pembayaran</h5>
       </div>
     </card-header>
     <card-body>
@@ -36,8 +35,7 @@ function submit() {
           <form @submit.prevent="submit">
             <ease-button v-bind="{
               type: 'submit',
-              text: 'Buat',
-              disabled: detail_pengajuan_dana_length < 1,
+              text: 'Submit',
             }" />
           </form>
         </div>

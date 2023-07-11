@@ -93,7 +93,8 @@ export interface PengajuanDana {
     id_pengajuan_dana: string;
     id_keuangan: Keuangan['id_keuangan'];
     status_pengajuan: 100 | 400;
-    status_aktivitas: 'Diajukan' | 'Dievaluasi' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Disetujui';
+    tanggal_pengajuan: Date;
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
@@ -118,7 +119,7 @@ export interface PencairanDana {
     id_pencairan_dana: string;
     id_keuangan: Keuangan['id_keuangan'];
     status_pencairan: 100 | 400;
-    status_aktivitas: 'Diajukan' | 'Dibayar' | 'Diterima';
+    status_aktivitas: 'Dibuat' | 'Dibayar' | 'Dilunasi' | 'Diterima';
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;

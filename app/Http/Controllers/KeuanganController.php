@@ -22,7 +22,8 @@ class KeuanganController extends Controller
 
         $KeuanganQuery = $Keuangan
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'keuangan.id_proyek')
-            ->leftJoin('pengajuan_dana as pd', 'pd.id_keuangan', '=', 'keuangan.id_keuangan');
+            ->leftJoin('pengajuan_dana as pgd', 'pgd.id_keuangan', '=', 'keuangan.id_keuangan')
+            ->leftJoin('pencairan_dana as pcd', 'pcd.id_keuangan', '=', 'keuangan.id_keuangan');
 
         if ($request->isMethod('get') && $request->all()) {
             $KeuanganQuery = $this->filter($request, $KeuanganQuery);
@@ -35,7 +36,8 @@ class KeuanganController extends Controller
             'proyek.nama_proyek',
             'proyek.tahun_anggaran',
             'proyek.pengguna_jasa',
-            'pd.id_pengajuan_dana'
+            'pgd.id_pengajuan_dana',
+            'pcd.id_pencairan_dana'
         )
         ->where('keuangan.deleted_at', NULL)
         ->latest('keuangan.id_keuangan')->paginate(10);
@@ -81,15 +83,6 @@ class KeuanganController extends Controller
             $PengajuanDana = new PengajuanDana;
             $PengajuanDana->id_keuangan = $Keuangan->id_keuangan;
             $PengajuanDana->save();
-
-            $Timeline = new Timeline;
-            $Timeline->fill([
-                'user_id' => $request->user()->id,
-                'model_id' => $PengajuanDana->id_pengajuan_dana,
-                'model_type' => get_class($PengajuanDana),
-                'status_aktivitas' => 'Dibuat'
-            ]);
-            $Timeline->save();
         });
 
         return redirect()->back()->with('success', 'Keuangan Proyek berhasil dibuat!');

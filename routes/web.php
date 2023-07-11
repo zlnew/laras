@@ -127,7 +127,7 @@ Route::middleware('auth')->group(function() {
 
             Route::middleware(['permission:approve pengajuan dana'])->group(function() {
                 Route::post('/detail/{PengajuanDana}/approve', [PengajuanDanaController::class, 'approve'])->name('pengajuan_dana.approve');
-                Route::post('/detail/{PengajuanDana}/reject', [PengajuanDanaController::class, 'reject'])->name('pengajuan_dana.reject');
+                Route::post('/detail/{PengajuanDana}/refuse', [PengajuanDanaController::class, 'refuse'])->name('pengajuan_dana.refuse');
             });
         });
     
@@ -142,6 +142,12 @@ Route::middleware('auth')->group(function() {
                 Route::post('/detail/{PencairanDana}', [PencairanDanaController::class,'store'])->name('pencairan_dana.store');
                 Route::patch('/detail/{DetailPencairanDana}', [PencairanDanaController::class, 'update'])->name('pencairan_dana.update');
                 Route::delete('/detail/{DetailPencairanDana}', [PencairanDanaController::class, 'destroy'])->name('pencairan_dana.destroy');
+                Route::post('/detail/{PencairanDana}/submit', [PencairanDanaController::class, 'submit'])->name('pencairan_dana.submit');
+            });
+
+            Route::middleware(['permission:approve status pencairan dana'])->group(function() {
+                Route::post('/detail/{PencairanDana}/accept', [PencairanDanaController::class, 'accept'])->name('pencairan_dana.accept');
+                Route::post('/detail/{PencairanDana}/reject', [PencairanDanaController::class, 'reject'])->name('pencairan_dana.reject');
             });
         });
     });

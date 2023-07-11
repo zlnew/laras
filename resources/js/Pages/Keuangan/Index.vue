@@ -133,6 +133,7 @@ onUpdated(() => {
                 <t-head-cell value="Tahun Anggaran" />
                 <t-head-cell value="Keperluan" />
                 <t-head-cell value="Pengajuan Dana" />
+                <t-head-cell value="Pencairan Dana" />
                 <t-head-cell />
               </t-row>
             </t-head>
@@ -167,6 +168,18 @@ onUpdated(() => {
                     :href="route('pengajuan_dana.detail', proyek.id_pengajuan_dana)">
                     Lihat
                   </Link>
+                </t-body-cell>
+
+                <t-body-cell
+                  whitespace="nowrap">
+                  <Link
+                    v-if="proyek.id_pencairan_dana"
+                    class="link text-xs"
+                    :href="route('pencairan_dana.detail', proyek.id_pencairan_dana)">
+                    Lihat
+                  </Link>
+
+                  <span v-else>-</span>
                 </t-body-cell>
 
                 <t-body-cell

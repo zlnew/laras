@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
 import { FormLabel, FormTextarea } from '@/Components/Form.vue';
-import { DetailPengajuanDana, PengajuanDana, Persetujuan } from '@/types';
+import { DetailPengajuanDana, PengajuanDana } from '@/types';
 import { TotalAmountPengajuanDana } from '../Detail.vue';
 import { useForm } from '@inertiajs/vue3';
 
@@ -9,7 +9,6 @@ const props = defineProps<{
   id_pengajuan_dana: PengajuanDana['id_pengajuan_dana'];
   group_of_id_detail_pengajuan_dana: Array<DetailPengajuanDana['id_detail_pengajuan_dana']> | undefined;
   total_amount: TotalAmountPengajuanDana;
-  persetujuan: Array<Persetujuan>;
 }>();
 
 const form = useForm<{
@@ -29,8 +28,8 @@ function approve() {
   form.post(route('pengajuan_dana.approve', props.id_pengajuan_dana));
 }
 
-function reject() {
-  form.post(route('pengajuan_dana.reject', props.id_pengajuan_dana));
+function refuse() {
+  form.post(route('pengajuan_dana.refuse', props.id_pengajuan_dana));
 }
 </script>
 
@@ -49,7 +48,7 @@ function reject() {
         </div>
   
         <div class="flex justify-end space-x-2">
-          <form @submit.prevent="reject">
+          <form @submit.prevent="refuse">
             <ease-button v-bind="{
               variant: 'danger',
               type: 'submit',
