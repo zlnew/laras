@@ -24,7 +24,8 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="Dashboard"
                         icon="fa-solid fa-gauge"
-                        :href="route('dashboard')" :active="route().current('dashboard')"
+                        :href="route('dashboard')"
+                        :active="route().current('dashboard')"
                     />
                 </li>
 
@@ -36,7 +37,8 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="Proyek"
                         icon="fa-solid fa-diagram-project"
-                        :href="route('proyek')" :active="route().current('proyek')"
+                        :href="route('proyek')"
+                        :active="route().current('proyek')"
                     />
                 </li>
 
@@ -44,7 +46,8 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="RAB"
                         icon="fa-solid fa-window-restore"
-                        :href="route('rab.search')" :active="route().current('rab.search') || route().current('rab.detail')"
+                        :href="route('rab')"
+                        :active="route().current('rab') || route().current('detail_rab')"
                     />
                 </li>
 
@@ -52,7 +55,8 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="RAPP"
                         icon="fa-solid fa-window-restore"
-                        :href="route('rap.search')" :active="route().current('rap.search') || route().current('rap.detail')"
+                        :href="route('rap')"
+                        :active="route().current('rap') || route().current('detail_rap')"
                     />
                 </li>
 
@@ -60,7 +64,8 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="Keuangan"
                         icon="fa-solid fa-money-bill"
-                        :href="route('rap.search')"
+                        :href="route('keuangan')"
+                        :active="route().current('keuangan') || route().current('pengajuan_dana.detail') || route().current('pencairan_dana.detail')"
                     />
                 </li>
 
@@ -72,7 +77,8 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="Pengajuan Dana"
                         icon="fa-solid fa-file-lines"
-                        :href="route('proyek')"
+                        :href="route('laporan.pengajuan_dana')"
+                        :active="route().current('laporan.pengajuan_dana')"
                     />
                 </li>
 
@@ -80,17 +86,18 @@ const fullYear: number = new Date().getFullYear();
                     <NavLink
                         name="Penagihan/Invoice"
                         icon="fa-solid fa-file-lines"
-                        :href="route('proyek')"
+                        :href="route('laporan.pencairan_dana')"
+                        :active="route().current('laporan.pencairan_dana')"
                     />
                 </li>
 
-                <li class="mt-0.5 w-full">
+                <!-- <li class="mt-0.5 w-full">
                     <NavLink
                         name="Evaluasi Proyek"
                         icon="fa-solid fa-file-lines"
                         :href="route('proyek')"
                     />
-                </li>
+                </li> -->
             </ul>
         </div>
     </aside>
@@ -106,6 +113,7 @@ const fullYear: number = new Date().getFullYear();
 
                 <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
                     <li class="flex items-center">
+                        <strong class="capitalize text-sm">{{ $page.props.role }}</strong>
                         <Link :href="route('logout')" method="post" as="button">
                             <EaseButton variant="danger-transparent" slotted>
                                 <FasIcon icon="fa-solid fa-sign-out-alt" class="mr-2" /> Logout

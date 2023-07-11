@@ -3,10 +3,11 @@ import { computed } from 'vue';
 
 const props = withDefaults(
     defineProps<{
-        value: string,
+        value?: string,
         textAlign?: 'left' | 'right' | 'center',
     }>(),
     {
+        value: '',
         textAlign: 'left',
     }
 );

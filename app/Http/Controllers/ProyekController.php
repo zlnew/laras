@@ -15,57 +15,57 @@ class ProyekController extends Controller
 {
     public function index(Request $request): Response
     {
-        $daftarProyek = Proyek::query();
+        $ProyekQuery = Proyek::query();
 
         if ($request->isMethod('get') && $request->all()) {
-            $daftarProyek = $this->filter($request, $daftarProyek);
+            $ProyekQuery = $this->filter($request, $ProyekQuery);
         }
 
-        $daftarProyek = $daftarProyek->latest('id_proyek')->paginate();
+        $Proyek = $ProyekQuery->latest('id_proyek')->paginate(10);
 
         return Inertia::render('Proyek/Index', [
-            'daftarProyek' => $daftarProyek,
+            'daftar_proyek' => $Proyek,
         ]);
     }
 
-    public function filter($searchRequest, $daftarProyek) {
-        $daftarProyek->when($searchRequest->get('nama_proyek'), function($query, $input) {
-            $query->where('nama_proyek', 'like', $input . '%');
+    public function filter($searchRequest, $ProyekQuery) {
+        $ProyekQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
+            $query->where('nama_proyek', 'like', '%' . $input . '%');
         });
 
-        $daftarProyek->when($searchRequest->get('tahun_anggaran'), function($query, $input) {
+        $ProyekQuery->when($searchRequest->get('tahun_anggaran'), function($query, $input) {
             $query->where('tahun_anggaran', $input);
         });
         
-        $daftarProyek->when($searchRequest->get('pengguna_jasa'), function($query, $input) {
-            $query->where('pengguna_jasa', 'like', $input. '%');
+        $ProyekQuery->when($searchRequest->get('pengguna_jasa'), function($query, $input) {
+            $query->where('pengguna_jasa', 'like', '%' . $input . '%');
         });
 
-        $daftarProyek->when($searchRequest->get('waktu_mulai'), function($query, $input) {
+        $ProyekQuery->when($searchRequest->get('waktu_mulai'), function($query, $input) {
             $query->where('waktu_mulai', '>=', $input);
         });
 
-        $daftarProyek->when($searchRequest->get('waktu_selesai'), function($query, $input) {
+        $ProyekQuery->when($searchRequest->get('waktu_selesai'), function($query, $input) {
             $query->where('waktu_selesai', '<=', $input);
         });
 
-        $daftarProyek->when($searchRequest->get('nilai_kontrak_min'), function($query, $input) {
+        $ProyekQuery->when($searchRequest->get('nilai_kontrak_min'), function($query, $input) {
             $query->where('nilai_kontrak', '>=', $input);
         });
 
-        $daftarProyek->when($searchRequest->get('nilai_kontrak_max'), function($query, $input) {
+        $ProyekQuery->when($searchRequest->get('nilai_kontrak_max'), function($query, $input) {
             $query->where('nilai_kontrak', '<=', $input);
         });
 
-        $daftarProyek->when($searchRequest->get('pic'), function($query, $input) {
+        $ProyekQuery->when($searchRequest->get('pic'), function($query, $input) {
             $query->where('pic', $input);
         });
 
-        $daftarProyek->when($searchRequest->get('status_proyek'), function($query, $input) {
+        $ProyekQuery->when($searchRequest->get('status_proyek'), function($query, $input) {
             $query->where('status_proyek', $input);
         });
 
-        return $daftarProyek;
+        return $ProyekQuery;
     }
 
     public function store(StoreRequest $request): RedirectResponse
@@ -90,11 +90,11 @@ class ProyekController extends Controller
         return redirect()->route('proyek')->with('success', 'Proyek berhasil dibuat!');
     }
 
-    public function update(UpdateRequest $request, Proyek $proyek): RedirectResponse
+    public function update(UpdateRequest $request, Proyek $Proyek): RedirectResponse
     {
         $validated = $request->safe();
 
-        $proyek->fill([
+        $Proyek->fill([
             'nama_proyek' => $validated->nama_proyek,
             'tahun_anggaran' => $validated->tahun_anggaran,
             'pengguna_jasa' => $validated->pengguna_jasa,
@@ -105,14 +105,14 @@ class ProyekController extends Controller
             'slug' => Str::slug($validated->nama_proyek),
         ]);
 
-        $proyek->save();
+        $Proyek->save();
 
         return redirect()->route('proyek')->with('success', 'Proyek berhasil diperbarui!');
     }
 
-    public function destroy(Proyek $proyek): RedirectResponse
+    public function destroy(Proyek $Proyek): RedirectResponse
     {
-        $proyek->delete();
+        $Proyek->delete();
 
         return redirect()->route('proyek')->with('success', 'Proyek berhasil dihapus!');
     }

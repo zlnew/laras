@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DetailRAB extends Model
@@ -21,9 +20,4 @@ class DetailRAB extends Model
         'harga_satuan',
         'keterangan',
     ];
-
-    public function satuan(): HasOne
-    {
-        return $this->hasOne(Satuan::class, 'id_satuan', 'id_satuan');
-    }
 }

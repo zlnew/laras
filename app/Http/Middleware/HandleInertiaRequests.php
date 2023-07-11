@@ -34,6 +34,12 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'role' => function () use ($request) {
+                if ($request->user()) {
+                    $roleName = $request->user()->roles->first()->name;
+                    return $roleName;
+                }
+            },
             'permissions' => function () use ($request) {
                 if ($request->user()) {
                     $permissionsViaRoles = $request->user()->getPermissionsViaRoles();
@@ -41,6 +47,9 @@ class HandleInertiaRequests extends Middleware
                     
                     return $permissionsViaRoles->merge($directPermissions)->pluck('name')->toArray();
                 }
+            },
+            'query' => function () use ($request) {
+                return $request->query();
             },
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [

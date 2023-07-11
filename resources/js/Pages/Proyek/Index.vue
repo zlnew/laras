@@ -20,33 +20,45 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Proyek } from '@/types';
 
 const page = usePage();
-const permissions = computed(() => page.props.permissions);
+
+const permissions = page.props.permissions;
+
+const CRUDPermission = computed(() => {
+  if (
+    permissions.includes('create proyek')
+    && permissions.includes('update proyek')
+    && permissions.includes('delete proyek')
+  ) {
+    return true;
+  }
+
+  return false;
+});
 
 const props = defineProps<{
-  daftarProyek: {
+  daftar_proyek: {
     data: Array<Proyek>,
-  },
-  flash: {
-    success: string | null,
-    error: string | null,
   },
 }>();
 
-const computed__daftarProyek = computed(() => {
-  return props.daftarProyek.data.map((proyek) => {
-    const computed__waktu_mulai = ll(proyek.waktu_mulai);
-    const computed__waktu_selesai = ll(proyek.waktu_selesai);
-    const computed__status_proyek = proyek.status_proyek == 400 ? 'Closed' : 'On Progress';
-    const computed__nilai_kontrak = toRupiah(proyek.nilai_kontrak);
+const daftar_proyek = computed(() => {
+  const data = props.daftar_proyek.data.map((proyek) => {
+    const waktu_mulai_in_ll = ll(proyek.waktu_mulai);
+    const waktu_selesai_in_ll = ll(proyek.waktu_selesai);
+    const status_proyek_in_string = proyek.status_proyek == 400
+      ? 'Closed'
+      : 'On Progress';
+    const nilai_kontrak_in_rupiah = toRupiah(proyek.nilai_kontrak);
 
     return { ...proyek,
-      waktu_mulai: computed__waktu_mulai,
-      waktu_selesai: computed__waktu_selesai,
-      status_proyek: computed__status_proyek,
-      nilai_kontrak: computed__nilai_kontrak,
-      status_proyek_code: proyek.status_proyek,
+      waktu_mulai_in_ll: waktu_mulai_in_ll,
+      waktu_selesai_in_ll: waktu_selesai_in_ll,
+      status_proyek_in_string: status_proyek_in_string,
+      nilai_kontrak_in_rupiah: nilai_kontrak_in_rupiah,
     };
   });
+
+  return { data };
 });
 
 function PopCreateModal() {
@@ -66,90 +78,145 @@ function PopSearchModal() {
 }
 
 onUpdated(() => {
-  if (props.flash.success) Toast.success(props.flash.success);
+  if (page.props.flash.success) Toast.success(page.props.flash.success);
+  if (page.props.flash.error) Toast.error(page.props.flash.error);
 });
 </script>
 
 <template>
   <Head title="Daftar Proyek" />
   
-  <AuthenticatedLayout>
+  <authenticated-layout>
     <template v-slot:breadcrumb>
-      <Breadrumb v-slot:breadcrumb v-bind="{ second: 'Proyek', current: 'Daftar Proyek' }" />
+      <Breadrumb
+        v-slot:breadcrumb
+        v-bind="{
+          second: 'Proyek',
+          current: 'Daftar Proyek'
+        }"
+      />
     </template>
 
-    <ContentLayout>
-      <CardLayout>
-        <CardHeader>
+    <content-layout>
+      <card-layout>
+        <card-header>
           <div class="flex justify-between items-center">
             <div>
-              <EaseButton v-if="permissions.includes('create proyek')" @click="PopCreateModal" slotted>
-                <FasIcon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru
-              </EaseButton>
+              <ease-button
+                v-if="CRUDPermission"
+                @click="PopCreateModal"
+                slotted>
+                <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Proyek Baru
+              </ease-button>
             </div>
-            <EaseButton @click="PopSearchModal()" variant="transparent" slotted>
-              <FasIcon icon="fa-solid fa-search" class="mr-1" /> Pencarian
-            </EaseButton>
+            <ease-button
+              @click="PopSearchModal()"
+              variant="transparent"
+              slotted>
+              <fas-icon icon="fa-solid fa-search" class="mr-1" /> Pencarian
+            </ease-button>
           </div>
-        </CardHeader>
+        </card-header>
 
-        <CardBody table>
-          <TableLayout>
-            <THead>
-              <TRow>
-                <THeadCell value="Nama Proyek" />
-                <THeadCell value="Tahun Anggaran" />
-                <THeadCell value="Pengguna Jasa" />
-                <THeadCell textAlign="center" value="Waktu Mulai" />
-                <THeadCell textAlign="center" value="Waktu Selesai" />
-                <THeadCell textAlign="right" value="Nilai Kontrak" />
-                <THeadCell textAlign="center" value="Status" />
-                <THeadCell textAlign="center" value="" />
-              </TRow>
-            </THead>
-            <TBody>
-              <TRow
-                v-if="computed__daftarProyek.length"
-                v-for="(proyek, index) in computed__daftarProyek" :key="proyek.id_proyek"
-                v-bind="{ last: index === computed__daftarProyek.length - 1 }">
+        <card-body table>
+          <table-layout>
+            <t-head>
+              <t-row>
+                <t-head-cell value="Nama Proyek" />
+                <t-head-cell value="Tahun Anggaran" />
+                <t-head-cell value="Pengguna Jasa" />
+                <t-head-cell text-align="center" value="Waktu Mulai" />
+                <t-head-cell text-align="center" value="Waktu Selesai" />
+                <t-head-cell text-align="right" value="Nilai Kontrak" />
+                <t-head-cell text-align="center" value="Status" />
+                <t-head-cell />
+              </t-row>
+            </t-head>
+            <t-body>
+              <t-row
+                v-if="daftar_proyek.data.length"
+                v-for="(proyek, index) in daftar_proyek.data" :key="proyek.id_proyek"
+                v-bind="{ last: index === daftar_proyek.data.length - 1 }">
 
-                <TBodyCell>
-                  <Link href="#">
-                    <EaseButton variant="link" class="text-left" slotted>
-                      <span class="line-clamp-2 hover:line-clamp-none">{{ proyek.nama_proyek }}</span>
-                    </EaseButton>
+                <t-body-cell>
+                  <Link class="link" href="#">
+                    <span class="line-clamp-2 hover:line-clamp-none">{{ proyek.nama_proyek }}</span>
                   </Link>
-                </TBodyCell>
-                <TBodyCell whitespace="nowrap">{{ proyek.tahun_anggaran }}</TBodyCell>
-                <TBodyCell>{{ proyek.pengguna_jasa }}</TBodyCell>
-                <TBodyCell whitespace="nowrap" textAlign="center">{{ proyek.waktu_mulai }}</TBodyCell>
-                <TBodyCell whitespace="nowrap" textAlign="center">{{ proyek.waktu_selesai }}</TBodyCell>
-                <TBodyCell whitespace="nowrap" textAlign="right">{{ proyek.nilai_kontrak }}</TBodyCell>
-                <TBodyCell whitespace="nowrap" textAlign="center">
-                  <EaseButton v-bind="{
-                    text: proyek.status_proyek,
-                    variant: proyek.status_proyek_code == 400 ? 'danger-transparent' : 'transparent'
-                  }" />
-                </TBodyCell>
-                <TBodyCell
-                  v-if="permissions.includes('update proyek') && permissions.includes('delete proyek')"
+                </t-body-cell>
+
+                <t-body-cell
+                  whitespace="nowrap">
+                  {{ proyek.tahun_anggaran }}
+                </t-body-cell>
+
+                <t-body-cell
+                  whitespace="normal">
+                  {{ proyek.pengguna_jasa }}
+                </t-body-cell>
+
+                <t-body-cell
+                  whitespace="nowrap"
+                  text-align="center">
+                  {{ proyek.waktu_mulai_in_ll }}
+                </t-body-cell>
+                
+                <t-body-cell
+                  whitespace="nowrap"
+                  text-align="center">
+                  {{ proyek.waktu_selesai_in_ll }}
+                </t-body-cell>
+
+                <t-body-cell
+                  whitespace="nowrap"
+                  text-align="right">
+                {{ proyek.nilai_kontrak_in_rupiah }}
+                </t-body-cell>
+
+                <t-body-cell
+                  whitespace="nowrap"
+                  text-align="center">
+                  <ease-button
+                    v-bind="{
+                      text: proyek.status_proyek_in_string,
+                      variant: proyek.status_proyek == 400
+                        ? 'danger-transparent'
+                        : 'transparent'
+                      }"
+                  />
+                </t-body-cell>
+
+                <t-body-cell
+                  v-if="CRUDPermission"
                   whitespace="nowrap">
                   <div class="flex">
-                    <EaseButton @click="PopEditModal(proyek)" text="Edit" variant="link" />
-                    <EaseButton @click="PopDeleteModal(proyek.id_proyek)" variant="link" slotted>
-                      <span class="text-danger">Delete</span>
-                    </EaseButton>
+                    <ease-button
+                      @click="PopEditModal(proyek)"
+                      variant="link"
+                      text="Edit"
+                    />
+                    <ease-button
+                      @click="PopDeleteModal(proyek.id_proyek)"
+                      variant="danger-link"
+                      text="Delete"
+                    />
                   </div>
-                </TBodyCell>
-              </TRow>
+                </t-body-cell>
 
-              <TRow v-else last>
-                <TBodyCell colspan="7" textAlign="center">Proyek tidak ditemukan</TBodyCell>
-              </TRow>
-            </TBody>
-          </TableLayout>
-        </CardBody>
-      </CardLayout>
-    </ContentLayout>
-  </AuthenticatedLayout>
+              </t-row>
+
+              <t-row v-else last>
+
+                <t-body-cell
+                  colspan="7"
+                  text-align="center">
+                  Proyek tidak ditemukan
+                </t-body-cell>
+
+              </t-row>
+            </t-body>
+          </table-layout>
+        </card-body>
+      </card-layout>
+    </content-layout>
+  </authenticated-layout>
 </template>

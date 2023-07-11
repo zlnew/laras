@@ -2,18 +2,17 @@
 import { ModalLayout, ModalHead, ModalBody, ModalFooter } from "@/Components/Modal.vue";
 import { useForm } from "@inertiajs/vue3";
 import useModalStore from "@/stores/useModalStore";
-import { DetailRAP } from "@/types";
-
-const props = defineProps<{
-  id_detail_rap: DetailRAP['id_detail_rap'],
-}>();
 
 const modal = useModalStore();
+
+const props = defineProps<{
+  id_rap: string,
+}>();
 
 const form = useForm({});
 
 function destroy() {
-  form.delete(route('rap.destroy', props.id_detail_rap), {
+  form.delete(route('rap.destroy', props.id_rap), {
     onSuccess: () => {
       modal.close();
     }
@@ -22,24 +21,34 @@ function destroy() {
 </script>
 
 <template>
-  <ModalLayout size="md">
-    <ModalHead title="Konfirmasi Penghapusan Uraian RAP" />
+  <modal-layout size="md">
+    <modal-head title="Konfirmasi Penghapusan RAB" />
 
-    <ModalBody>
-      <p>Apakah anda yakin ingin menghapus Uraian RAP ini? Semua data yang berkaitan dengan uraian ini akan hilang.</p>
-    </ModalBody>
+    <modal-body>
+      <p>Apakah anda yakin ingin menghapus RAP proyek ini? Semua data yang berkaitan dengan RAP ini akan hilang.</p>
+    </modal-body>
     
-    <ModalFooter>
-      <EaseButton @click="modal.close" v-bind="{type: 'button', text: 'Close', variant: 'transparent'}" />
-      <EaseButton @click.prevent="destroy" v-bind="{
-        type: 'submit',
-        variant: 'danger-transparent',
-        text: 'Yes, delete it!',
-        loading: form.processing,
-        onLoading: () => ({
+    <modal-footer>
+      <ease-button
+        @click="modal.close"
+        v-bind="{
+          type: 'button',
+          text: 'Close',
+          variant: 'transparent'
+        }"
+      />
+      <ease-button
+        @click.prevent="destroy"
+        v-bind="{
+          variant: 'danger-transparent',
+          type: 'submit',
+          text: 'Yes, delete it!',
+          loading: form.processing,
+          onLoading: () => ({
             text: 'Deleting data...',
-        })
-      }" />
-    </ModalFooter>
-  </ModalLayout>
+          })
+        }"
+      />
+    </modal-footer>
+  </modal-layout>
 </template>

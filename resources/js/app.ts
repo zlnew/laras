@@ -39,6 +39,10 @@ createInertiaApp({
         });
 
         easeButton.addVariant({
+            danger: {
+                color: '#fff',
+                bgColor: '#ef4444'
+            },
             transparent: {
                 color: '#172554',
                 bgColor: 'transparent',

@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rab', function (Blueprint $table) {
-            $table->ulid('id_rab')->primary();
-            $table->foreignUlid('id_proyek');
-            $table->decimal('tax', 3, 0)->default(11);
-            $table->decimal('additional_tax', 3, 0)->default(4);
+        Schema::create('detail_pencairan_dana', function (Blueprint $table) {
+            $table->id('id_detail_pencairan_dana');
+            $table->foreignUlid('id_pencairan_dana');
+            $table->foreignUlid('id_detail_pengajuan_dana');
+            $table->decimal('jumlah_pencairan', 12, 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rab');
+        Schema::dropIfExists('detail_pencairan_dana');
     }
 };

@@ -30,6 +30,7 @@ class RolesPermissionsSeeder extends Seeder
           'create rab',
           'update rab',
           'delete rab',
+          'approve rab'
         ];
 
         $rap_modules = [
@@ -37,6 +38,28 @@ class RolesPermissionsSeeder extends Seeder
           'create rap',
           'update rap',
           'delete rap',
+          'approve rap'
+        ];
+
+        $pengajuan_dana_modules = [
+          'view pengajuan dana',
+          'create pengajuan dana',
+          'update pengajuan dana',
+          'delete pengajuan dana',
+          'approve pengajuan dana'
+        ];
+
+        $pencairan_dana_modules = [
+          'view pencairan dana',
+          'create pencairan dana',
+          'update pencairan dana',
+          'delete pencairan dana',
+          'approve pencairan dana'
+        ];
+
+        $laporan_modules = [
+          'view laporan',
+          'generate laporan'
         ];
 
 
@@ -51,6 +74,18 @@ class RolesPermissionsSeeder extends Seeder
         }
 
         foreach ($rap_modules as $module) {
+          Permission::create(['name' => $module]);
+        }
+
+        foreach ($pengajuan_dana_modules as $module) {
+          Permission::create(['name' => $module]);
+        }
+
+        foreach ($pencairan_dana_modules as $module) {
+          Permission::create(['name' => $module]);
+        }
+
+        foreach ($laporan_modules as $module) {
           Permission::create(['name' => $module]);
         }
 
@@ -71,25 +106,37 @@ class RolesPermissionsSeeder extends Seeder
         $manajer_proyek->givePermissionTo([
           'view proyek',
           'view rab',
-          'view rap', 'create rap', 'update rap', 'delete rap'
+          'view rap', 'create rap', 'update rap', 'delete rap',
+          'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana',
+          'view pencairan dana',
+          'generate laporan'
         ]);
 
         $kepala_divisi->givePermissionTo([
           'view proyek', 'create proyek', 'update proyek', 'delete proyek',
           'view rab', 'create rab', 'update rab', 'delete rab',
-          'view rap',
+          'view rap', 'approve rap',
+          'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana', 'approve pengajuan dana',
+          'view pencairan dana',
+          'view laporan'
         ]);
 
         $direktur_utama->givePermissionTo([
           'view proyek',
-          'view rab',
-          'view rap'
+          'view rab', 'approve rab',
+          'view rap', 'approve rap',
+          'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana', 'approve pengajuan dana',
+          'view pencairan dana', 'approve pengajuan dana',
+          'view laporan'
         ]);
 
         $keuangan->givePermissionTo([
           'view proyek',
           'view rab',
-          'view rap'
+          'view rap',
+          'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana',
+          'view pencairan dana', 'create pencairan dana', 'update pencairan dana', 'delete pencairan dana',
+          'generate laporan'
         ]);
 
 
