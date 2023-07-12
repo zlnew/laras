@@ -3,3 +3,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .link {
+    @apply transition font-bold text-primary underline;
+    @apply hover:opacity-80;
+  }
+}
