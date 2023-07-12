@@ -29,6 +29,42 @@ const fullYear: number = new Date().getFullYear();
                     />
                 </li>
 
+                <!-- <li class="w-full mt-8 mb-2">
+                    <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Master</h6>
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Users"
+                        icon="fa-solid fa-users"
+                        :href="route('proyek')"
+                    />
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Roles & Permissions"
+                        icon="fa-solid fa-universal-access"
+                        :href="route('proyek')"
+                    />
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Satuan"
+                        icon="fa-solid fa-ruler-horizontal"
+                        :href="route('proyek')"
+                    />
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Rekening"
+                        icon="fa-solid fa-credit-card"
+                        :href="route('proyek')"
+                    />
+                </li> -->
+
                 <li class="w-full mt-8 mb-2">
                     <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Main</h6>
                 </li>
@@ -112,8 +148,25 @@ const fullYear: number = new Date().getFullYear();
                 </nav>
 
                 <ul class="flex flex-row justify-end pl-0 mb-0 list-none md-max:w-full">
-                    <li class="flex items-center">
-                        <strong class="capitalize text-sm">{{ $page.props.role }}</strong>
+                    <li class="flex items-center gap-4">
+                        <Link
+                            :href="route('profile.edit')"
+                            :class="{
+                                'bg-white drop-shadow-lg': route().current('profile.edit')
+                            }"
+                            class="transition flex items-center gap-4 p-2 pr-4 rounded-2xl hover:bg-white hover:drop-shadow-lg">
+                            <img
+                                :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`"
+                                alt="User Avatar"
+                                class="w-12 rounded-full"
+                            />
+                            <div>
+                                <span class="link text-sm no-underline">
+                                    {{ $page.props.auth.user.name }}
+                                </span>
+                                <p class="capitalize text-xs">{{ $page.props.role }}</p>
+                            </div>
+                        </Link>
                         <Link :href="route('logout')" method="post" as="button">
                             <EaseButton variant="danger-transparent" slotted>
                                 <FasIcon icon="fa-solid fa-sign-out-alt" class="mr-2" /> Logout

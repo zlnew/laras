@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\PasswordController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,6 +13,7 @@ use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengajuanDanaController;
 use App\Http\Controllers\PencairanDanaController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +31,10 @@ Route::get('/', function() {
 })->middleware('guest');
 
 Route::middleware('auth')->group(function() {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/password', [PasswordController::class, 'update'])->name('password.update');
+
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
