@@ -29,19 +29,22 @@ const fullYear: number = new Date().getFullYear();
                     />
                 </li>
 
-                <!-- <li class="w-full mt-8 mb-2">
-                    <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Master</h6>
-                </li>
+                <template v-if="$page.props.role === 'admin'">
+                    <li class="w-full mt-8 mb-2">
+                        <h6 class="pl-6 ml-2 font-bold leading-tight uppercase text-xs opacity-60">Master</h6>
+                    </li>
+    
+                    <li class="mt-0.5 w-full">
+                        <NavLink
+                            name="Users"
+                            icon="fa-solid fa-users"
+                            :href="route('users')"
+                            :active="route().current('users')"
+                        />
+                    </li>
+                </template>
 
-                <li class="mt-0.5 w-full">
-                    <NavLink
-                        name="Users"
-                        icon="fa-solid fa-users"
-                        :href="route('proyek')"
-                    />
-                </li>
-
-                <li class="mt-0.5 w-full">
+                <!-- <li class="mt-0.5 w-full">
                     <NavLink
                         name="Roles & Permissions"
                         icon="fa-solid fa-universal-access"
@@ -158,7 +161,7 @@ const fullYear: number = new Date().getFullYear();
                             <img
                                 :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`"
                                 alt="User Avatar"
-                                class="w-12 rounded-full"
+                                class="w-10 rounded-full"
                             />
                             <div>
                                 <span class="link text-sm no-underline">

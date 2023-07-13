@@ -11,6 +11,7 @@ use App\Http\Controllers\DetailRABController;
 use App\Http\Controllers\DetailRAPController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Master\UsersController;
 use App\Http\Controllers\PengajuanDanaController;
 use App\Http\Controllers\PencairanDanaController;
 use App\Http\Controllers\ProfileController;
@@ -38,6 +39,13 @@ Route::middleware('auth')->group(function() {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::prefix('master')->middleware('role:admin')->group(function() {
+        Route::get('/users', [UsersController::class, 'index'])->name('users');
+        Route::post('/users', [UsersController::class, 'store'])->name('users.store');
+        Route::patch('/users/{user}', [UsersController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UsersController::class, 'destroy'])->name('users.destroy');
+    });
     
     Route::prefix('proyek')->group(function() {
         Route::group(['middleware' => ['permission:view proyek']], function () {
