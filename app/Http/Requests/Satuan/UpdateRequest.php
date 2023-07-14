@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Satuan;
 
-use App\Models\User;
+use App\Models\Satuan;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,15 +24,12 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
+            'nama_satuan' => [
                 'required',
-                'email',
+                'string',
                 'max:255',
-                Rule::unique(User::class, 'email')->ignore($this->id, 'id')
-            ],
-            'password' => ['nullable', 'string', 'max:255'],
-            'role' => ['required', 'string', 'exists:roles,name'],
+                Rule::unique(Satuan::class, 'nama_satuan')->ignore($this->id_satuan, 'id_satuan')
+            ]
         ];
     }
 }
