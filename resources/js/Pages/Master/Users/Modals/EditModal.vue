@@ -13,6 +13,7 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
+  id: props.user.id,
   name: props.user.name,
   email: props.user.email,
   password: null,
@@ -31,7 +32,7 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <modal-layout size="xl">
-      <modal-head title="Form Tambah User" />
+      <modal-head title="Form Ubah User" />
 
       <modal-body>
         <div class="w-full mb-4">

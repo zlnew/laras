@@ -11,6 +11,8 @@ use App\Http\Controllers\DetailRABController;
 use App\Http\Controllers\DetailRAPController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Master\RekeningController;
+use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Master\UsersController;
 use App\Http\Controllers\PengajuanDanaController;
 use App\Http\Controllers\PencairanDanaController;
@@ -45,6 +47,16 @@ Route::middleware('auth')->group(function() {
         Route::post('/users', [UsersController::class, 'store'])->name('users.store');
         Route::patch('/users/{user}', [UsersController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UsersController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/satuan', [SatuanController::class, 'index'])->name('satuan');
+        Route::post('/satuan', [SatuanController::class, 'store'])->name('satuan.store');
+        Route::patch('/satuan/{satuan}', [SatuanController::class, 'update'])->name('satuan.update');
+        Route::delete('/satuan/{satuan}', [SatuanController::class, 'destroy'])->name('satuan.destroy');
+
+        Route::get('/rekening', [RekeningController::class, 'index'])->name('rekening');
+        Route::post('/rekening', [RekeningController::class, 'store'])->name('rekening.store');
+        Route::patch('/rekening/{rekening}', [RekeningController::class, 'update'])->name('rekening.update');
+        Route::delete('/rekening/{rekening}', [RekeningController::class, 'destroy'])->name('rekening.destroy');
     });
     
     Route::prefix('proyek')->group(function() {

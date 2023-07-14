@@ -42,28 +42,30 @@ const fullYear: number = new Date().getFullYear();
                             :active="route().current('users')"
                         />
                     </li>
+
+                    <li class="mt-0.5 w-full">
+                        <NavLink
+                            name="Satuan"
+                            icon="fa-solid fa-ruler-horizontal"
+                            :href="route('satuan')"
+                            :active="route().current('satuan')"
+                        />
+                    </li>
+
+                    <li class="mt-0.5 w-full">
+                        <NavLink
+                            name="Rekening"
+                            icon="fa-solid fa-credit-card"
+                            :href="route('rekening')"
+                            :active="route().current('rekening')"
+                        />
+                    </li>
                 </template>
 
                 <!-- <li class="mt-0.5 w-full">
                     <NavLink
                         name="Roles & Permissions"
                         icon="fa-solid fa-universal-access"
-                        :href="route('proyek')"
-                    />
-                </li>
-
-                <li class="mt-0.5 w-full">
-                    <NavLink
-                        name="Satuan"
-                        icon="fa-solid fa-ruler-horizontal"
-                        :href="route('proyek')"
-                    />
-                </li>
-
-                <li class="mt-0.5 w-full">
-                    <NavLink
-                        name="Rekening"
-                        icon="fa-solid fa-credit-card"
                         :href="route('proyek')"
                     />
                 </li> -->
