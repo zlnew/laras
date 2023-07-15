@@ -16,10 +16,10 @@ import { Head } from '@inertiajs/vue3';
     </template>
 
     <ContentLayout>
-      <CardLayout>
+      <CardLayout class="w-1/2">
 				<CardHeader>
           <div class="flex justify-between items-center">
-						<h5 class="font-bold text-xl">Dashboard</h5>
+						<h5 class="font-bold text-xl text-dark">Dashboard</h5>
           </div>
         </CardHeader>
 				<CardBody>

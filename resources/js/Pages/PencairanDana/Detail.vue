@@ -139,7 +139,7 @@ onUpdated(() => {
       <card-layout>
 				<card-header>
           <div class="flex justify-between items-center">
-						<h5 class="font-bold text-xl">List Pengajuan Dana</h5>
+						<h5 class="font-bold text-xl text-dark">List Pengajuan Dana</h5>
           </div>
         </card-header>
 
@@ -170,7 +170,7 @@ onUpdated(() => {
                 
                 <t-body-cell
                   whitespace="nowrap"
-                  class="font-semibold text-primary">
+                  class="font-semibold text-dark">
                   {{ item.uraian }}
                 </t-body-cell>
                 
@@ -186,7 +186,7 @@ onUpdated(() => {
                 
                 <t-body-cell
                   whitespace="nowrap">
-                  <span class="text-primary">
+                  <span class="text-dark">
                     {{ item.nama_bank }} | {{ item.nomor_rekening }}
                   </span> - {{ item.nama_rekening }}
                 </t-body-cell>
@@ -219,7 +219,7 @@ onUpdated(() => {
                       }"
                     />
                   </template>
-                  <span v-else class="text-primary">
+                  <span v-else class="text-dark">
                     {{ toRupiah(item.jumlah_pencairan) }}
                   </span>
                 </t-body-cell>

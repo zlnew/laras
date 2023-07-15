@@ -27,8 +27,8 @@ const submit = () => {
             <div class="flex flex-col w-full max-w-full px-3 mx-auto md:flex-0 shrink-0 md:w-6/12 lg:w-5/12 xl:w-4/12">
               <div class="relative flex flex-col min-w-0 mt-32 break-words bg-transparent border-0 shadow-none rounded-2xl bg-clip-border">
                 <div class="p-6 pb-0 mb-0 bg-transparent border-b-0 rounded-t-2xl">
-                  <h3 class="text-2xl relative z-10 font-bold text-transparent bg-secondary bg-clip-text">Selamat Datang</h3>
-                  <p class="mb-0">Masukkan username dan password anda.</p>
+                  <h3 class="mb-2 text-3xl relative z-10 font-bold text-transparent text-gradient">Selamat Datang</h3>
+                  <p class="mb-0 text-slate-500">Silahkan masukkan email dan password anda untuk melanjutkan.</p>
                 </div>
                 <div class="flex-auto p-6">
                   <form @submit.prevent="submit">
@@ -50,9 +50,9 @@ const submit = () => {
                       <FormError class="mt-2" :message="form.errors.password" />
                     </div>
 
-                    <div class="mb-4">
+                    <div class="mb-4 space-x-2">
                       <FormCheckbox id="remember_me" name="remember" v-model:checked="form.remember" />
-                      <label class="mb-2 ml-3 font-normal cursor-pointer select-none text-sm text-primary" for="remember_me">Remember me</label>
+                      <FormLabel for="remember_me" value="Ingat Saya" />
                     </div>
 
                     <div class="text-center">

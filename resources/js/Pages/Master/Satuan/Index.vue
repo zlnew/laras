@@ -123,7 +123,7 @@ onUpdated(() => {
 
                 <t-body-cell
                   whitespace="nowrap"
-                  class="font-semibold text-primary">
+                  class="font-semibold text-dark">
                   {{ item.nama_satuan }}
                 </t-body-cell>
 

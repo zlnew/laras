@@ -170,7 +170,7 @@ onUpdated(() => {
       <card-layout>
 				<card-header>
           <div class="flex justify-between items-center">
-						<h5 class="font-bold text-xl">Uraian Rencana Anggaran Biaya</h5>
+						<h5 class="font-bold text-xl text-dark">Uraian Rencana Anggaran Biaya</h5>
             <ease-button
               v-if="CRUDPermission && pengajuanPersmission"
               @click="OpenCreateModal"
@@ -206,7 +206,7 @@ onUpdated(() => {
 
                 <t-body-cell
                   whitespace="nowrap"
-                  class="font-semibold text-primary">
+                  class="font-semibold text-dark">
                   {{ item.uraian }}
                 </t-body-cell>
                 

@@ -22,7 +22,7 @@ function submit() {
   <card-layout class="h-fit">
     <card-header class="mb-2">
       <div class="flex justify-between items-center">
-        <h5 class="font-bold text-xl">Submit</h5>
+        <h5 class="font-bold text-xl text-dark">Submit</h5>
       </div>
     </card-header>
     <card-body>

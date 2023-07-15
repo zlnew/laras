@@ -1,4 +1,4 @@
-<script setup lang="ts">
+wZ<script setup lang="ts">
 import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 
@@ -9,23 +9,54 @@ const props = defineProps<{
     active?: boolean,
 }>();
 
-const classes = computed(() =>
-    props.active
-        ? 'py-2.7 shadow-soft-xl text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap rounded-lg bg-white px-4 font-semibold text-slate-700 transition-colors'
-        : 'py-2.7 text-sm ease-nav-brand my-0 mx-4 flex items-center whitespace-nowrap px-4 transition-colors'
-);
+const classes = computed(() => {
+    const baseClasses = [
+        'my-0 mx-4 py-2.7 px-4 text-sm',
+        'ease-nav-brand',
+        'flex items-center',
+        'rounded-lg whitespace-nowrap transition'
+    ];
 
-const iconBgClasses = computed(() => 
-    props.active
-        ? 'bg-primary shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5'
-        : 'bg-white shadow-soft-2xl mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5'
-);
+    const activeClasses = [
+        'font-bold',
+        'text-dark bg-white',
+        'shadow-soft-xl'
+    ];
 
-const iconClasses = computed(() => 
-    props.active
-        ? 'text-white'
-        : ''
-);
+    const unactiveClasses = [
+        'font-medium',
+        'text-dark/70'
+    ];
+
+    return [
+        props.active ? activeClasses : unactiveClasses,
+        ...baseClasses
+    ];
+});
+
+const iconBgClasses = computed(() => {
+    const baseClasses = [
+        'mr-2 h-8 w-8 xl:p-2.5',
+        'flex items-center justify-center',
+        'bg-center text-center stroke-0',
+        'shadow-soft-2xl rounded-md',
+    ];
+
+    const activeClasses = [
+        'bg-gradient-to-tr from-primary to-secondary',
+    ];
+
+    const unactiveClasses = [
+        'bg-white'
+    ];
+
+    return [
+        props.active ? activeClasses : unactiveClasses,
+        ...baseClasses
+    ];    
+});
+
+const iconClasses = computed(() => props.active ? 'text-white' : '');
 </script>
 
 <template>

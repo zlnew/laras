@@ -11,7 +11,7 @@ defineProps<{
   <card-layout class="w-fit">
     <card-header>
       <div class="flex justify-between items-center">
-        <h5 class="font-bold text-xl">Informasi RAB</h5>
+        <h5 class="font-bold text-xl text-dark">Informasi RAB</h5>
       </div>
     </card-header>
     <card-body>
@@ -21,21 +21,21 @@ defineProps<{
             <td>Proyek</td>
             <td class="pl-6 pr-3">:</td>
             <td>
-              <span class="font-medium text-primary">{{ rab.nama_proyek }}</span>
+              <span class="font-medium text-dark">{{ rab.nama_proyek }}</span>
             </td>
           </tr>
           <tr>
             <td>Tahun Anggaran</td>
             <td class="pl-6 pr-3">:</td>
             <td>
-              <span class="font-medium text-primary">{{ rab.tahun_anggaran }}</span>
+              <span class="font-medium text-dark">{{ rab.tahun_anggaran }}</span>
             </td>
           </tr>
           <tr>
             <td>Pengguna Jasa</td>
             <td class="pl-6 pr-3">:</td>
             <td>
-              <span class="font-medium text-primary">{{ rab.pengguna_jasa }}</span>
+              <span class="font-medium text-dark">{{ rab.pengguna_jasa }}</span>
             </td>
           </tr>
           <tr>

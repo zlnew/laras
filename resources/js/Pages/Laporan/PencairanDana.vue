@@ -98,7 +98,7 @@ function search() {
 
                 <t-body-cell
                   whitespace="nowrap">
-                  <span class="font-semibold text-primary">
+                  <span class="font-semibold text-dark">
                     {{ item.keperluan }}
                   </span>
                 </t-body-cell>
@@ -111,7 +111,7 @@ function search() {
                 <t-body-cell
                   text-align="right"
                   whitespace="nowrap">
-                  <span class="text-primary">
+                  <span class="text-dark">
                     {{ toRupiah(item.jumlah_pengajuan_dana) }}
                   </span>
                 </t-body-cell>
@@ -119,7 +119,7 @@ function search() {
                 <t-body-cell
                   text-align="right"
                   whitespace="nowrap">
-                  <span class="font-semibold text-primary">
+                  <span class="font-semibold text-dark">
                     {{ toRupiah(item.jumlah_sudah_dibayarkan) }}
                   </span>
                 </t-body-cell>
@@ -127,7 +127,7 @@ function search() {
                 <t-body-cell
                   text-align="right"
                   whitespace="nowrap">
-                  <span class="font-semibold text-primary">
+                  <span class="font-semibold text-dark">
                     {{ toRupiah(item.jumlah_belum_dibayarkan) }}
                   </span>
                 </t-body-cell>
@@ -141,8 +141,8 @@ function search() {
                           ? 'Closed'
                           : 'Open',
                         variant: item.status_pencairan == 400
-                          ? 'danger-link'
-                          : 'link'
+                          ? 'danger-transparent'
+                          : 'transparent'
                       }"
                     />
                   </Link>

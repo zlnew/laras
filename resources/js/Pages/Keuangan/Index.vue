@@ -156,7 +156,7 @@ onUpdated(() => {
                 
                 <t-body-cell
                   whitespace="nowrap">
-                  <span class="font-semibold text-primary">
+                  <span class="font-semibold text-dark">
                     {{ proyek.keperluan }}
                   </span>
                 </t-body-cell>
