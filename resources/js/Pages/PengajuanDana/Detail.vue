@@ -232,7 +232,7 @@ onUpdated(() => {
       <card-layout>
 				<card-header>
           <div class="flex justify-between items-center">
-						<h5 class="font-bold text-xl">List Pengajuan Dana</h5>
+						<h5 class="font-bold text-xl text-dark">List Pengajuan Dana</h5>
             <ease-button
               v-if="CRUDPermission && pengajuanPermission"
               @click="OpenCreateModal"
@@ -270,7 +270,7 @@ onUpdated(() => {
                 
                 <t-body-cell
                   whitespace="nowrap"
-                  class="font-semibold text-primary">
+                  class="font-semibold text-dark">
                   {{ item.uraian }}
                 </t-body-cell>
                 

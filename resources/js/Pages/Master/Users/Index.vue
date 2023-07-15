@@ -102,7 +102,7 @@ onUpdated(() => {
 
                 <t-body-cell
                   whitespace="nowrap"
-                  class="font-semibold text-primary">
+                  class="font-semibold text-dark">
                   {{ user.name }}
                 </t-body-cell>
 
@@ -113,7 +113,7 @@ onUpdated(() => {
 
                 <t-body-cell
                   whitespace="normal"
-                  class="capitalize font-semibold text-primary">
+                  class="capitalize font-semibold text-dark">
                   {{ user.role_name }}
                 </t-body-cell>
 

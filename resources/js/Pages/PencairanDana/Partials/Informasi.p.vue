@@ -24,7 +24,7 @@ const pencairan_dana = computed(() => {
   <card-layout class="w-fit">
     <card-header>
       <div class="flex justify-between items-center">
-        <h5 class="font-bold text-xl">Informasi Pencairan Dana</h5>
+        <h5 class="font-bold text-xl text-dark">Informasi Pencairan Dana</h5>
       </div>
     </card-header>
     <card-body>
@@ -34,7 +34,7 @@ const pencairan_dana = computed(() => {
             <td>Proyek</td>
             <td class="pl-6 pr-3">:</td>
             <td>
-              <span class="font-medium text-primary">
+              <span class="font-medium text-dark">
                 {{ keuangan.nama_proyek }}
               </span>
             </td>
@@ -43,7 +43,7 @@ const pencairan_dana = computed(() => {
             <td>Tahun Anggaran</td>
             <td class="pl-6 pr-3">:</td>
             <td>
-              <span class="font-medium text-primary">
+              <span class="font-medium text-dark">
                 {{ keuangan.tahun_anggaran }}
               </span>
             </td>
@@ -52,7 +52,7 @@ const pencairan_dana = computed(() => {
             <td>Pengguna Jasa</td>
             <td class="pl-6 pr-3">:</td>
             <td>
-              <span class="font-medium text-primary">
+              <span class="font-medium text-dark">
                 {{ keuangan.pengguna_jasa }}
               </span>
             </td>
@@ -61,7 +61,7 @@ const pencairan_dana = computed(() => {
             <td>Keperluan</td>
             <td class="pl-6 pr-3">:</td>
             <td>
-              <span class="font-medium text-primary">
+              <span class="font-medium text-dark">
                 {{ keuangan.keperluan }}
               </span>
             </td>

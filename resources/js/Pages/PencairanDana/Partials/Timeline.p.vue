@@ -13,7 +13,7 @@ defineProps<{
   <card-layout class="h-fit">
     <card-header class="mb-2">
       <div class="flex justify-between items-center">
-        <h5 class="font-bold text-xl">Timeline</h5>
+        <h5 class="font-bold text-xl text-dark">Timeline</h5>
       </div>
     </card-header>
     <card-body table>
@@ -34,7 +34,7 @@ defineProps<{
               :last="index === timeline.length - 1">
 
             <t-body-cell
-              class="font-semibold text-primary">
+              class="font-semibold text-dark">
               {{ item.status_aktivitas }} pada {{ ll(item.created_at) }}
             </t-body-cell>
             

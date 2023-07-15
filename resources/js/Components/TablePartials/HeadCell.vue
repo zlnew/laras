@@ -24,12 +24,11 @@ const aligmentClasses = computed(() => {
 <template>
     <th :class="[aligmentClasses]"
         class="px-6 py-3
-            text-xxs font-bold text-primary
+            text-xxs font-bold text-dark/80
             uppercase align-middle
             bg-transparent border-b border-light
             shadow-none border-b-solid tracking-none
-            whitespace-nowrap
-            opacity-70">
+            whitespace-nowrap">
         {{ value }}
     </th>
 </template>

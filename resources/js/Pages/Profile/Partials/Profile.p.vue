@@ -21,7 +21,7 @@ function submit() {
 <template>
   <card-layout class="h-fit">
     <card-header>
-      <h5 class="text-xl font-bold text-primary">
+      <h5 class="text-xl font-bold text-dark">
         User Profile
       </h5>
     </card-header>
@@ -31,13 +31,13 @@ function submit() {
         <img
             :src="`https://ui-avatars.com/api/?name=${form.name}`"
             alt="User Avatar"
-            class="w-32 rounded-full"
+            class="w-24 rounded-full"
         />
         <div class="max-w-xs">
-          <p class="text-2xl font-bold text-primary">
+          <p class="text-2xl font-bold text-dark">
             {{ form.name }}
           </p>
-          <p class="text-lg capitalize text-primary/60">
+          <p class="text-lg capitalize text-dark/60">
             {{ role }}
           </p>
         </div>
@@ -80,7 +80,7 @@ function submit() {
           <ease-button
             v-bind="{
               type: 'submit',
-              text: 'Submit',
+              text: 'Update Profile',
               loading: form.processing
             }"
           />

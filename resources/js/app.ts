@@ -32,19 +32,19 @@ createInertiaApp({
         const easeButton = useEaseButton();
         
         easeButton.defaultStyle({
-            bgColor: '#172554',
+            bgColor: '#0284c7',
             borderRadius: '0.5rem',
-            outlineColor: '#172554',
+            outlineColor: '#0284c7',
             classes: 'transition ease-in-out',
         });
 
         easeButton.addVariant({
-            danger: {
+            'danger': {
                 color: '#fff',
                 bgColor: '#ef4444'
             },
-            transparent: {
-                color: '#172554',
+            'transparent': {
+                color: '#0284c7',
                 bgColor: 'transparent',
             },
             'success-transparent': {
@@ -57,10 +57,10 @@ createInertiaApp({
             },
             'danger-link': {
                 color: '#ef4444',
-                bgColor: 'variant="link"',
-                textDecoration: 'underline',
+                bgColor: 'transparent',
+                textDecoration: 'underline'
             },
         });
     },
-    progress: { color: '#172554' },
+    progress: { color: '#0284c7' },
 });
