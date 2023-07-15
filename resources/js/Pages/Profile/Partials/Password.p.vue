@@ -19,7 +19,7 @@ function submit() {
 <template>
   <card-layout class="h-fit">
     <card-header>
-      <h5 class="text-xl font-bold text-primary">
+      <h5 class="text-xl font-bold text-dark">
         Change Password
       </h5>
     </card-header>
@@ -78,7 +78,7 @@ function submit() {
           <ease-button
             v-bind="{
               type: 'submit',
-              text: 'Submit',
+              text: 'Change Password',
               loading: form.processing
             }"
           />

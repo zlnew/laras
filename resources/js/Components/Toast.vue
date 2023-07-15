@@ -34,7 +34,7 @@ const iconClasses = computed(() => {
     <Teleport to="body">
         <Transition name="toast-fade">
             <div v-if="toast.state?.message" :class="colorClasses"
-                class="fixed bottom-5 right-5 px-4 py-2 rounded-lg shadow-soft-lg">
+                class="fixed bottom-5 right-5 px-4 py-4 rounded-lg shadow-soft-lg">
                 <div class="flex justify-between items-center space-x-2">
                     <FasIcon :icon="iconClasses" /> 
                     <span>{{ toast.state.message }}</span>

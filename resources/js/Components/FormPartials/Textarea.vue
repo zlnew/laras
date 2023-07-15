@@ -23,6 +23,14 @@ onMounted(() => {
 
 defineExpose({ focus: () => input.value?.focus() });
 
+const baseClasses = [
+    'ease-soft w-full transition rounded-lg shadow-sm',
+    'font-normal text-sm text-dark bg-white',
+    'border border-light',
+    'focus:outline-none focus:border-primary',
+    'focus:-outline-offset-1 focus:outline-primary'
+];
+
 const sizeClasses = computed(() => {
     switch (props.size) {
         case 'sm': return 'px-3 py-1';
@@ -34,10 +42,9 @@ const sizeClasses = computed(() => {
 
 <template>
     <textarea
-        :class="sizeClasses"
-        class="ease-soft block w-full transition-all rounded-lg shadow-sm
-            font-normal text-sm text-gray-700 bg-white
-            border border-solid border-light
-            focus:drop-shadow focus:border-primary"
-        @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)" ref="input">{{ modelValue }}</textarea>
+        ref="input"
+        :class="[sizeClasses, baseClasses]"
+        @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)">
+        {{ modelValue }}
+    </textarea>
 </template>

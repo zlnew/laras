@@ -8,15 +8,15 @@ const fullYear: number = new Date().getFullYear();
 </script>
 
 <template>
-    <aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-auto rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent">
+    <aside class="max-w-62.5 ease-nav-brand z-990 fixed inset-y-0 my-4 ml-4 block w-full -translate-x-full flex-wrap items-center justify-between overflow-y-hidden rounded-2xl border-0 bg-white p-0 antialiased shadow-none transition-transform duration-200 xl:left-0 xl:translate-x-0 xl:bg-transparent">
         <div class="h-19.5">
-            <a class="block px-4 py-4 m-0 text-sm whitespace-nowrap text-slate-700" href="#">
+            <a class="block px-4 py-4 m-0 text-sm whitespace-nowrap text-dark" href="#">
                 <img src="/storage/logo.png" class="inline h-full max-w-full transition-all duration-200 ease-nav-brand border border-primary" alt="main_logo" />
                 <span class="ml-1 font-semibold transition-all duration-200 ease-nav-brand"></span>
             </a>
         </div>
 
-        <hr class="h-px mt-4 bg-transparent bg-gradient-to-r from-transparent via-black/40 to-transparent" />
+        <hr class="h-px my-4 bg-transparent bg-gradient-to-r from-transparent via-dark/40 to-transparent" />
 
         <div class="items-center block w-auto max-h-screen overflow-auto h-sidenav grow basis-full">
             <ul class="flex flex-col pl-0 mb-0">
@@ -157,16 +157,16 @@ const fullYear: number = new Date().getFullYear();
                         <Link
                             :href="route('profile.edit')"
                             :class="{
-                                'bg-white drop-shadow-lg': route().current('profile.edit')
+                                'bg-white shadow-soft-xl': route().current('profile.edit')
                             }"
-                            class="transition flex items-center gap-4 p-2 pr-4 rounded-2xl hover:bg-white hover:drop-shadow-lg">
+                            class="transition flex items-center gap-4 p-2 pr-4 rounded-lg hover:bg-white hover:shadow-soft-xl">
                             <img
                                 :src="`https://ui-avatars.com/api/?name=${$page.props.auth.user.name}`"
                                 alt="User Avatar"
                                 class="w-10 rounded-full"
                             />
                             <div>
-                                <span class="link text-sm no-underline">
+                                <span class="font-semibold text-dark text-sm no-underline">
                                     {{ $page.props.auth.user.name }}
                                 </span>
                                 <p class="capitalize text-xs">{{ $page.props.role }}</p>

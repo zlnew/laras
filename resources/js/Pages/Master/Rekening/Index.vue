@@ -86,7 +86,7 @@ onUpdated(() => {
             <t-head>
               <t-row>
                 <t-head-cell value="Nama" />
-                <t-head-cell value="Bank" />
+                <t-head-cell text-align="right" value="Bank" />
                 <t-head-cell value="Rekening" />
                 <t-head-cell />
               </t-row>
@@ -99,29 +99,30 @@ onUpdated(() => {
 
                 <t-body-cell
                   whitespace="nowrap">
-                  <span class="font-semibold text-primary">
+                  <span class="font-semibold text-dark">
                     {{ item.nama }}
                   </span>
-                  <p class="font-semibold text-primary/60">
+                  <p class="text-dark/60">
                     {{ item.jabatan }}
                   </p>
                 </t-body-cell>
 
                 <t-body-cell
+                  text-align="right"
                   whitespace="nowrap">
-                  <span class="font-semibold text-primary">
+                  <span class="font-semibold text-dark">
                     {{ item.nama_bank }}
                   </span>
                 </t-body-cell>
 
                 <t-body-cell
                   whitespace="normal">
-                  <span class="font-semibold text-primary">
-                    {{ item.nomor_rekening }},
+                  <span class="font-semibold text-dark">
+                    {{ item.nomor_rekening }}
                   </span>
-                  <span class="text-primary/60">
+                  <p class="text-dark/60">
                     {{ item.nama_rekening }}
-                  </span>
+                  </p>
                 </t-body-cell>
 
                 <t-body-cell
