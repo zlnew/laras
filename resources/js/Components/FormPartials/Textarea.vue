@@ -44,7 +44,5 @@ const sizeClasses = computed(() => {
     <textarea
         ref="input"
         :class="[sizeClasses, baseClasses]"
-        @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)">
-        {{ modelValue }}
-    </textarea>
+        @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)">{{ modelValue }}</textarea>
 </template>
