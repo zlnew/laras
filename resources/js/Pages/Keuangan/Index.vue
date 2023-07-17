@@ -15,6 +15,7 @@ import { Toast } from '@/utilities/toastify';
 import CreateModalWindow from './Modals/Create.m.vue';
 import EditModalWindow from './Modals/Edit.m.vue';
 import DeleteModalWindow from './Modals/Delete.m.vue';
+import CreatePenagihanModal from './Modals/CreatePenagihanModal.vue';
 
 const page = usePage();
 
@@ -44,6 +45,12 @@ const props = defineProps<{
 const form = useForm({
   nama_proyek: queryParams.nama_proyek,
 });
+
+function CreatePenagihan() {
+  Modal.pop(CreatePenagihanModal, {
+    daftar_proyek: props.proyek
+  });
+}
 
 function PopCreateModal() {
   Modal.pop(CreateModalWindow, {
@@ -99,6 +106,11 @@ onUpdated(() => {
                 slotted>
                 <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Tambah Keuangan Proyek
               </ease-button>
+              <ease-button
+                @click="CreatePenagihan"
+                slotted>
+                <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Tambah Penagihan
+              </ease-button>
             </div>
             <form @submit.prevent="search">
               <div class="flex justify-between items-center space-x-2">
@@ -134,6 +146,7 @@ onUpdated(() => {
                 <t-head-cell value="Keperluan" />
                 <t-head-cell value="Pengajuan Dana" />
                 <t-head-cell value="Pencairan Dana" />
+                <t-head-cell value="Penagihan" />
                 <t-head-cell />
               </t-row>
             </t-head>
@@ -164,10 +177,12 @@ onUpdated(() => {
                 <t-body-cell
                   whitespace="nowrap">
                   <Link
+                    v-if="proyek.id_pengajuan_dana"
                     class="link text-xs"
                     :href="route('pengajuan_dana.detail', proyek.id_pengajuan_dana)">
                     Lihat
                   </Link>
+                  <span v-else>-</span>
                 </t-body-cell>
 
                 <t-body-cell
@@ -176,6 +191,18 @@ onUpdated(() => {
                     v-if="proyek.id_pencairan_dana"
                     class="link text-xs"
                     :href="route('pencairan_dana.detail', proyek.id_pencairan_dana)">
+                    Lihat
+                  </Link>
+
+                  <span v-else>-</span>
+                </t-body-cell>
+
+                <t-body-cell
+                  whitespace="nowrap">
+                  <Link
+                    v-if="proyek.id_penagihan"
+                    class="link text-xs"
+                    :href="route('penagihan.detail', proyek.id_penagihan)">
                     Lihat
                   </Link>
 

@@ -14,6 +14,7 @@ defineProps<{
 const form = useForm({
   id_proyek: null,
   keperluan: null,
+  for: 'pengajuan dana'
 });
 
 function submit() {

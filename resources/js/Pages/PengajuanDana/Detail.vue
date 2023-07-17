@@ -66,7 +66,11 @@ const persetujuanPermission = computed(() => {
   
   if (permissions.includes('approve pengajuan dana')) {
     if (role === 'admin') {
-      return true;
+      switch (status_aktivitas) {
+        case 'Diajukan': return true;
+        case 'Dievaluasi': return true;
+        default: return false
+      }
     }
   
     if (role === 'kepala divisi') {

@@ -1,5 +1,3 @@
-@import './soft-ui-dashboard-tailwind.min.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,5 +12,8 @@
   .link {
     @apply transition font-semibold text-primary;
     @apply hover:opacity-80 hover:underline;
+  }
+  .form-control {
+    @apply w-full block rounded-lg;
   }
 }

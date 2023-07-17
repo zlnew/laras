@@ -143,6 +143,30 @@ export interface DetailPencairanDana {
     [key: string]: any;
 };
 
+export interface Penagihan {
+    id_penagihan: string;
+    id_keuangan: Keuangan['id_keuangan'];
+    status_penagihan: 100 | 400;
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diterima';
+    tanggal_pengajuan: Date;
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
+    [key: string]: any;
+}
+
+export interface DetailPenagihan {
+    id_detail_penagihan: number;
+    id_penagihan: Penagihan['id_penagihan'];
+    id_detail_rab: DetailRAB['id_detail_rab'];
+    volume_penagihan: number;
+    status_diterima: '100' | '400';
+    created_at: Date;
+    updated_at: Date;
+    deleted_at: Date;
+    [key: string]: Penagihan | DetailRAB | any;
+};
+
 export interface Timeline {
     id_timeline: number;
     user_id: User['id'];

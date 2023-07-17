@@ -37,7 +37,7 @@ function refuse() {
   <card-layout class="h-fit">
     <card-header class="mb-2">
       <div class="flex justify-between items-center">
-        <h5 class="font-bold text-xl text-dark">Persetujuan</h5>
+        <h5 class="font-bold text-xl text-dark">Approval</h5>
       </div>
     </card-header>
     <card-body>

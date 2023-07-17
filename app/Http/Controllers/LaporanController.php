@@ -101,4 +101,49 @@ class LaporanController extends Controller
             'pencairan_dana' => $PencairanDana
         ]);
     }
+
+    public function penagihan(Request $request): Response
+    {
+        $penagihan = DB::table('penagihan as png')
+            ->leftJoin('keuangan as ka', 'ka.id_keuangan', '=', 'png.id_keuangan')
+            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'ka.id_proyek')
+            ->leftJoin('detail_penagihan as d_png', 'd_png.id_penagihan', '=', 'png.id_penagihan')
+            ->leftJoin('detail_rab as d_rab', 'd_rab.id_detail_rab', '=', 'd_png.id_detail_rab');
+
+        if ($request->isMethod('get') && $request->all()) {
+            $penagihan->when($request->get('nama_proyek'), function($query, $input) {
+                $query->where('pr.nama_proyek', 'like', $input . '%');
+            });
+        }
+
+        $penagihan = $penagihan
+            ->select(
+                'pr.id_proyek',
+                'png.id_penagihan',
+                'pr.nama_proyek',
+                'ka.keperluan',
+                'png.tanggal_pengajuan',
+                DB::raw('SUM(d_png.volume_penagihan * d_rab.harga_satuan) as jumlah_pengajuan'),
+                DB::raw("SUM(
+                    CASE
+                        WHEN d_png.status_diterima = '400'
+                        THEN d_png.volume_penagihan * d_rab.harga_satuan
+                    END) as jumlah_diterima"
+                ),
+                DB::raw("SUM(
+                    CASE
+                        WHEN d_png.status_diterima = '100'
+                        THEN d_png.volume_penagihan * d_rab.harga_satuan
+                    END) as jumlah_belum_ditagihkan"
+                ),
+                'png.status_penagihan',
+            )
+        ->where('png.tanggal_pengajuan', '!=', NULL)
+        ->groupBy('png.id_penagihan')
+        ->orderBy('png.id_penagihan', 'asc')->paginate(10);
+        
+        return Inertia::render('Laporan/Penagihan', [
+            'penagihan' => $penagihan
+        ]);
+    }
 }
