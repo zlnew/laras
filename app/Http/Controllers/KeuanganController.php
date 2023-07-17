@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Keuangan\StoreRequest;
 use App\Http\Requests\Keuangan\UpdateRequest;
 use App\Models\Keuangan;
+use App\Models\Penagihan;
 use App\Models\PengajuanDana;
 use App\Models\Proyek;
 use App\Models\Timeline;
@@ -23,7 +24,8 @@ class KeuanganController extends Controller
         $KeuanganQuery = $Keuangan
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'keuangan.id_proyek')
             ->leftJoin('pengajuan_dana as pgd', 'pgd.id_keuangan', '=', 'keuangan.id_keuangan')
-            ->leftJoin('pencairan_dana as pcd', 'pcd.id_keuangan', '=', 'keuangan.id_keuangan');
+            ->leftJoin('pencairan_dana as pcd', 'pcd.id_keuangan', '=', 'keuangan.id_keuangan')
+            ->leftJoin('penagihan as png', 'png.id_keuangan', '=', 'keuangan.id_keuangan');
 
         if ($request->isMethod('get') && $request->all()) {
             $KeuanganQuery = $this->filter($request, $KeuanganQuery);
@@ -37,9 +39,17 @@ class KeuanganController extends Controller
             'proyek.tahun_anggaran',
             'proyek.pengguna_jasa',
             'pgd.id_pengajuan_dana',
-            'pcd.id_pencairan_dana'
+            'pcd.id_pencairan_dana',
+            'png.id_penagihan'
         )
         ->where('keuangan.deleted_at', NULL)
+        ->groupBy(
+            'keuangan.id_keuangan',
+            'proyek.id_proyek',
+            'pgd.id_pengajuan_dana',
+            'pcd.id_pencairan_dana',
+            'png.id_penagihan'
+        )
         ->latest('keuangan.id_keuangan')->paginate(10);
 
         $Proyek = Proyek::query()
@@ -80,12 +90,20 @@ class KeuanganController extends Controller
             ]);
             $Keuangan->save();
 
-            $PengajuanDana = new PengajuanDana;
-            $PengajuanDana->id_keuangan = $Keuangan->id_keuangan;
-            $PengajuanDana->save();
+            if ($request->post('for') === 'pengajuan dana') {
+                $PengajuanDana = new PengajuanDana;
+                $PengajuanDana->id_keuangan = $Keuangan->id_keuangan;
+                $PengajuanDana->save();
+            }
+
+            if ($request->post('for') === 'penagihan') {
+                $Penagihan = new Penagihan;
+                $Penagihan->id_keuangan = $Keuangan->id_keuangan;
+                $Penagihan->save();
+            }
         });
 
-        return redirect()->back()->with('success', 'Keuangan Proyek berhasil dibuat!');
+        return redirect()->back()->with('success', 'Keuangan berhasil dibuat!');
     }
 
     public function update(UpdateRequest $request, Keuangan $Keuangan): RedirectResponse
@@ -98,13 +116,13 @@ class KeuanganController extends Controller
 
         $Keuangan->save();
 
-        return redirect()->back()->with('success', 'Keuangan Proyek berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Keuangan berhasil diperbarui!');
     }
 
     public function destroy(Keuangan $Keuangan): RedirectResponse
     {
         $Keuangan->delete();
 
-        return redirect()->back()->with('success', 'Keuangan Proyek berhasil dihapus!');
+        return redirect()->back()->with('success', 'Keuangan berhasil dihapus!');
     }
 }

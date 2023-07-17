@@ -106,7 +106,10 @@ const fullYear: number = new Date().getFullYear();
                         name="Keuangan"
                         icon="fa-solid fa-money-bill"
                         :href="route('keuangan')"
-                        :active="route().current('keuangan') || route().current('pengajuan_dana.detail') || route().current('pencairan_dana.detail')"
+                        :active="route().current('keuangan')
+                            || route().current('pengajuan_dana.detail')
+                            || route().current('pencairan_dana.detail')
+                            || route().current('penagihan.detail')"
                     />
                 </li>
 
@@ -125,10 +128,19 @@ const fullYear: number = new Date().getFullYear();
 
                 <li class="mt-0.5 w-full">
                     <NavLink
-                        name="Penagihan/Invoice"
+                        name="Pencairan Dana"
                         icon="fa-solid fa-file-lines"
                         :href="route('laporan.pencairan_dana')"
                         :active="route().current('laporan.pencairan_dana')"
+                    />
+                </li>
+
+                <li class="mt-0.5 w-full">
+                    <NavLink
+                        name="Penagihan / Invoice"
+                        icon="fa-solid fa-file-lines"
+                        :href="route('laporan.penagihan')"
+                        :active="route().current('laporan.penagihan')"
                     />
                 </li>
 

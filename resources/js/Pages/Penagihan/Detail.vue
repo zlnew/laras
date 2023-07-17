@@ -6,20 +6,20 @@ import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import { TableLayout, THead, TBody, TFoot, TRow, THeadCell, TBodyCell } from '@/Components/Table.vue';
 import { computed, onUpdated } from 'vue';
-import { DetailPengajuanDana, DetailRAP, PengajuanDana, Timeline, Keuangan, Rekening } from '@/types';
+import { Timeline, Keuangan, DetailPenagihan, Penagihan, DetailRAB } from '@/types';
 import { fromRupiah, toRupiah } from '@/utilities/number';
 import { Modal } from '@/utilities/modal';
 import { Toast } from '@/utilities/toastify';
 import { ref } from 'vue';
 
-import CreateModalWindow from './Modals/Create.m.vue';
-import UpdateModalWindow from './Modals/Update.m.vue';
-import DeleteModalWindow from './Modals/Delete.m.vue';
+import CreateModalWindow from './Modals/CreateModal.vue';
+import EditModalWindow from './Modals/EditModal.vue';
+import DeleteModalWindow from './Modals/DeleteModal.vue';
 
-import InformasiSection from './Partials/Informasi.p.vue';
-import TimelineSection from './Partials/Timeline.p.vue';
-import PersetujuanSection from './Partials/Persetujuan.p.vue';
-import PengajuanSection from './Partials/Pengajuan.p.vue';
+import InformasiSection from './Partials/InformasiPartial.vue';
+import TimelineSection from './Partials/TimelinePartial.vue';
+import VerifikasiSection from './Partials/VerifikasiPartial.vue';
+import PengajuanSection from './Partials/PengajuanPartial.vue';
 
 const page = usePage();
 
@@ -28,11 +28,10 @@ const permissions = page.props.permissions;
 
 const props = defineProps<{
   keuangan: Keuangan;
-  detail_pengajuan_dana: Array<DetailPengajuanDana>;
-  pengajuan_dana: PengajuanDana;
-  detail_rap: Array<DetailRAP>;
+  detail_penagihan: Array<DetailPenagihan>;
+  penagihan: Penagihan;
+  detail_rab: Array<DetailRAB>;
   timeline: Array<Timeline>;
-  rekening: Array<Rekening>;
 }>();
 
 const CRUDPermission = computed(() => {
@@ -41,9 +40,9 @@ const CRUDPermission = computed(() => {
   }
 
   if (
-    permissions.includes('create pengajuan dana')
-    && permissions.includes('update pengajuan dana')
-    && permissions.includes('delete pengajuan dana')
+    permissions.includes('create penagihan')
+    && permissions.includes('update penagihan')
+    && permissions.includes('delete penagihan')
   ) {
     return true;
   }
@@ -52,7 +51,7 @@ const CRUDPermission = computed(() => {
 });
 
 const pengajuanPermission = computed(() => {
-  const status_aktivitas = props.pengajuan_dana.status_aktivitas;
+  const status_aktivitas = props.penagihan.status_aktivitas;
 
   if (status_aktivitas === 'Dibuat') {
     return true;
@@ -61,71 +60,66 @@ const pengajuanPermission = computed(() => {
   return false;
 });
 
-const persetujuanPermission = computed(() => {
-  const status_aktivitas = props.pengajuan_dana.status_aktivitas;
+const verifikasiPermission = computed(() => {
+  const status_aktivitas = props.penagihan.status_aktivitas;
   
   if (permissions.includes('approve pengajuan dana')) {
-    if (role === 'admin') {
-      switch (status_aktivitas) {
-        case 'Diajukan': return true;
-        case 'Dievaluasi': return true;
-        default: return false
-      }
-    }
-  
-    if (role === 'kepala divisi') {
-      switch (status_aktivitas) {
-        case 'Diajukan': return true;
-        default: return false
-      }
-    }
-  
-    if (role === 'direktur utama') {
-      switch (status_aktivitas) {
-        case 'Dievaluasi': return true;
-        default: return false
-      }
+    switch (status_aktivitas) {
+      case 'Diajukan': return true;
+      default: return false
     }
   }
 
   return false;
 });
 
-const detail_pengajuan_dana = computed(() => {
-  return props.detail_pengajuan_dana.map((detail) => {
-    const jumlah_pengajuan_in_rupiah = toRupiah(detail.jumlah_pengajuan);
-    return {
-      ...detail,
-      jumlah_pengajuan_in_rupiah: jumlah_pengajuan_in_rupiah,
-    }
+const detail_penagihan = computed(() => {
+  return props.detail_penagihan.map((item) => {
+    return { ...item }
   });
 });
 
-export interface TotalAmountPengajuanDana {
-  pengajuan_dana: string | undefined;
-  disetujui: string | undefined;
-  ditolak: string | undefined;
+export interface TotalAmountPenagihan {
+  penagihan: number;
+  diterima: number;
+  belum_ditagihkan: number;
 }
 
-const total_amount = computed<TotalAmountPengajuanDana>(() => {
-  const pengajuan_dana = props.detail_pengajuan_dana.reduce((total, detail) => {    
-    return total + parseFloat(detail.jumlah_pengajuan.toString());
+const total_amount = computed<TotalAmountPenagihan>(() => {
+  const penagihan = props.detail_penagihan.reduce((total, detail) => {    
+    return total + (detail.harga_satuan * detail.volume_penagihan);
+  }, 0);
+
+  const diterima = props.detail_penagihan.reduce((total, detail) => {
+    if (detail.status_diterima === '400') {
+      return total + (detail.harga_satuan * detail.volume_penagihan);
+    }
+
+    return total;
+  }, 0);
+
+  const belum_ditagihkan = props.detail_penagihan.reduce((total, detail) => {
+    if (detail.status_diterima === '100') {
+      return total + (detail.harga_satuan * detail.volume_penagihan);
+    }
+
+    return total;
   }, 0);
 
   return {
-    pengajuan_dana: toRupiah(pengajuan_dana),
-    disetujui: toRupiah(total_disetujui.value),
-    ditolak: toRupiah(total_ditolak.value),
+    penagihan: penagihan,
+    diterima: diterima + total_diterima.value,
+    belum_ditagihkan: belum_ditagihkan - total_belum_ditagihkan.value,
   }
 });
 
-const group_of_checked_id = ref<Array<DetailPengajuanDana['id_detail_pengajuan_dana']>>();
-const total_disetujui = ref<number>(0);
-const total_ditolak = ref<number>(0);
+const group_of_checked_id = ref<Array<DetailPenagihan['id_detail_penagihan']>>();
+const total_diterima = ref<number>(0);
+const total_belum_ditagihkan = ref<number>(0);
 
 function checkAll(event: Event) {
   const checkAll = event.target as HTMLInputElement;
-  const checkboxes = document.querySelectorAll('.persetujuan-checkbox');
+  const checkboxes = document.querySelectorAll('.verifikasi-checkbox');
   
   checkboxes.forEach(checkbox => {
     if (checkbox instanceof HTMLInputElement) {
@@ -138,12 +132,12 @@ function checkAll(event: Event) {
 
 function sumTotal() {
   pushCheckedIDs();
-  sumTotalDisetujui();
-  sumTotalDitolak();
+  sumTotalDiterima();
+  sumTotalBelumDitagihkan();
 }
 
 function pushCheckedIDs() {
-  const checkboxes = document.querySelectorAll('.persetujuan-checkbox');
+  const checkboxes = document.querySelectorAll('.verifikasi-checkbox');
   let checked_id: number[] = [];
 
   checkboxes.forEach((checkbox) => {
@@ -155,56 +149,51 @@ function pushCheckedIDs() {
   group_of_checked_id.value = checked_id;
 }
 
-function sumTotalDisetujui() {
-  const checkboxes = document.querySelectorAll('.persetujuan-checkbox');
-  let total_disetujui_amount = 0;
-
+function sumTotalDiterima() {
+  const checkboxes = document.querySelectorAll('.verifikasi-checkbox');
+  let total_amount = 0;
+  
   checkboxes.forEach((checkbox) => {
     if (checkbox instanceof HTMLInputElement && checkbox.checked) {
       const amount = parseFloat(checkbox.dataset.amount || '0');
-      total_disetujui_amount += amount;
+      total_amount += amount;
     }
   });
 
-  total_disetujui.value = total_disetujui_amount;
+  total_diterima.value = total_amount
 }
 
-function sumTotalDitolak() {
-  const checkboxes = document.querySelectorAll('.persetujuan-checkbox');
-  const total_pengajuan = fromRupiah(total_amount.value.pengajuan_dana || '0');
-  let total_ditolak_amount = 0;
+function sumTotalBelumDitagihkan() {
+  const checkboxes = document.querySelectorAll('.verifikasi-checkbox');
+  let total_amount = 0;
 
   checkboxes.forEach((checkbox) => {
     if (checkbox instanceof HTMLInputElement && checkbox.checked) {
       const amount = parseFloat(checkbox.dataset.amount || '0');
-      total_ditolak_amount += amount;
+      total_amount += amount;
     }
   });
   
-  if (total_pengajuan) {
-    total_ditolak.value = total_pengajuan - total_ditolak_amount;
-  }
+  total_belum_ditagihkan.value = total_amount;
 }
 
-function OpenCreateModal() {
+function createPenagihan() {
   Modal.pop(CreateModalWindow, {
-    id_pengajuan_dana: props.pengajuan_dana.id_pengajuan_dana,
-    detail_rap: props.detail_rap,
-    rekening: props.rekening
+    id_penagihan: props.penagihan.id_penagihan,
+    detail_rab: props.detail_rab,
   });
 }
 
-function OpenUpdateModal(detail_pengajuan_dana: DetailPengajuanDana) {
-  Modal.pop(UpdateModalWindow, {
-    detail_pengajuan_dana: detail_pengajuan_dana,
-    detail_rap: props.detail_rap,
-    rekening: props.rekening
+function editPenagihan(detail_penagihan: DetailPenagihan) {
+  Modal.pop(EditModalWindow, {
+    detail_penagihan: detail_penagihan,
+    detail_rab: props.detail_rab,
   });
 }
 
-function OpenDeleteModal(id_detail_pengajuan_dana: DetailPengajuanDana['id_detail_pengajuan_dana']) {
+function deletePenagihan(id_detail_penagihan: DetailPenagihan['id_detail_penagihan']) {
   Modal.pop(DeleteModalWindow, {
-    id_detail_pengajuan_dana: id_detail_pengajuan_dana
+    id_detail_penagihan: id_detail_penagihan
   });
 }
 
@@ -215,12 +204,12 @@ onUpdated(() => {
 </script>
 
 <template>
-  <Head title="Pengajuan Dana" />
+  <Head title="Penagihan / Invoice" />
 
   <authenticated-layout>
     <template v-slot:breadcrumb>
       <Breadrumb v-slot:breadcrumb v-bind="{
-        second: 'Keuangan',
+        second: 'Penagihan',
         current: props.keuangan.nama_proyek
       }" />
     </template>
@@ -229,17 +218,17 @@ onUpdated(() => {
       <informasi-section
         v-bind="{
           keuangan: keuangan,
-          pengajuan_dana: pengajuan_dana
+          penagihan: penagihan
         }"
       />
 
       <card-layout>
-				<card-header>
+				<card-header class="mb-4">
           <div class="flex justify-between items-center">
-						<h5 class="font-bold text-xl text-dark">List Pengajuan Dana</h5>
+						<h5 class="font-bold text-xl text-dark">List Penagihan</h5>
             <ease-button
               v-if="CRUDPermission && pengajuanPermission"
-              @click="OpenCreateModal"
+              @click="createPenagihan"
               slotted>
               <fas-icon icon="fa-solid fa-plus" class="mr-1" /> Tambah Uraian
             </ease-button>
@@ -252,21 +241,20 @@ onUpdated(() => {
               <t-row>
                 <t-head-cell value="#" />
                 <t-head-cell value="Uraian" />
-                <t-head-cell value="Pos" />
-                <t-head-cell value="Jenis Pembayaran" />
-                <t-head-cell value="Rekening" />
-                <t-head-cell value="Bank" />
-                <t-head-cell text-align="right" value="Jumlah Pengajuan" />
-                <t-head-cell v-if="persetujuanPermission" value="Persetujuan" />
+                <t-head-cell value="Volume" />
+                <t-head-cell value="Satuan" />
+                <t-head-cell text-align="right" value="Harga Satuan" />
+                <t-head-cell text-align="right" value="Jumlah Penagihan" />
+                <t-head-cell v-if="verifikasiPermission" value="Verifikasi" />
                 <t-head-cell v-if="CRUDPermission && pengajuanPermission" />
               </t-row>
             </t-head>
 
             <t-body>
               <t-row
-                  v-if="detail_pengajuan_dana.length"
-                  v-for="(item, index) in detail_pengajuan_dana"
-                  :key="item.id_detail_pengajuan_dana">
+                  v-if="detail_penagihan.length"
+                  v-for="(item, index) in detail_penagihan"
+                  :key="item.id_detail_penagihan">
 
                 <t-body-cell>
                   {{ index + 1 }}
@@ -280,38 +268,44 @@ onUpdated(() => {
                 
                 <t-body-cell
                   whitespace="nowrap">
-                  {{ item.uraian_rap }}
+                  {{ item.volume_penagihan }}
                 </t-body-cell>
-                
+
                 <t-body-cell
                   whitespace="nowrap">
-                  {{ item.jenis_pembayaran }}
+                  {{ item.nama_satuan }}
                 </t-body-cell>
-                
+
                 <t-body-cell
-                  whitespace="nowrap">
-                  {{ item.nomor_rekening }} - {{ item.nama_rekening }}
-                </t-body-cell>
-                
-                <t-body-cell
-                  whitespace="nowrap">{{ item.nama_bank }}
+                  whitespace="nowrap"
+                  text-align="right">
+                  {{ toRupiah(item.harga_satuan) }}
                 </t-body-cell>
                 
                 <t-body-cell
                   whitespace="nowrap"
                   text-align="right">
-                  {{ item.jumlah_pengajuan_in_rupiah }}
+                  {{ toRupiah(item.volume_penagihan * item.harga_satuan) }}
                 </t-body-cell>
                 
                 <t-body-cell
-                  v-if="persetujuanPermission">
+                  v-if="verifikasiPermission">
                   <input
+                    v-if="item.status_diterima === '100'"
                     @change="sumTotal"
                     v-bind="{
-                    type: 'checkbox',
-                    class: 'persetujuan-checkbox',
-                    'data-id': item.id_detail_pengajuan_dana,
-                    'data-amount': item.jumlah_pengajuan
+                      type: 'checkbox',
+                      class: 'verifikasi-checkbox',
+                      'data-id': item.id_detail_penagihan,
+                      'data-amount': item.volume_penagihan * item.harga_satuan
+                    }"
+                  />
+                  <input
+                    v-else
+                    v-bind="{
+                      type: 'checkbox',
+                      checked: true,
+                      disabled: true
                     }"
                   />
                 </t-body-cell>
@@ -319,18 +313,24 @@ onUpdated(() => {
                 <t-body-cell
                   v-if="CRUDPermission && pengajuanPermission"
                   whitespace="nowrap">
-                  <div class="flex">
+                  <div v-if="item.status_diterima === '100'" class="flex">
                     <ease-button
                       variant="link"
                       text="Edit"
-                      @click="OpenUpdateModal(item)"
+                      @click="editPenagihan(item)"
                     />
                     <ease-button
                       variant="danger-link"
                       text="Delete"
-                      @click="OpenDeleteModal(item.id_detail_pengajuan_dana)"
+                      @click="deletePenagihan(item.id_detail_penagihan)"
                     />
                   </div>
+                  <div v-else>
+                    <ease-button
+                      variant="transparent"
+                      text="Diterima"
+                    />
+                  </div> 
                 </t-body-cell>
 
               </t-row>
@@ -344,72 +344,73 @@ onUpdated(() => {
               </t-row>
             </t-body>
 
-            <t-foot v-if="detail_pengajuan_dana.length">
+            <t-foot v-if="detail_penagihan.length">
               <t-row
-                v-if="persetujuanPermission"
+                v-if="verifikasiPermission"
                 last>
-                <t-body-cell colspan="6"></t-body-cell>
+                <t-body-cell colspan="5"></t-body-cell>
                 
                 <t-body-cell
                   text-align="right">
-                  Setujui Semua
+                  Verifikasi Semua
                 </t-body-cell>
                 
                 <t-body-cell>
                   <input
                     @change="checkAll($event)"
                     type="checkbox"
-                    title="Setujui semua"
+                    title="Verifikasi semua"
                   />
                 </t-body-cell>
               </t-row>
 
               <t-row last>
-                <t-body-cell colspan="5"></t-body-cell>
+                <t-body-cell colspan="4"></t-body-cell>
                 
                 <t-body-cell
+                  text-align="right"
                   class="font-semibold">
-                  Total Pengajuan
+                  Total Penagihan
                 </t-body-cell>
                 
                 <t-body-cell
                   text-align="right"
                   class="font-semibold">
-                  {{ total_amount.pengajuan_dana }}
+                  {{ toRupiah(total_amount.penagihan) }}
                 </t-body-cell>
               </t-row>
 
               <t-row
-                v-if="persetujuanPermission"
                 last>
-                <t-body-cell colspan="5"></t-body-cell>
+                <t-body-cell colspan="4"></t-body-cell>
                 
                 <t-body-cell
+                  text-align="right"
                   class="font-semibold">
-                  Disetujui
+                  Total Diterima
                 </t-body-cell>
                 
                 <t-body-cell
                   text-align="right"
                   class="font-semibold">
-                  {{ total_amount.disetujui }}
+                  {{ toRupiah(total_amount.diterima) }}
                 </t-body-cell>
               </t-row>
 
               <t-row
-                v-if="persetujuanPermission"
                 last>
-                <t-body-cell colspan="5"></t-body-cell>
+                <t-body-cell colspan="4"></t-body-cell>
                 
                 <t-body-cell
+                  text-align="right"
                   class="font-semibold">
-                  Tidak Disetujui
+                  Sisa Belum Ditagihkan
                 </t-body-cell>
                 
                 <t-body-cell
                   text-align="right"
                   class="font-semibold">
-                  {{ total_amount.ditolak }}
+                  {{ toRupiah(total_amount.belum_ditagihkan) }}
                 </t-body-cell>
               </t-row>
             </t-foot>
@@ -427,16 +428,16 @@ onUpdated(() => {
         <pengajuan-section
           v-if="CRUDPermission && pengajuanPermission"
           v-bind="{
-            id_pengajuan_dana: pengajuan_dana.id_pengajuan_dana,
-            detail_pengajuan_dana_length: detail_pengajuan_dana.length
+            id_penagihan: penagihan.id_penagihan,
+            detail_penagihan_length: detail_penagihan.length
           }"
         />
 
-        <persetujuan-section
-          v-if="persetujuanPermission"
+        <verifikasi-section
+          v-if="verifikasiPermission"
           v-bind="{
-            id_pengajuan_dana: pengajuan_dana.id_pengajuan_dana,
-            group_of_id_detail_pengajuan_dana: group_of_checked_id,
+            id_penagihan: penagihan.id_penagihan,
+            group_of_id_detail_penagihan: group_of_checked_id,
             total_amount: total_amount,
           }"
         />

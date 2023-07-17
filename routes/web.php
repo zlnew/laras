@@ -14,6 +14,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Master\RekeningController;
 use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Master\UsersController;
+use App\Http\Controllers\PenagihanController;
 use App\Http\Controllers\PengajuanDanaController;
 use App\Http\Controllers\PencairanDanaController;
 use App\Http\Controllers\ProfileController;
@@ -174,11 +175,32 @@ Route::middleware('auth')->group(function() {
                 Route::post('/detail/{PencairanDana}/reject', [PencairanDanaController::class, 'reject'])->name('pencairan_dana.reject');
             });
         });
+
+        Route::prefix('penagihan')->group(function() {
+            Route::group(['middleware' => ['permission:view penagihan']], function () {
+                Route::get('/detail/{penagihan}', [PenagihanController::class, 'detail'])->name('penagihan.detail');
+            });
+    
+            Route::group(['middleware' => [
+                'permission:create penagihan|update penagihan|delete penagihan'
+            ]], function () {
+                Route::post('/detail/{penagihan}', [PenagihanController::class,'store'])->name('penagihan.store');
+                Route::patch('/detail/{detailPenagihan}', [PenagihanController::class, 'update'])->name('penagihan.update');
+                Route::delete('/detail/{detailPenagihan}', [PenagihanController::class, 'destroy'])->name('penagihan.destroy');
+                Route::post('/detail/{penagihan}/submit', [PenagihanController::class, 'submit'])->name('penagihan.submit');
+            });
+
+            Route::middleware(['permission:approve penagihan'])->group(function() {
+                Route::post('/detail/{penagihan}/accept', [PenagihanController::class, 'accept'])->name('penagihan.accept');
+                Route::post('/detail/{penagihan}/decline', [PenagihanController::class, 'decline'])->name('penagihan.decline');
+            });
+        });
     });
 
     Route::prefix('laporan')->group(function () {
         Route::get('/pengajuan-dana', [LaporanController::class, 'pengajuan_dana'])->name('laporan.pengajuan_dana');
         Route::get('/pencairan-dana', [LaporanController::class, 'pencairan_dana'])->name('laporan.pencairan_dana');
+        Route::get('/penagihan', [LaporanController::class, 'penagihan'])->name('laporan.penagihan');
     });
 });
 

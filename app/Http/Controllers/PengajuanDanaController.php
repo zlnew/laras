@@ -23,6 +23,7 @@ class PengajuanDanaController extends Controller
             ->leftJoin('proyek', 'keuangan.id_proyek', '=', 'proyek.id_proyek')
             ->where('keuangan.id_keuangan', $PengajuanDana->id_keuangan)
             ->select(
+                'proyek.id_proyek',
                 'proyek.nama_proyek',
                 'proyek.tahun_anggaran',
                 'proyek.pengguna_jasa',
@@ -52,8 +53,15 @@ class PengajuanDanaController extends Controller
             ->orderBy('d_pd.id_detail_pengajuan_dana', 'asc')->get();
         
         $DetailRAP = DB::table('detail_rap')
-            ->select('id_detail_rap', 'uraian', 'harga_satuan')
-            ->where('deleted_at', NULL)
+            ->leftJoin('rap', 'rap.id_rap', '=', 'detail_rap.id_rap')
+            ->select(
+                'detail_rap.id_detail_rap',
+                'detail_rap.uraian',
+                'detail_rap.harga_satuan'
+            )
+            ->where('rap.id_proyek', $Keuangan->id_proyek)
+            ->where('detail_rap.deleted_at', NULL)
+            ->groupBy('detail_rap.id_detail_rap')
             ->get();
 
         $Timeline = DB::table('timeline')

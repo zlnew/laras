@@ -60,11 +60,7 @@ const pengajuanPermission = computed(() => {
 const persetujuanPermission = computed(() => {
   const status_aktivitas = props.pencairan_dana.status_aktivitas;
   
-  if (permissions.includes('approve status pencairan dana')) {
-    if (role === 'admin') {
-      return true;
-    }
-  
+  if (permissions.includes('approve status pencairan dana')) {  
     switch (status_aktivitas) {
       case 'Dibayar': return true;
       default: return false

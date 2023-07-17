@@ -54,7 +54,16 @@ class RolesPermissionsSeeder extends Seeder
           'create pencairan dana',
           'update pencairan dana',
           'delete pencairan dana',
-          'approve pencairan dana'
+          'approve pencairan dana',
+          'approve status pencairan dana'
+        ];
+
+        $penagihan_modules = [
+          'view penagihan',
+          'create penagihan',
+          'update penagihan',
+          'delete penagihan',
+          'approve penagihan'
         ];
 
         $laporan_modules = [
@@ -85,6 +94,10 @@ class RolesPermissionsSeeder extends Seeder
           Permission::create(['name' => $module]);
         }
 
+        foreach ($penagihan_modules as $module) {
+          Permission::create(['name' => $module]);
+        }
+
         foreach ($laporan_modules as $module) {
           Permission::create(['name' => $module]);
         }
@@ -108,7 +121,8 @@ class RolesPermissionsSeeder extends Seeder
           'view rab',
           'view rap', 'create rap', 'update rap', 'delete rap',
           'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana',
-          'view pencairan dana',
+          'view pencairan dana', 'approve status pencairan dana',
+          'view penagihan',
           'generate laporan'
         ]);
 
@@ -118,6 +132,7 @@ class RolesPermissionsSeeder extends Seeder
           'view rap', 'approve rap',
           'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana', 'approve pengajuan dana',
           'view pencairan dana',
+          'view penagihan',
           'view laporan'
         ]);
 
@@ -127,6 +142,7 @@ class RolesPermissionsSeeder extends Seeder
           'view rap', 'approve rap',
           'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana', 'approve pengajuan dana',
           'view pencairan dana', 'approve pengajuan dana',
+          'view penagihan', 'approve penagihan',
           'view laporan'
         ]);
 
@@ -136,6 +152,7 @@ class RolesPermissionsSeeder extends Seeder
           'view rap',
           'view pengajuan dana', 'create pengajuan dana', 'update pengajuan dana', 'delete pengajuan dana',
           'view pencairan dana', 'create pencairan dana', 'update pencairan dana', 'delete pencairan dana',
+          'view penagihan', 'create penagihan', 'update penagihan', 'delete penagihan',
           'generate laporan'
         ]);
 

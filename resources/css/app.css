@@ -13,4 +13,7 @@
     @apply transition font-semibold text-primary;
     @apply hover:opacity-80 hover:underline;
   }
+  .form-control {
+    @apply w-full block rounded-lg;
+  }
 }

@@ -14,7 +14,7 @@ defineProps<{
 const form = useForm({
   id_proyek: null,
   keperluan: null,
-  for: 'pengajuan dana'
+  for: 'penagihan'
 });
 
 function submit() {
@@ -29,7 +29,7 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <modal-layout size="5xl">
-      <modal-head title="Form Tambah Keuangan Proyek" />
+      <modal-head title="Form Tambah Penagihan" />
   
       <modal-body>
         <div class="w-full mb-4">
@@ -62,13 +62,6 @@ function submit() {
           />
 
           <form-error class="mt-2" :message="form.errors.keperluan" />
-        </div>
-
-        <div class="w-full">
-          <strong class="text-primary text-sm">
-            <fas-icon icon="fa-solid fa-info-circle" size="lg" class="mr-1" />
-            Pengajuan Dana akan otomatis terbuat setelah Keuangan Proyek ditambahkan.
-          </strong>
         </div>
       </modal-body>
       
