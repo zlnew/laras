@@ -175,13 +175,28 @@ class PengajuanDanaController extends Controller
             ]);
             $Timeline->save();
 
-            $DetailPengajuanDana = new DetailPengajuanDana;
-            $DetailPengajuanDana
+            $UpdateDetailPengajuanDana = DetailPengajuanDana::query()
                 ->where('id_pengajuan_dana', $PengajuanDana->id_pengajuan_dana)
-                ->whereNotIn(
-                    'id_detail_pengajuan_dana',
-                    $request->post('group_of_id_detail_pengajuan_dana'
-                ))->delete();
+                ->whereIn('id_detail_pengajuan_dana',
+                    $request->post('group_of_id_detail_pengajuan_dana')
+                )
+            ->get();
+
+            foreach ($UpdateDetailPengajuanDana as $item) {
+                $item->status_persetujuan = '400';
+                $item->save();
+            }
+
+            $DeleteDetailPengajuanDana = DetailPengajuanDana::query()
+                ->where('id_pengajuan_dana', $PengajuanDana->id_pengajuan_dana)
+                ->whereNotIn('id_detail_pengajuan_dana',
+                    $request->post('group_of_id_detail_pengajuan_dana')
+                )
+            ->get();
+
+            foreach ($DeleteDetailPengajuanDana as $item) {
+                $item->delete();
+            }
 
             $PengajuanDana->status_pengajuan = $status_pengajuan;
             $PengajuanDana->status_aktivitas = $status_aktivitas;

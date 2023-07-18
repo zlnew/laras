@@ -19,6 +19,6 @@ class DetailPengajuanDana extends Model
         'uraian',
         'jumlah_pengajuan',
         'jenis_pembayaran',
-        'tanggal_pengajuan'
+        'status_persetujuan',
     ];
 }
