@@ -30,14 +30,15 @@ class LaporanController extends Controller
                 'ka.keperluan',
                 'pd.tanggal_pengajuan',
                 DB::raw('SUM(d_pd.jumlah_pengajuan) as jumlah_pengajuan_dana'),
-                DB::raw('SUM(
+                DB::raw("SUM(
                     CASE
-                        WHEN d_pd.deleted_at IS NULL
+                        WHEN d_pd.status_persetujuan = '400'
                         THEN d_pd.jumlah_pengajuan
-                    END) as jumlah_disetujui'
+                    END) as jumlah_disetujui"
                 ),
                 'pd.status_pengajuan',
             )
+        ->where('pd.tanggal_pengajuan', '!=', NULL)
         ->groupBy('pd.id_pengajuan_dana')
         ->orderBy('pd.id_pengajuan_dana', 'asc')->paginate(10);
         
@@ -70,19 +71,21 @@ class LaporanController extends Controller
                 'ka.keperluan',
                 'pd.tanggal_pengajuan',
 
-                DB::raw('(SELECT SUM(d_pd.jumlah_pengajuan)
+                DB::raw("(SELECT SUM(d_pd.jumlah_pengajuan)
                     FROM detail_pengajuan_dana as d_pd
-                    WHERE d_pd.id_pengajuan_dana = pd.id_pengajuan_dana) as jumlah_pengajuan_dana'),
+                    WHERE d_pd.status_persetujuan = '400'
+                    AND d_pd.id_pengajuan_dana = pd.id_pengajuan_dana) as jumlah_pengajuan_dana"),
 
-                DB::raw('(SELECT SUM(d_pc.jumlah_pencairan)
+                DB::raw("(SELECT SUM(d_pc.jumlah_pencairan)
                     FROM detail_pencairan_dana as d_pc
-                    WHERE d_pc.id_pencairan_dana = pc.id_pencairan_dana) as jumlah_sudah_dibayarkan'),
+                    WHERE d_pc.id_pencairan_dana = pc.id_pencairan_dana) as jumlah_sudah_dibayarkan"),
 
-                DB::raw('(SELECT SUM(d_pd.jumlah_pengajuan)
+                DB::raw("(SELECT SUM(d_pd.jumlah_pengajuan)
                     FROM detail_pengajuan_dana as d_pd
-                    WHERE d_pd.id_pengajuan_dana = pd.id_pengajuan_dana) - (SELECT SUM(d_pc.jumlah_pencairan)
+                    WHERE d_pd.status_persetujuan = '400'
+                    AND d_pd.id_pengajuan_dana = pd.id_pengajuan_dana) - (SELECT SUM(d_pc.jumlah_pencairan)
                         FROM detail_pencairan_dana as d_pc
-                        WHERE d_pc.id_pencairan_dana = pc.id_pencairan_dana) as jumlah_belum_dibayarkan'),
+                        WHERE d_pc.id_pencairan_dana = pc.id_pencairan_dana) as jumlah_belum_dibayarkan"),
 
                 'pc.status_pencairan',
             )
