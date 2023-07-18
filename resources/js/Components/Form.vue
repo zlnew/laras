@@ -4,8 +4,8 @@ export { default as FormInput } from "@/Components/FormPartials/Input.vue";
 export { default as FormLabel } from "@/Components/FormPartials/Label.vue";
 export { default as FormError } from "@/Components/FormPartials/Error.vue";
 export { default as FormSelect } from "@/Components/FormPartials/Select.vue";
-export { default as FormSelectSearch } from "@/Components/FormPartials/SelectSearch.vue";
 export { default as FormTextarea } from "@/Components/FormPartials/Textarea.vue";
+export { default as FormSearchDropdown } from "@/Components/FormPartials/SearchDropdown.vue";
 
 export default {};
 </script>

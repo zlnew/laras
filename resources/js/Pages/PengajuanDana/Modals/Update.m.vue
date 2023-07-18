@@ -2,7 +2,7 @@
 import { ModalLayout, ModalHead, ModalBody, ModalFooter } from "@/Components/Modal.vue";
 import useModalStore from "@/stores/useModalStore";
 import { useForm } from "@inertiajs/vue3";
-import { FormInput, FormLabel, FormError, FormSelect } from "@/Components/Form.vue";
+import { FormInput, FormLabel, FormError, FormSelect, FormSearchDropdown } from "@/Components/Form.vue";
 import { toRupiah } from "@/utilities/number";
 import { DetailPengajuanDana, DetailRAP, Rekening } from "@/types";
 
@@ -124,16 +124,29 @@ function submit() {
         <div class="w-full mb-4">
           <form-label for="id_rekening" value="Rekening" />
 
-          <form-select v-model="form.id_rekening"
-            id="id_rekening"
-            size="lg" >
-            <option value="">Pilih Rekening</option>
-            <option
-              v-for="rek in rekening"
-              :value="rek.id_rekening">
-              {{ rek.nama_bank }} | {{ rek.nomor_rekening }} - {{ rek.nama_rekening }}
-            </option>
-          </form-select>
+          <form-search-dropdown v-model="form.id_rekening"
+            v-bind="{
+              id: 'id_rekening',
+              index: 'id_rekening',
+              options: rekening,
+              searchKeys: ['nama_bank', 'nomor_rekening', 'nama_rekening'],
+              placeholder: 'Pilih Rekening',
+            }"
+          >
+            <template #selected-option="option">
+              <div class="flex">
+                <span>
+                  <strong>{{ option.nama_bank }}</strong> |
+                  {{ option.nomor_rekening }} - {{ option.nama_rekening }}
+                </span>
+              </div>
+            </template>
+
+            <template #option="option">
+              <strong>{{ option.nama_bank }}</strong>
+              <p>{{ option.nomor_rekening }} - {{ option.nama_rekening }}</p>
+            </template>
+          </form-search-dropdown>
 
           <form-error class="mt-2" :message="form.errors.id_rekening" />
         </div>
