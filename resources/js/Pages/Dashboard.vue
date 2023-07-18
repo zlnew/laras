@@ -1,87 +1,9 @@
 <script setup lang="ts">
-import Breadrumb from '@/Components/Breadrumb.vue';
+import { Head } from '@inertiajs/vue3';
 import { CardLayout, CardHeader, CardBody } from '@/Components/Card.vue';
+import Breadrumb from '@/Components/Breadrumb.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ContentLayout from '@/Components/Content.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { computed } from 'vue';
-import { FormSelectSearch } from '@/Components/Form.vue';
-
-const isSearching = ref(false);
-const search = ref();
-const searchInput = ref<HTMLInputElement | null>(null);
-const selectedOptionIndex = ref(-1);
-
-const label = 'name';
-const origins = [
-  { name: 'Earth' },
-  { name: 'Sun' },
-  { name: 'Jupiter' },
-  { name: 'Venus' },
-  { name: 'Mars' },
-  { name: 'Earth' },
-  { name: 'Sun' },
-  { name: 'Jupiter' },
-  { name: 'Venus' },
-  { name: 'Mars' },
-  { name: 'Earth' },
-  { name: 'Sun' },
-  { name: 'Jupiter' },
-  { name: 'Venus' },
-  { name: 'Mars' },
-];
-
-const options = ref(origins);
-
-const filteredOptions = computed(() => {
-  const searchQuery = search.value.toLowerCase().trim();
-
-  if (searchQuery) {
-    options.value = origins;
-
-    return options.value.filter(option => {
-      return option[label].toLowerCase().includes(searchQuery);
-    });
-  }
-
-  return origins;
-});
-
-function handleSearchOptions() {
-  selectedOptionIndex.value = -1;
-  isSearching.value = true;
-  options.value = filteredOptions.value;
-}
-
-function handleBlur() {
-  isSearching.value = false;
-}
-
-function handleChooseOption(option: string) {
-  search.value = option;
-  isSearching.value = false;
-  searchInput.value?.blur();
-}
-
-function handleArrowDown() {
-  if (selectedOptionIndex.value < options.value.length - 1) {
-    selectedOptionIndex.value++;
-  }
-}
-
-function handleArrowUp() {
-  if (selectedOptionIndex.value > 0) {
-    selectedOptionIndex.value--;
-  }
-}
-
-function handleEnter() {
-  if (selectedOptionIndex.value !== -1) {
-    const selectedOption = options.value[selectedOptionIndex.value][label];
-    handleChooseOption(selectedOption);
-  }
-}
 </script>
 
 <template>
@@ -105,15 +27,6 @@ function handleEnter() {
 					</div>
 				</CardBody>
       </CardLayout>
-
-      <!-- <div class="w-1/2">
-        <form-select-search
-          size="lg"
-          :options="origins"
-          label="name"
-          placeholder="Choose Origin"
-        />
-      </div> -->
     </ContentLayout>
   </AuthenticatedLayout>
 </template>

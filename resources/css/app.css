@@ -1,3 +1,42 @@
+.search-dropdown .vs__search::placeholder {
+  color: #075985;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.search-dropdown .vs__dropdown-toggle {
+  background: #ffffff;
+  color: #075985;
+  padding: 0.5rem 0.5rem 0.75rem 0.5rem;
+  border-radius: 0.5rem;
+  border-color: #d1d5db;
+}
+
+.search-dropdown .vs__dropdown-menu {
+  background: #ffffff;
+  color: #075985;
+  border-radius: 0.5rem;
+  border-color: #d1d5db;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.search-dropdown .vs__dropdown-option--highlight {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+
+.search-dropdown .vs__selected {
+  color: #075985;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.search-dropdown .vs__clear,
+.search-dropdown .vs__open-indicator {
+  fill: #075985;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,8 +51,5 @@
   .link {
     @apply transition font-semibold text-primary;
     @apply hover:opacity-80 hover:underline;
-  }
-  .form-control {
-    @apply w-full block rounded-lg;
   }
 }
