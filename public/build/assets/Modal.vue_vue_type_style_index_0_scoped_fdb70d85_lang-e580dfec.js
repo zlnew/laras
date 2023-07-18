@@ -1,0 +1,1 @@
+import{L as a,G as d,M as c}from"./app-803e4503.js";a({});const s={component:null,props:{}},r=d("modal-store",{state:()=>({state:s}),actions:{open(o){const{props:n,component:t}=o,e=document.body;e&&(e.style.overflow="hidden"),c(t),this.state={component:t,props:n||{}}},close(){this.state=s;const o=document.body;o&&(o.style.overflow="auto")}},getters:{}});export{r as u};
