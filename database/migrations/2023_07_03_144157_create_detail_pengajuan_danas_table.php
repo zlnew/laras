@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('uraian');
             $table->decimal('jumlah_pengajuan', 12, 2);
             $table->enum('jenis_pembayaran', ['Cash', 'Transfer']);
+            $table->enum('status_persetujuan', [100, 400])->default(100);
             $table->timestamps();
             $table->softDeletes();
         });

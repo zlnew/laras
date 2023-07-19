@@ -17,27 +17,23 @@ class RekeningController extends Controller
 {
     public function index(Request $request): Response
     {
-        $rekeningQuery = DB::table('rekening')
-            ->select(
-                'id_rekening',
-                'nama',
-                'jabatan',
-                'nama_bank',
-                'nomor_rekening',
-                'nama_rekening'
-            )
-            ->where('deleted_at', NULL)
-            ->latest('id_rekening');
+        $rekeningQuery = DB::table('rekening')->where('deleted_at', NULL);
 
         if ($request->method() === 'GET' && $request->all()) {
-            $rekeningQuery = $this->applyFilters($request, $rekeningQuery);
+            $rekeningQuery = $this->filter($request, $rekeningQuery);
         }
 
-        $rekening = $rekeningQuery->paginate(10);
+        $rekening = $rekeningQuery->select(
+                'id_rekening', 'nama',
+                'jabatan', 'nama_bank',
+                'nomor_rekening', 'nama_rekening'
+            )
+            ->orderBy('id_rekening', 'desc')
+            ->paginate(10);
 
         $banks = DB::table('rekening')
-            ->select('nama_bank')
             ->groupBy('nama_bank')
+            ->select('nama_bank')
             ->get();
 
         return Inertia::render('Master/Rekening/Index', [
@@ -46,7 +42,7 @@ class RekeningController extends Controller
         ]);
     }
 
-    public function applyFilters(Request $request, $rekeningQuery): Builder
+    public function filter(Request $request, $rekeningQuery): Builder
     {
         $rekeningQuery->when($request->get('nama_bank'), function ($query, $nama_bank) {
             $query->where('nama_bank', $nama_bank);

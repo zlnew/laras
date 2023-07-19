@@ -17,23 +17,22 @@ class SatuanController extends Controller
 {
     public function index(Request $request): Response
     {
-        $satuanQuery = DB::table('satuan')
-            ->select('id_satuan', 'nama_satuan')
-            ->where('deleted_at', NULL)
-            ->latest('id_satuan');
+        $satuanQuery = DB::table('satuan')->where('deleted_at', NULL);
 
         if ($request->method() === 'GET' && $request->all()) {
-            $satuanQuery = $this->applyFilters($request, $satuanQuery);
+            $satuanQuery = $this->filter($request, $satuanQuery);
         }
 
-        $satuan = $satuanQuery->paginate(10);
+        $satuan = $satuanQuery->select('id_satuan', 'nama_satuan')
+            ->orderBy('id_satuan', 'desc')
+            ->paginate(10);
 
         return Inertia::render('Master/Satuan/Index', [
             'satuan' => $satuan,
         ]);
     }
 
-    public function applyFilters(Request $request, $satuanQuery): Builder
+    public function filter(Request $request, $satuanQuery): Builder
     {
         $satuanQuery->when($request->get('nama_satuan'), function ($query, $nama_satuan) {
             $query->where('nama_satuan', 'like', $nama_satuan . '%');

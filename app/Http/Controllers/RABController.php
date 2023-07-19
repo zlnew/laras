@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RAB\StoreRequest;
 use App\Http\Requests\RAB\TaxRequest;
 use App\Http\Requests\RAB\UpdateRequest;
-use App\Models\Proyek;
 use App\Models\RAB;
 use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
@@ -18,47 +17,44 @@ class RABController extends Controller
 {
     public function index(Request $request): Response
     {
-        $RAB = DB::table('rab');
-
-        $RABQuery = $RAB->leftJoin('proyek', 'proyek.id_proyek', '=', 'rab.id_proyek');
+        $rabQuery = DB::table('rab')
+            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'rab.id_proyek')
+            ->where('rab.deleted_at', null);
 
         if ($request->isMethod('get') && $request->all()) {
-            $RABQuery = $this->filter($request, $RABQuery);
+            $rabQuery = $this->filter($request, $rabQuery);
         }
 
-        $RAB = $RABQuery->select(
-            'rab.id_rab',
-            'rab.status_rab',
-            'proyek.id_proyek',
-            'proyek.nama_proyek',
-            'proyek.tahun_anggaran',
-            'proyek.pengguna_jasa',
-        )
-        ->where('rab.deleted_at', NULL)
-        ->latest('rab.id_rab')->paginate(10);
+        $rab = $rabQuery->select(
+                'rab.id_rab', 'rab.status_rab',
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran', 'proyek.pengguna_jasa',
+            )
+            ->orderBy('rab.id_rab', 'desc')
+            ->paginate(10);
 
-        $Proyek = Proyek::query()
+        $proyek = DB::table('proyek')
             ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
+            ->where('rab.deleted_at', null)
+            ->where('rab.id_rab', null)
             ->select(
-                'proyek.id_proyek',
-                'proyek.nama_proyek',
+                'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.tahun_anggaran'
             )
-        ->where('rab.id_rab', null)
-        ->get();
+            ->get();
             
         return Inertia::render('RAB/Index', [
-            'rab' => $RAB,
-            'proyek' => $Proyek
+            'rab' => $rab,
+            'proyek' => $proyek
         ]);
     }
 
-    public function filter($searchRequest, $RABQuery) {
-        $RABQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
+    private function filter($searchRequest, $rabQuery) {
+        $rabQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
             $query->where('proyek.nama_proyek', 'like', $input . '%');
         });
 
-        return $RABQuery;
+        return $rabQuery;
     }
 
     public function store(StoreRequest $request): RedirectResponse
@@ -66,111 +62,118 @@ class RABController extends Controller
         DB::transaction(function () use ($request) {
             $validated = $request->safe();
 
-            $RAB = new RAB;
-            $RAB->id_proyek = $validated->id_proyek;
-            $RAB->save();
+            // Create A RAB
+            $rab = new RAB;
+            $rab->id_proyek = $validated->id_proyek;
+            $rab->save();
             
-            $Timeline = new Timeline;
-            $Timeline->fill([
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
                 'user_id' => $request->user()->id,
-                'model_id' => $RAB->id_rab,
-                'model_type' => get_class($RAB),
+                'model_id' => $rab->id_rab,
+                'model_type' => get_class($rab),
                 'catatan' => $request->post('catatan'),
                 'status_aktivitas' => 'Dibuat'
             ]);
-            $Timeline->save();
+            $timeline->save();
         });
 
         return redirect()->back()->with('success', 'RAB berhasil dibuat!');
     }
 
-    public function update(UpdateRequest $request, RAB $RAB): RedirectResponse
+    public function update(UpdateRequest $request, RAB $rab): RedirectResponse
     {
         $validated = $request->safe();
 
-        $RAB->id_proyek = $validated->id_proyek;
-        $RAB->save();
+        $rab->id_proyek = $validated->id_proyek;
+        $rab->save();
 
         return redirect()->back()->with('success', 'RAB berhasil diperbarui!');
     }
 
-    public function destroy(RAB $RAB): RedirectResponse
+    public function destroy(RAB $rab): RedirectResponse
     {
-        $RAB->delete();
+        $rab->delete();
 
         return redirect()->back()->with('success', 'RAB berhasil dihapus!');
     }
 
-    public function update_tax(TaxRequest $request, RAB $RAB): RedirectResponse
+    public function update_tax(TaxRequest $request, RAB $rab): RedirectResponse
     {
         $validated = $request->safe();
 
-        $RAB->fill([
+        $rab->fill([
             'tax' => $validated->tax,
             'additional_tax' => $validated->additional_tax,
         ]);
-
-        $RAB->save();
+        $rab->save();
 
         return redirect()->back();
     }
 
-    public function submit(Request $request, RAB $RAB): RedirectResponse
+    public function submit(Request $request, RAB $rab): RedirectResponse
     {
-        DB::transaction(function () use ($request, $RAB) {
-            $RAB->status_aktivitas = 'Diajukan';
-            $RAB->save();
+        DB::transaction(function () use ($request, $rab) {
+            // Update The RAB Status
+            $rab->status_aktivitas = 'Diajukan';
+            $rab->save();
             
-            $Timeline = new Timeline;
-            $Timeline->fill([
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
                 'user_id' => $request->user()->id,
-                'model_id' => $RAB->id_rab,
-                'model_type' => get_class($RAB),
+                'model_id' => $rab->id_rab,
+                'model_type' => get_class($rab),
                 'catatan' => $request->post('catatan'),
                 'status_aktivitas' => 'Diajukan'
             ]);
-            $Timeline->save();
+            $timeline->save();
         });
 
         return redirect()->back()->with('success', 'RAB berhasil diajukan!');
     }
 
-    public function approve(Request $request, RAB $RAB): RedirectResponse
+    public function approve(Request $request, RAB $rab): RedirectResponse
     {
-        DB::transaction(function () use ($request, $RAB) {
-            $RAB->status_rab = '400';
-            $RAB->status_aktivitas = 'Disetujui';
-            $RAB->save();
+        DB::transaction(function () use ($request, $rab) {
+            // Update The RAB Status
+            $rab->status_rab = '400';
+            $rab->status_aktivitas = 'Disetujui';
+            $rab->save();
             
-            $Timeline = new Timeline;
-            $Timeline->fill([
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
                 'user_id' => $request->user()->id,
-                'model_id' => $RAB->id_rab,
-                'model_type' => get_class($RAB),
+                'model_id' => $rab->id_rab,
+                'model_type' => get_class($rab),
                 'catatan' => $request->post('catatan'),
                 'status_aktivitas' => 'Disetujui'
             ]);
-            $Timeline->save();
+            $timeline->save();
         });
 
         return redirect()->route('rab')->with('success', 'RAB berhasil disetujui!');
     }
 
-    public function refuse(Request $request, RAB $RAB): RedirectResponse
+    public function refuse(Request $request, RAB $rab): RedirectResponse
     {
-        DB::transaction(function () use ($request, $RAB) {
-            $RAB->status_aktivitas = 'Dibuat';
-            $RAB->save();
+        DB::transaction(function () use ($request, $rab) {
+            // Update The RAB Status
+            $rab->status_aktivitas = 'Dibuat';
+            $rab->save();
             
-            $Timeline = new Timeline;
-            $Timeline->fill([
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
                 'user_id' => $request->user()->id,
-                'model_id' => $RAB->id_rab,
-                'model_type' => get_class($RAB),
+                'model_id' => $rab->id_rab,
+                'model_type' => get_class($rab),
                 'catatan' => $request->post('catatan'),
                 'status_aktivitas' => 'Ditolak'
             ]);
-            $Timeline->save();
+            $timeline->save();
         });
 
         return redirect()->back()->with('success', 'RAB berhasil ditolak!');
