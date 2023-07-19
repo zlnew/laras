@@ -4,12 +4,13 @@ import ContentLayout from '@/Components/Content.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { CardLayout, CardHeader, CardBody } from "@/Components/Card.vue";
 import { TableLayout, THead, TBody, TRow, THeadCell, TBodyCell } from '@/Components/Table.vue';
+import Pagination from '@/Components/Pagination.vue';
 
 import { Toast } from "@/utilities/toastify";
 
 import { onUpdated } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
-import { User, Role } from '@/types';
+import { User, Role, DataWithPagination } from '@/types';
 import { Modal } from '@/utilities/modal';
 
 import SearchModal from './Modals/SearchModal.vue';
@@ -20,10 +21,8 @@ import DeleteModal from './Modals/DeleteModal.vue';
 const page = usePage();
 
 const props = defineProps<{
-  users: {
-    data: Array<User>,
-  },
-  roles: Array<Role>
+  users: DataWithPagination<User>
+  roles: Array<Role>,
 }>();
 
 function searchUser() {
@@ -146,6 +145,7 @@ onUpdated(() => {
               </t-row>
             </t-body>
           </table-layout>
+          <pagination :pagination="users" />
         </card-body>
       </card-layout>
     </content-layout>
