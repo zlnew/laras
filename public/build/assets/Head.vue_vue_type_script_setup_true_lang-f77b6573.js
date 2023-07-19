@@ -1,0 +1,1 @@
+import{d as e,o,c as s,t as a}from"./app-ff9ff714.js";const n={class:"text-xl font-bold text-dark"},_=e({__name:"Head",props:{title:{}},setup(r){return(t,c)=>(o(),s("h1",n,a(t.title),1))}});export{_};
