@@ -1,23 +1,23 @@
 <?php
 
-use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Master\RekeningController;
+use App\Http\Controllers\Master\SatuanController;
+use App\Http\Controllers\Master\UsersController;
 use App\Http\Controllers\ProyekController;
 use App\Http\Controllers\RABController;
 use App\Http\Controllers\RAPController;
 use App\Http\Controllers\DetailRABController;
 use App\Http\Controllers\DetailRAPController;
 use App\Http\Controllers\KeuanganController;
-use App\Http\Controllers\LaporanController;
-use App\Http\Controllers\Master\RekeningController;
-use App\Http\Controllers\Master\SatuanController;
-use App\Http\Controllers\Master\UsersController;
-use App\Http\Controllers\PenagihanController;
 use App\Http\Controllers\PengajuanDanaController;
 use App\Http\Controllers\PencairanDanaController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PenagihanController;
+use App\Http\Controllers\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
