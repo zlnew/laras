@@ -11,23 +11,22 @@ class LaporanController extends Controller
 {
     public function pengajuan_dana(Request $request): Response
     {
-        $PengajuanDana = DB::table('pengajuan_dana as pd')
+        $pengajuanDanaQuery = DB::table('pengajuan_dana as pd')
             ->leftJoin('keuangan as ka', 'ka.id_keuangan', '=', 'pd.id_keuangan')
             ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'ka.id_proyek')
-            ->leftJoin('detail_pengajuan_dana as d_pd', 'd_pd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana');
+            ->leftJoin('detail_pengajuan_dana as d_pd', 'd_pd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
+            ->where('pd.tanggal_pengajuan', '!=', NULL);
 
         if ($request->isMethod('get') && $request->all()) {
-            $PengajuanDana->when($request->get('nama_proyek'), function($query, $input) {
+            $pengajuanDanaQuery->when($request->get('nama_proyek'), function($query, $input) {
                 $query->where('pr.nama_proyek', 'like', $input . '%');
             });
         }
 
-        $PengajuanDana = $PengajuanDana
+        $pengajuanDana = $pengajuanDanaQuery->groupBy('pd.id_pengajuan_dana')
             ->select(
-                'pr.id_proyek',
-                'pd.id_pengajuan_dana',
-                'pr.nama_proyek',
-                'ka.keperluan',
+                'pr.id_proyek', 'pd.id_pengajuan_dana',
+                'pr.nama_proyek', 'ka.keperluan',
                 'pd.tanggal_pengajuan',
                 DB::raw('SUM(d_pd.jumlah_pengajuan) as jumlah_pengajuan_dana'),
                 DB::raw("SUM(
@@ -38,31 +37,40 @@ class LaporanController extends Controller
                 ),
                 'pd.status_pengajuan',
             )
-        ->where('pd.tanggal_pengajuan', '!=', NULL)
-        ->groupBy('pd.id_pengajuan_dana')
-        ->orderBy('pd.id_pengajuan_dana', 'asc')->paginate(10);
+            ->orderBy('pd.id_pengajuan_dana', 'asc')
+            ->paginate(10);
         
         return Inertia::render('Laporan/PengajuanDana', [
-            'pengajuan_dana' => $PengajuanDana
+            'pengajuan_dana' => $pengajuanDana
         ]);
     }
 
     public function pencairan_dana(Request $request): Response
     {
-        $PencairanDana = DB::table('pengajuan_dana as pd')
+        $pencairanDanaQuery = DB::table('pengajuan_dana as pd')
             ->leftJoin('keuangan as ka', 'ka.id_keuangan', '=', 'pd.id_keuangan')
             ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'ka.id_proyek')
             ->leftJoin('pencairan_dana as pc', 'pc.id_keuangan', '=', 'ka.id_keuangan')
             ->leftJoin('detail_pengajuan_dana as d_pd', 'd_pd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
-            ->rightJoin('detail_pencairan_dana as d_pc', 'd_pc.id_detail_pengajuan_dana', '=', 'd_pd.id_detail_pengajuan_dana');
+            ->rightJoin('detail_pencairan_dana as d_pc', 'd_pc.id_detail_pengajuan_dana', '=', 'd_pd.id_detail_pengajuan_dana')
+            ->where('pd.deleted_at', null);
 
         if ($request->isMethod('get') && $request->all()) {
-            $PencairanDana->when($request->get('nama_proyek'), function($query, $input) {
+            $pencairanDanaQuery->when($request->get('nama_proyek'), function($query, $input) {
                 $query->where('pr.nama_proyek', 'like', $input . '%');
             });
         }
 
-        $PencairanDana = $PencairanDana
+        $pencairanDana = $pencairanDanaQuery
+            ->groupBy(
+                'pr.id_proyek',
+                'pd.id_pengajuan_dana',
+                'pc.id_pencairan_dana',
+                'pr.nama_proyek',
+                'ka.keperluan',
+                'pd.tanggal_pengajuan',
+                'pc.status_pencairan'
+            )
             ->select(
                 'pr.id_proyek',
                 'pd.id_pengajuan_dana',
@@ -89,42 +97,34 @@ class LaporanController extends Controller
 
                 'pc.status_pencairan',
             )
-            ->groupBy(
-                'pr.id_proyek',
-                'pd.id_pengajuan_dana',
-                'pc.id_pencairan_dana',
-                'pr.nama_proyek',
-                'ka.keperluan',
-                'pd.tanggal_pengajuan',
-                'pc.status_pencairan'
-            )
-            ->orderBy('pd.id_pengajuan_dana', 'asc')->paginate(10);
+            ->orderBy('pd.id_pengajuan_dana', 'asc')
+            ->paginate(10);
         
         return Inertia::render('Laporan/PencairanDana', [
-            'pencairan_dana' => $PencairanDana
+            'pencairan_dana' => $pencairanDana
         ]);
     }
 
     public function penagihan(Request $request): Response
     {
-        $penagihan = DB::table('penagihan as png')
+        $penagihanQuery = DB::table('penagihan as png')
             ->leftJoin('keuangan as ka', 'ka.id_keuangan', '=', 'png.id_keuangan')
             ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'ka.id_proyek')
             ->leftJoin('detail_penagihan as d_png', 'd_png.id_penagihan', '=', 'png.id_penagihan')
-            ->leftJoin('detail_rab as d_rab', 'd_rab.id_detail_rab', '=', 'd_png.id_detail_rab');
+            ->leftJoin('detail_rab as d_rab', 'd_rab.id_detail_rab', '=', 'd_png.id_detail_rab')
+            ->where('png.deleted_at', null)
+            ->where('png.tanggal_pengajuan', '!=', null);
 
         if ($request->isMethod('get') && $request->all()) {
-            $penagihan->when($request->get('nama_proyek'), function($query, $input) {
+            $penagihanQuery->when($request->get('nama_proyek'), function($query, $input) {
                 $query->where('pr.nama_proyek', 'like', $input . '%');
             });
         }
 
-        $penagihan = $penagihan
+        $penagihan = $penagihanQuery->groupBy('png.id_penagihan')
             ->select(
-                'pr.id_proyek',
-                'png.id_penagihan',
-                'pr.nama_proyek',
-                'ka.keperluan',
+                'pr.id_proyek', 'png.id_penagihan',
+                'pr.nama_proyek', 'ka.keperluan',
                 'png.tanggal_pengajuan',
                 DB::raw('SUM(d_png.volume_penagihan * d_rab.harga_satuan) as jumlah_pengajuan'),
                 DB::raw("SUM(
@@ -141,9 +141,8 @@ class LaporanController extends Controller
                 ),
                 'png.status_penagihan',
             )
-        ->where('png.tanggal_pengajuan', '!=', NULL)
-        ->groupBy('png.id_penagihan')
-        ->orderBy('png.id_penagihan', 'asc')->paginate(10);
+            ->orderBy('png.id_penagihan', 'asc')
+            ->paginate(10);
         
         return Inertia::render('Laporan/Penagihan', [
             'penagihan' => $penagihan

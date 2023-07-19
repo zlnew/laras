@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status_rab', [100, 400])->default(100);
             $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Disetujui'])->default('Dibuat');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

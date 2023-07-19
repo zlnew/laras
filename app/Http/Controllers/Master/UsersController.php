@@ -19,20 +19,23 @@ class UsersController extends Controller
     public function index(Request $request): Response
     {
         $usersQuery = DB::table('users')
-            ->join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->select('users.*', 'roles.name as role_name')
-            ->where('users.id', '!=', $request->user()->id)
-            ->latest('users.id')
-            ->groupBy('users.id', 'roles.name');
+            ->leftJoin('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
+            ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('users.deleted_at', null)
+            ->where('users.id', '!=', $request->user()->id);
 
         if ($request->method() === 'GET' && $request->all()) {
-            $usersQuery = $this->applyFilters($request, $usersQuery);
+            $usersQuery = $this->filter($request, $usersQuery);
         }
 
-        $users = $usersQuery->paginate(10);
+        $users = $usersQuery->select('users.*', 'roles.name as role_name')
+            ->groupBy('users.id', 'roles.name')
+            ->orderBy('users.id', 'desc')
+            ->paginate(10);
 
-        $roles = DB::table('roles')->select('id', 'name')->get();
+        $roles = DB::table('roles')
+            ->select('id', 'name')
+            ->get();
 
         return Inertia::render('Master/Users/Index', [
             'users' => $users,
@@ -40,7 +43,7 @@ class UsersController extends Controller
         ]);
     }
 
-    public function applyFilters(Request $request, $usersQuery): Builder
+    public function filter(Request $request, $usersQuery): Builder
     {
         $usersQuery->when($request->get('name'), function ($query, $name) {
             $query->where('users.name', 'like', $name . '%');

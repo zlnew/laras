@@ -7,8 +7,6 @@ use App\Http\Requests\Keuangan\UpdateRequest;
 use App\Models\Keuangan;
 use App\Models\Penagihan;
 use App\Models\PengajuanDana;
-use App\Models\Proyek;
-use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,63 +17,56 @@ class KeuanganController extends Controller
 {
     public function index(Request $request): Response
     {
-        $Keuangan = DB::table('keuangan');
-
-        $KeuanganQuery = $Keuangan
+        $keuanganQuery = DB::table('keuangan')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'keuangan.id_proyek')
             ->leftJoin('pengajuan_dana as pgd', 'pgd.id_keuangan', '=', 'keuangan.id_keuangan')
             ->leftJoin('pencairan_dana as pcd', 'pcd.id_keuangan', '=', 'keuangan.id_keuangan')
-            ->leftJoin('penagihan as png', 'png.id_keuangan', '=', 'keuangan.id_keuangan');
+            ->leftJoin('penagihan as png', 'png.id_keuangan', '=', 'keuangan.id_keuangan')
+            ->where('keuangan.deleted_at', NULL);
 
         if ($request->isMethod('get') && $request->all()) {
-            $KeuanganQuery = $this->filter($request, $KeuanganQuery);
+            $keuanganQuery = $this->filter($request, $keuanganQuery);
         }
 
-        $Keuangan = $KeuanganQuery->select(
-            'keuangan.id_keuangan',
-            'keuangan.keperluan',
-            'proyek.id_proyek',
-            'proyek.nama_proyek',
-            'proyek.tahun_anggaran',
-            'proyek.pengguna_jasa',
-            'pgd.id_pengajuan_dana',
-            'pcd.id_pencairan_dana',
-            'png.id_penagihan'
-        )
-        ->where('keuangan.deleted_at', NULL)
-        ->groupBy(
-            'keuangan.id_keuangan',
-            'proyek.id_proyek',
-            'pgd.id_pengajuan_dana',
-            'pcd.id_pencairan_dana',
-            'png.id_penagihan'
-        )
-        ->latest('keuangan.id_keuangan')->paginate(10);
+        $keuangan = $keuanganQuery->groupBy(
+                'keuangan.id_keuangan', 'proyek.id_proyek',
+                'pgd.id_pengajuan_dana', 'pcd.id_pencairan_dana',
+                'png.id_penagihan'
+            )
+            ->select(
+                'keuangan.id_keuangan', 'keuangan.keperluan',
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran', 'proyek.pengguna_jasa',
+                'pgd.id_pengajuan_dana', 'pcd.id_pencairan_dana',
+                'png.id_penagihan'
+            )
+            ->orderBy('keuangan.id_keuangan', 'desc')
+            ->paginate(10);
 
-        $Proyek = Proyek::query()
+        $proyek = DB::table('proyek')
             ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('rab.status_rab', '400')
+            ->where('rap.status_rap', '400')
             ->select(
-                'proyek.id_proyek',
-                'proyek.nama_proyek',
+                'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.tahun_anggaran'
             )
-        ->where('rab.status_rab', '400')
-        ->where('rap.status_rap', '400')
-        ->get();
+            ->get();
             
         return Inertia::render('Keuangan/Index', [
-            'keuangan' => $Keuangan,
-            'proyek' => $Proyek
+            'keuangan' => $keuangan,
+            'proyek' => $proyek
         ]);
     }
 
-    public function filter($searchRequest, $KeuanganQuery) {
-        $KeuanganQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
+    public function filter($searchRequest, $keuanganQuery) {
+        $keuanganQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
             $query->where('proyek.nama_proyek', 'like', $input . '%');
         });
 
-        return $KeuanganQuery;
+        return $keuanganQuery;
     }
 
     public function store(StoreRequest $request): RedirectResponse
@@ -83,45 +74,43 @@ class KeuanganController extends Controller
         DB::transaction(function() use ($request) {
             $validated = $request->safe();
     
-            $Keuangan = new Keuangan;
-            $Keuangan->fill([
+            $keuangan = new Keuangan;
+            $keuangan->fill([
                 'id_proyek' => $validated->id_proyek,
                 'keperluan' => $validated->keperluan,
             ]);
-            $Keuangan->save();
+            $keuangan->save();
 
             if ($request->post('for') === 'pengajuan dana') {
-                $PengajuanDana = new PengajuanDana;
-                $PengajuanDana->id_keuangan = $Keuangan->id_keuangan;
-                $PengajuanDana->save();
+                $pengajuanDana = new PengajuanDana;
+                $pengajuanDana->id_keuangan = $keuangan->id_keuangan;
+                $pengajuanDana->save();
             }
 
             if ($request->post('for') === 'penagihan') {
-                $Penagihan = new Penagihan;
-                $Penagihan->id_keuangan = $Keuangan->id_keuangan;
-                $Penagihan->save();
+                $penagihan = new Penagihan;
+                $penagihan->id_keuangan = $keuangan->id_keuangan;
+                $penagihan->save();
             }
         });
 
         return redirect()->back()->with('success', 'Keuangan berhasil dibuat!');
     }
 
-    public function update(UpdateRequest $request, Keuangan $Keuangan): RedirectResponse
+    public function update(UpdateRequest $request, Keuangan $keuangan): RedirectResponse
     {
         $validated = $request->safe();
 
-        $Keuangan->fill([
-            'keperluan' => $validated->keperluan,
-        ]);
+        $keuangan->keperluan = $validated->keperluan;
 
-        $Keuangan->save();
+        $keuangan->save();
 
         return redirect()->back()->with('success', 'Keuangan berhasil diperbarui!');
     }
 
-    public function destroy(Keuangan $Keuangan): RedirectResponse
+    public function destroy(Keuangan $keuangan): RedirectResponse
     {
-        $Keuangan->delete();
+        $keuangan->delete();
 
         return redirect()->back()->with('success', 'Keuangan berhasil dihapus!');
     }

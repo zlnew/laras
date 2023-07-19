@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUlid('id_penagihan');
             $table->foreignUlid('id_detail_rab');
             $table->decimal('volume_penagihan', 3, 0);
-            $table->enum('status_diterima', ['100', '400'])->default('100');
+            $table->enum('status_diterima', [100, 400])->default(100);
             $table->timestamps();
             $table->softDeletes();
         });
