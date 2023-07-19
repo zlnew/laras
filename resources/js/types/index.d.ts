@@ -1,3 +1,28 @@
+export interface Pagination {
+    total: number;
+    per_page: number;
+    current_page: number;
+    last_page: number;
+    first_page_url: string;
+    last_page_url: string;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+    path: string;
+    from: number;
+    to: number;
+    links: Array<PaginationLink>;
+}
+
+export interface PaginationLink {
+    active: boolean;
+    label: string;
+    url: string;
+}
+
+export interface DataWithPagination<T> extends Pagination {
+    data: Array<T>;
+}
+
 export interface User {
     id: number;
     name: string;
@@ -164,7 +189,7 @@ export interface DetailPenagihan {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: Penagihan | DetailRAB | any;
+    [key: string]: any;
 };
 
 export interface Timeline {
