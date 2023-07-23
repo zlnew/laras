@@ -1,1 +1,0 @@
-import{d as t,o,c as a,t as s}from"./app-75a3a99f.js";const n={class:"mb-2 font-bold text-xs text-dark/80"},p=t({__name:"Label",props:{value:{}},setup(r){return(e,l)=>(o(),a("label",n,s(e.value),1))}});export{p as _};
