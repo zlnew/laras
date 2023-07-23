@@ -5,45 +5,28 @@ import { markRaw } from "vue";
 const component = extend({});
 type VueComponent = InstanceType<typeof component>
 
-export interface ErrorBags {
-    errors?: Object;
+export interface ModalPayload {
+    component: VueComponent | null;
+    props?: Object
 }
 
-export interface IModalProps {
-    component: null | VueComponent;
-    props?: {
-        errors?: Object;
-        [key: string]: Object | undefined;
-    }
+interface ModalState {
+    state: ModalPayload;
 }
 
-export interface IModalState {
-    state: IModalProps;
-}
-
-const basicState = { component: null, props: {} };
+const defaultState = { component: null, props: {} };
 
 export default defineStore("modal-store", {
-    state: (): IModalState => ({ state: basicState }),
+    state: (): ModalState => ({ state: defaultState }),
     actions: {
-        open(payload: IModalProps) {
-            const { props, component } = payload;
-            const body = document.body;
+        open(payload: ModalPayload) {
+            markRaw(payload.component)
 
-            if (body) body.style.overflow = "hidden";
-
-            markRaw(component)
-            
-            this.state = { component, props: props || {} };
+            this.state = payload;
         },
         close() {
-            this.state = basicState;
-
-            const body = document.body;
-
-            if(body) body.style.overflow = "auto";
+            this.state = defaultState;
         },
     },
-    getters: {},
 });
 

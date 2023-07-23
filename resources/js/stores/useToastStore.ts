@@ -1,35 +1,36 @@
 import { defineStore } from "pinia";
 
-export interface IToastProps {
-    message: string | null;
-    type?: 'success' | 'error' | null;
-    duration?: number | null,
+export interface ToastProps {
+    message: string;
+    type?: 'success' | 'error' | 'warning';
+    duration?: number,
 }
 
-export interface IToastState {
-    state: IToastProps;
+interface ToastState {
+    state: ToastProps;
 }
 
-const basicState = { message: null, type: null, duration: null };
+const defaultState: ToastProps = {
+    message: '',
+    type: 'success',
+    duration: 5000
+};
 
 export default defineStore("toast-store", {
-    state: (): IToastState => ({ state: basicState }),
+    state: (): ToastState => ({ state: defaultState }),
     actions: {
-        open(payload: IToastProps) {
-            const { message, type, duration } = payload;
-            
-            this.state = { message, type, duration };
+        open(props: ToastProps) {            
+            this.state = props;
 
-            if (duration) {
+            if (props.duration) {
                 setTimeout(() => {
                     this.close();
-                }, duration);
+                },props.duration);
             }
         },
         close() {
-            this.state = basicState;
+            this.state = defaultState;
         },
-    },
-    getters: {},
+    }
 });
 

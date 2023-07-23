@@ -28,7 +28,6 @@ export interface User {
     name: string;
     email: string;
     email_verified_at: string;
-    [key: string]: any;
 }
 
 export interface Role {
@@ -54,7 +53,6 @@ export interface Proyek {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface RAB {
@@ -67,7 +65,6 @@ export interface RAB {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 }
 
 export interface DetailRAB {
@@ -81,7 +78,6 @@ export interface DetailRAB {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface RAP {
@@ -92,7 +88,6 @@ export interface RAP {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 }
 
 export interface DetailRAP {
@@ -107,7 +102,6 @@ export interface DetailRAP {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface Keuangan {
@@ -117,7 +111,6 @@ export interface Keuangan {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 }
 
 export interface PengajuanDana {
@@ -129,7 +122,6 @@ export interface PengajuanDana {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface DetailPengajuanDana {
@@ -143,7 +135,6 @@ export interface DetailPengajuanDana {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface PencairanDana {
@@ -154,7 +145,6 @@ export interface PencairanDana {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface DetailPencairanDana {
@@ -165,7 +155,6 @@ export interface DetailPencairanDana {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface Penagihan {
@@ -177,7 +166,6 @@ export interface Penagihan {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 }
 
 export interface DetailPenagihan {
@@ -189,7 +177,6 @@ export interface DetailPenagihan {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface Timeline {
@@ -202,7 +189,6 @@ export interface Timeline {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface Satuan {
@@ -211,7 +197,6 @@ export interface Satuan {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export interface Rekening {
@@ -224,7 +209,6 @@ export interface Rekening {
     created_at: Date;
     updated_at: Date;
     deleted_at: Date;
-    [key: string]: any;
 };
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
