@@ -10,10 +10,10 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 
 // plugins
 import pinia from '@/plugins/pinia';
-import Quasar from '@/plugins/quasar';
+import { quasar, plugins } from '@/plugins/quasar';
 
 // directives
-import inertiaLink from '@/directives/inertia-link';
+import InertiaLink from '@/directives/inertia-link';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -25,10 +25,10 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(pinia)
-            .use(Quasar, {
-                plugins: {}
+            .use(quasar, {
+                plugins: plugins
             })
-            .directive('inLink', inertiaLink)
+            .directive('in-link', InertiaLink)
             .mount(el);
     },
     progress: { color: '#0284c7' },

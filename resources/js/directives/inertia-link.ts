@@ -6,7 +6,7 @@ function visit(path: string, method: 'get' | 'post' | 'put' | 'delete' = 'get') 
   });
 }
 
-const inertiaLink =  {
+const InertiaLink =  {
   mounted(el: unknown, binding: any) {
     if (el instanceof HTMLElement) {
       el.style.cursor = 'pointer';    
@@ -25,4 +25,4 @@ const inertiaLink =  {
   }
 }
 
-export default inertiaLink;
+export default InertiaLink;

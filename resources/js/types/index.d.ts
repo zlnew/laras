@@ -45,14 +45,14 @@ export interface Proyek {
     nama_proyek: string;
     tahun_anggaran: string;
     pengguna_jasa: string;
-    waktu_mulai: Date;
-    waktu_selesai: Date;
+    waktu_mulai: string;
+    waktu_selesai: string;
     nilai_kontrak: number;
     pic: string;
     status_proyek: 100 | 400;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface RAB {
@@ -62,9 +62,9 @@ export interface RAB {
     additional_tax: number;
     status_rab: 100 | 400;
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Disetujui';
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 }
 
 export interface DetailRAB {
@@ -75,9 +75,9 @@ export interface DetailRAB {
     volume: number;
     harga_satuan: number;
     keterangan: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface RAP {
@@ -85,9 +85,9 @@ export interface RAP {
     id_proyek: Proyek['id_proyek'];
     status_rap: 100 | 400;
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diperiksa' | 'Disetujui';
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 }
 
 export interface DetailRAP {
@@ -99,18 +99,18 @@ export interface DetailRAP {
     harga_satuan: number;
     keterangan: string;
     status_uraian: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface Keuangan {
     id_keuangan: string;
     id_proyek: Proyek['id_proyek'];
     keperluan: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 }
 
 export interface PengajuanDana {
@@ -118,10 +118,10 @@ export interface PengajuanDana {
     id_keuangan: Keuangan['id_keuangan'];
     status_pengajuan: 100 | 400;
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Disetujui';
-    tanggal_pengajuan: Date;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    tanggal_pengajuan: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface DetailPengajuanDana {
@@ -132,9 +132,9 @@ export interface DetailPengajuanDana {
     uraian: string;
     jumlah_pengajuan: number;
     jenis_pembayaran: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface PencairanDana {
@@ -142,9 +142,9 @@ export interface PencairanDana {
     id_keuangan: Keuangan['id_keuangan'];
     status_pencairan: 100 | 400;
     status_aktivitas: 'Dibuat' | 'Dibayar' | 'Dilunasi' | 'Diterima';
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface DetailPencairanDana {
@@ -152,9 +152,9 @@ export interface DetailPencairanDana {
     id_pencairan_dana: PencairanDana['id_pencairan_dana'];
     id_detail_pengajuan_dana: DetailPengajuanDana['id_detail_pengajuan_dana'];
     jumlah_pencairan: number;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface Penagihan {
@@ -162,10 +162,10 @@ export interface Penagihan {
     id_keuangan: Keuangan['id_keuangan'];
     status_penagihan: 100 | 400;
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diterima';
-    tanggal_pengajuan: Date;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    tanggal_pengajuan: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 }
 
 export interface DetailPenagihan {
@@ -174,9 +174,9 @@ export interface DetailPenagihan {
     id_detail_rab: DetailRAB['id_detail_rab'];
     volume_penagihan: number;
     status_diterima: '100' | '400';
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface Timeline {
@@ -186,17 +186,17 @@ export interface Timeline {
     model_type: string;
     catatan: string;
     status_aktivitas: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface Satuan {
     id_satuan: number;
     nama_satuan: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export interface Rekening {
@@ -206,9 +206,9 @@ export interface Rekening {
     nama_bank: string;
     nomor_rekening: string;
     nama_rekening: string;
-    created_at: Date;
-    updated_at: Date;
-    deleted_at: Date;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string;
 };
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

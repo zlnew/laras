@@ -6,17 +6,23 @@ import { Head } from '@inertiajs/vue3';
 import Layout from '@/Layouts/AuthenticatedLayout.vue';
 
 // comps
-import { DashboardOverview } from '@/Components/dashboard-page';
+import { ProyekTable } from '@/Components/proyek-page';
+import { Proyek } from '@/types';
 
 const breadcrumbs = [
-  { label: 'Dashboard', url: '#' },
-  { label: 'Overview', url: '#' }
+  { label: 'Main', url: '#' },
+  { label: 'Proyek', url: '#' }
 ];
+
+defineProps<{
+  proyek: Array<Proyek>;
+}>();
 </script>
 
 <template>
-  <Head title="Dashboard" />
+  <Head title="Proyek" />
   <layout>
+    
     <template #breadcrumbs>
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
@@ -27,6 +33,7 @@ const breadcrumbs = [
       </q-breadcrumbs>
     </template>
 
-    <dashboard-overview />
+    <proyek-table :rows="proyek" />
+
   </layout>
 </template>

@@ -15,7 +15,7 @@ function toRupiah (amount: number) {
     return formattedAmount;
 }
 
-export default {
+export {
     fromRupiah,
     toRupiah
 }

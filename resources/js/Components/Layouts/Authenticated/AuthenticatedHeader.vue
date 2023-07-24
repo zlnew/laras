@@ -9,10 +9,7 @@ defineEmits(['toggleLeftDrawer']);
       
       <q-toolbar-title>
         <div class="q-pa-md q-gutter-sm text-subtitle1">
-          <q-breadcrumbs align="left">
-            <q-breadcrumbs-el label="Dashboard" v-in-link="route('dashboard')" />
-            <q-breadcrumbs-el label="Overview" />
-          </q-breadcrumbs>
+          <slot name="breadcrumbs" />
         </div>
       </q-toolbar-title>
 

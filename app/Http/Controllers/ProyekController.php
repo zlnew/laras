@@ -31,10 +31,11 @@ class ProyekController extends Controller
                 'nilai_kontrak', 'pic',
                 'status_proyek'
             )
-            ->orderBy('id_proyek', 'desc')->paginate(10);
+            ->orderBy('id_proyek', 'desc')
+            ->get();
 
-        return Inertia::render('Proyek/Index', [
-            'daftar_proyek' => $proyek,
+        return Inertia::render('Main/ProyekPage', [
+            'proyek' => $proyek,
         ]);
     }
 

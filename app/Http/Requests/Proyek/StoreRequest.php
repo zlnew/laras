@@ -26,7 +26,7 @@ class StoreRequest extends FormRequest
             'nama_proyek' => ['required', 'string', 'max:255'],
             'tahun_anggaran' => ['required', 'string', 'max:15'],
             'pengguna_jasa' => ['required', 'string', 'max:50'],
-            'nilai_kontrak' => ['required', 'numeric'],
+            'nilai_kontrak' => ['required', 'numeric', 'min:1'],
             'waktu_mulai' => ['required', 'date'],
             'waktu_selesai' => ['required', 'date'],
             'pic' => ['required', 'string', 'max:50'],
