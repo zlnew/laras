@@ -2,20 +2,22 @@
 // types
 import { Proyek } from '@/types';
 import { QTableColumn, useQuasar } from 'quasar';
+import { ProyekFilterOptions } from '@/Pages/Main/ProyekPage.vue';
 
 // utils
 import { toRupiah } from '@/utils/money';
 
 // comps
 import {
-  SearchProyekDialog,
-  CreateProyekDialog,
-  EditProyekDialog,
-  DeleteProyekDialog
-} from '@/Components/proyek-page';
+  ProyekSearchDialog,
+  ProyekCreateDialog,
+  ProyekEditDialog,
+  ProyekDeleteDialog
+} from '@/Components/Main/proyek-page';
 
 const props = defineProps<{
   rows: Array<Proyek>;
+  filterOptions: ProyekFilterOptions; 
 }>();
 
 const columns: Array<QTableColumn> = [
@@ -81,16 +83,17 @@ const $q = useQuasar();
 
 function searchProyek() {
   $q.dialog({
-    component: SearchProyekDialog,
+    component: ProyekSearchDialog,
     componentProps: {
-      rows: props.rows
+      rows: props.rows,
+      options: props.filterOptions
     }
   });
 }
 
 function createProyek() {
   $q.dialog({
-    component: CreateProyekDialog,
+    component: ProyekCreateDialog,
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
@@ -102,7 +105,7 @@ function createProyek() {
 
 function editProyek(data: Proyek) {
   $q.dialog({
-    component: EditProyekDialog,
+    component: ProyekEditDialog,
     componentProps: {
       proyek: data
     }
@@ -117,7 +120,7 @@ function editProyek(data: Proyek) {
 
 function deleteProyek(id: Proyek['id_proyek']) {
   $q.dialog({
-    component: DeleteProyekDialog,
+    component: ProyekDeleteDialog,
     componentProps: {
       id_proyek: id
     }

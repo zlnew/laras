@@ -2,13 +2,15 @@
 // cores
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
+import { ref } from 'vue';
 
 // utils
 import { toRupiah } from '@/utils/money';
+import { filterOptions } from '@/utils/options';
 
 // types
 import { Proyek } from '@/types';
-import { ref } from 'vue';
+import { ProyekFilterOptions } from '@/Pages/Main/ProyekPage.vue';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -23,56 +25,28 @@ interface ProyekSearch {
 
 const props = defineProps<{
   rows: Array<Proyek>;
+  options: ProyekFilterOptions;
 }>();
 
-const penggunaJasaOptions = props.rows.reduce((group: any, product) => {
-  group[product.pengguna_jasa] = [];
-  group[product.pengguna_jasa].push(product.pengguna_jasa);
+const tahunAnggaranOptionsRef = ref(props.options.tahun_anggaran);
+const penggunaJasaOptionsRef = ref(props.options.pengguna_jasa);
+const picOptionsRef = ref(props.options.pic);
 
-  return group;
-}, {});
-
-const tahunAnggaranOptions = props.rows.reduce((group: any, product) => {
-  group[product.tahun_anggaran] = [];
-  group[product.tahun_anggaran].push(product.tahun_anggaran);
-
-  return group;
-}, {});
-
-const picOptions = props.rows.reduce((group: any, product) => {
-  group[product.pic] = [];
-  group[product.pic].push(product.pic);
-
-  return group;
-}, {});
-
-const penggunaJasa = Object.keys(penggunaJasaOptions);
-const penggunaJasaRef = ref(penggunaJasa);
-
-const tahunAnggaran = Object.keys(tahunAnggaranOptions);
-const tahunAnggaranRef = ref(tahunAnggaran);
-
-const pic = Object.keys(picOptions);
-const picRef = ref(pic);
-
-function penggunaJasaFilterFn (val: string, update: Function) {    
+function tahunAnggaranFilter (val: string, update: Function) {
   update(() => {
-    const needle = val.toLowerCase();
-    penggunaJasaRef.value = penggunaJasa.filter((v) => v.toLowerCase().indexOf(needle) > -1);
+    tahunAnggaranOptionsRef.value = filterOptions(val, props.options.tahun_anggaran)
   });
 }
 
-function tahunAnggaranFilterFn (val: string, update: Function) {    
+function penggunaJasaFilter (val: string, update: Function) {
   update(() => {
-    const needle = val.toLowerCase();
-    tahunAnggaranRef.value = tahunAnggaran.filter((v) => v.toLowerCase().indexOf(needle) > -1);
+    penggunaJasaOptionsRef.value = filterOptions(val, props.options.pengguna_jasa)
   });
 }
 
-function picFilterFn (val: string, update: Function) {    
+function picFilter (val: string, update: Function) {    
   update(() => {
-    const needle = val.toLowerCase();
-    picRef.value = pic.filter((v) => v.toLowerCase().indexOf(needle) > -1);
+    picOptionsRef.value = filterOptions(val, props.options.pic)
   });
 }
 
@@ -92,12 +66,7 @@ const form = useForm({
 
 function search() {
   form.get(route('proyek'), {
-    onSuccess: (page) => {
-      onDialogOK({
-        type: 'positive',
-        message: page.props.flash.success
-      });
-    }
+    onSuccess: () => onDialogOK()
   });
 }
 </script>
@@ -147,8 +116,8 @@ function search() {
               mask="####"
               label="Tahun Anggaran"
               v-model="form.tahun_anggaran"
-              :options="tahunAnggaranRef"
-              @filter="tahunAnggaranFilterFn"
+              :options="tahunAnggaranOptionsRef"
+              @filter="tahunAnggaranFilter"
             >
               <template v-slot:no-option>
                 <q-item>
@@ -169,8 +138,8 @@ function search() {
               input-debounce="0"
               label="Pengguna jasa"
               v-model="form.pengguna_jasa"
-              :options="penggunaJasaRef"
-              @filter="penggunaJasaFilterFn"
+              :options="penggunaJasaOptionsRef"
+              @filter="penggunaJasaFilter"
             >
               <template v-slot:no-option>
                 <q-item>
@@ -191,8 +160,8 @@ function search() {
               input-debounce="0"
               label="Penanggung Jawab (PIC)"
               v-model="form.pic"
-              :options="picRef"
-              @filter="picFilterFn"
+              :options="picOptionsRef"
+              @filter="picFilter"
             >
               <template v-slot:no-option>
                 <q-item>

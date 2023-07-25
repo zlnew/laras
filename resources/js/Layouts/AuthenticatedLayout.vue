@@ -8,7 +8,7 @@ import {
   AuthenticatedLeftDrawer,
   AuthenticatedPageContainer,
   AuthenticatedFooter
-} from '@/Components/authenticated-layout';
+} from '@/Components/Layouts/authenticated-layout';
 
 const leftDrawerOpen = ref(true);
 

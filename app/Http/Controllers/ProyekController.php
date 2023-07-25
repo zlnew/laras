@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class ProyekController extends Controller
 {
@@ -33,10 +34,35 @@ class ProyekController extends Controller
             )
             ->orderBy('id_proyek', 'desc')
             ->get();
+        
+        $filterOptions = $this->createOptions();
 
         return Inertia::render('Main/ProyekPage', [
             'proyek' => $proyek,
+            'filterOptions' => $filterOptions
         ]);
+    }
+
+    private function createOptions(): stdClass {
+        $penggunaJasaOptions = DB::table('proyek')
+            ->groupBy('pengguna_jasa')
+            ->pluck('pengguna_jasa');
+        
+        $tahunAnggaranOptions = DB::table('proyek')
+            ->groupBy('tahun_anggaran')
+            ->pluck('tahun_anggaran');
+
+        $picOptions = DB::table('proyek')
+            ->groupBy('pic')
+            ->pluck('pic');
+    
+        $options = new stdClass;
+
+        $options->pengguna_jasa = $penggunaJasaOptions;
+        $options->tahun_anggaran = $tahunAnggaranOptions;
+        $options->pic = $picOptions;
+
+        return $options;
     }
 
     private function filter($searchRequest, $proyekQuery) {

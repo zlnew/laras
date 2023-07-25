@@ -6,7 +6,7 @@ import { Head } from '@inertiajs/vue3';
 import Layout from '@/Layouts/AuthenticatedLayout.vue';
 
 // comps
-import { ProyekTable } from '@/Components/proyek-page';
+import { ProyekTable } from '@/Components/Main/proyek-page';
 import { Proyek } from '@/types';
 
 const breadcrumbs = [
@@ -14,8 +14,15 @@ const breadcrumbs = [
   { label: 'Proyek', url: '#' }
 ];
 
+export interface ProyekFilterOptions {
+  pengguna_jasa: string[];
+  tahun_anggaran: string[];
+  pic: string[];
+}
+
 defineProps<{
   proyek: Array<Proyek>;
+  filterOptions: ProyekFilterOptions;
 }>();
 </script>
 
@@ -33,7 +40,7 @@ defineProps<{
       </q-breadcrumbs>
     </template>
 
-    <proyek-table :rows="proyek" />
+    <proyek-table :rows="proyek" :filter-options="filterOptions" />
 
   </layout>
 </template>

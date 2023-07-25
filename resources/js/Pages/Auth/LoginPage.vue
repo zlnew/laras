@@ -6,7 +6,7 @@ import { Head } from '@inertiajs/vue3';
 import Layout from '@/Layouts/GuestLayout.vue';
 
 // comps
-import { LoginForm, LoginBackground } from '@/Components/login-page';
+import { LoginForm, LoginBackground } from '@/Components/Auth/login-page';
 </script>
 
 <template>

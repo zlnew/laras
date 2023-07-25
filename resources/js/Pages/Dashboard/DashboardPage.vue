@@ -6,7 +6,7 @@ import { Head } from '@inertiajs/vue3';
 import Layout from '@/Layouts/AuthenticatedLayout.vue';
 
 // comps
-import { DashboardOverview } from '@/Components/dashboard-page';
+import { DashboardOverview } from '@/Components/Dashboard/dashboard-page';
 
 const breadcrumbs = [
   { label: 'Dashboard', url: '#' },
