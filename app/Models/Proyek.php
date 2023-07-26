@@ -17,12 +17,15 @@ class Proyek extends Model
         'nama_proyek',
         'tahun_anggaran',
         'pengguna_jasa',
+        'penyedia_jasa',
         'nilai_kontrak',
         'waktu_mulai',
+        'durasi',
         'waktu_selesai',
         'pic',
         'status_proyek',
         'slug',
+        'id_rekening'
     ];
 
     public $autoIncrement = false;

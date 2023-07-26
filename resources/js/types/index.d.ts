@@ -45,7 +45,9 @@ export interface Proyek {
     nama_proyek: string;
     tahun_anggaran: string;
     pengguna_jasa: string;
+    penyedia_jasa: string;
     waktu_mulai: string;
+    durasi: number;
     waktu_selesai: string;
     nilai_kontrak: number;
     pic: string;

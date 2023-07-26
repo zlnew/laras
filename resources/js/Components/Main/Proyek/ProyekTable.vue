@@ -1,11 +1,16 @@
 <script setup lang="ts">
-// types
-import { Proyek } from '@/types';
-import { QTableColumn, useQuasar } from 'quasar';
-import { ProyekFilterOptions } from '@/Pages/Main/ProyekPage.vue';
+// cores
+import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 // utils
 import { toRupiah } from '@/utils/money';
+import { fullDate, endOfDate } from '@/utils/date';
+
+// types
+import { Proyek, Rekening } from '@/types';
+import { QTableColumn, useQuasar } from 'quasar';
+import { ProyekFilterOptions } from '@/Pages/Main/ProyekPage.vue';
 
 // comps
 import {
@@ -17,67 +22,9 @@ import {
 
 const props = defineProps<{
   rows: Array<Proyek>;
+  rekening: Array<Rekening>;
   filterOptions: ProyekFilterOptions; 
 }>();
-
-const columns: Array<QTableColumn> = [
-  {
-    name: 'nama_proyek',
-    label: 'Nama Proyek',
-    field: 'nama_proyek',
-    align: 'left',
-    classes: 'text-primary',
-    sortable: true
-  },
-  {
-    name: 'pengguna_jasa',
-    label: 'Pengguna Jasa',
-    field: 'pengguna_jasa',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'tahun_anggaran',
-    label: 'Tahun Anggaran',
-    field: 'tahun_anggaran',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'nilai_kontrak',
-    label: 'Nilai Kontrak',
-    field: 'nilai_kontrak',
-    align: 'right',
-    sortable: true
-  },
-  {
-    name: 'waktu_mulai',
-    label: 'Tanggal Mulai',
-    field: 'waktu_mulai',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'waktu_selesai',
-    label: 'Tanggal Selesai',
-    field: 'waktu_selesai',
-    align: 'left',
-    sortable: true
-  },
-  {
-    name: 'status_proyek',
-    label: 'Status',
-    field: 'status_proyek',
-    align: 'left',
-    sortable: true,
-  },
-  {
-    name: 'actions',
-    label: 'Actions',
-    field: '',
-    align: 'left',
-  }
-];
 
 const $q = useQuasar();
 
@@ -94,6 +41,9 @@ function searchProyek() {
 function createProyek() {
   $q.dialog({
     component: ProyekCreateDialog,
+    componentProps: {
+      rekening: props.rekening
+    }
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
@@ -107,7 +57,8 @@ function editProyek(data: Proyek) {
   $q.dialog({
     component: ProyekEditDialog,
     componentProps: {
-      proyek: data
+      proyek: data,
+      rekening: props.rekening
     }
   }).onOk((payload) => {
     $q.notify({
@@ -132,6 +83,32 @@ function deleteProyek(id: Proyek['id_proyek']) {
     });
   });
 }
+
+const columns: Array<QTableColumn> = [
+  {
+    name: 'nama_proyek',
+    label: 'Nama Proyek',
+    field: 'nama_proyek',
+    align: 'left',
+    classes: 'text-primary',
+    sortable: true
+  },
+  { name: 'pengguna_jasa', label: 'Pengguna Jasa', field: 'pengguna_jasa', align: 'left', sortable: true },
+  { name: 'penyedia_jasa', label: 'Penyedia Jasa', field: 'penyedia_jasa', align: 'left', sortable: true },
+  { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
+  { name: 'nilai_kontrak', label: 'Nilai Kontrak', field: 'nilai_kontrak', align: 'right', sortable: true },
+  { name: 'waktu_mulai', label: 'Tanggal Mulai', field: 'waktu_mulai', align: 'left', sortable: true },
+  { name: 'durasi', label: 'Durasi (Hari)', field: 'durasi', align: 'left', sortable: true },
+  { name: 'waktu_selesai', label: 'Tanggal Selesai', field: 'waktu_selesai', align: 'left', sortable: true },
+  { name: 'status_proyek', label: 'Status', field: 'status_proyek', align: 'left', sortable: true },
+  { name: 'actions', label: 'Actions', field: '', align: 'left' }
+];
+
+const tableFullscreen = ref(false);
+
+function toggleFullscreen() {
+  tableFullscreen.value = !tableFullscreen.value;
+}
 </script>
 
 <template>
@@ -143,6 +120,7 @@ function deleteProyek(id: Proyek['id_proyek']) {
       :rows="rows"
       :columns="columns"
       :rows-per-page-options="[ 5, 10, 15, 20, 25, 50, 0 ]"
+      :fullscreen="tableFullscreen"
     >
       <template v-slot:top-left>
         <q-btn
@@ -156,12 +134,27 @@ function deleteProyek(id: Proyek['id_proyek']) {
 
       <template v-slot:top-right>
         <q-btn
+          v-if="Object.keys($page.props.query).length"
+          flat
+          no-caps
+          label="Clear Filter"
+          icon="clear"
+          color="secondary"
+          @click="router.visit(route('proyek'))"
+        />
+        <q-btn
           flat
           no-caps
           label="Pencarian"
           icon="search"
           color="primary"
           @click="searchProyek"
+        />
+        <q-btn
+          flat dense
+          :icon="tableFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+          @click="toggleFullscreen"
+          class="q-ml-md"
         />
       </template>
 
@@ -188,6 +181,10 @@ function deleteProyek(id: Proyek['id_proyek']) {
             {{ props.row.pengguna_jasa }}
           </q-td>
 
+          <q-td key="penyedia_jasa" :props="props">
+            {{ props.row.penyedia_jasa }}
+          </q-td>
+
           <q-td key="tahun_anggaran" :props="props">
             {{ props.row.tahun_anggaran }}
           </q-td>
@@ -195,13 +192,17 @@ function deleteProyek(id: Proyek['id_proyek']) {
           <q-td key="nilai_kontrak" :props="props">
             {{ toRupiah(props.row.nilai_kontrak) }}
           </q-td>
-
+          
           <q-td key="waktu_mulai" :props="props">
-            {{ props.row.waktu_mulai }}
+            {{ fullDate(props.row.waktu_mulai) }}
+          </q-td>
+
+          <q-td key="durasi" :props="props">
+            {{ props.row.durasi }} Hari
           </q-td>
 
           <q-td key="waktu_selesai" :props="props">
-            {{ props.row.waktu_selesai }}
+            {{ fullDate(endOfDate(props.row.waktu_mulai, props.row.durasi)) }}
           </q-td>
           
           <q-td key="status_proyek" :props="props">
@@ -227,7 +228,9 @@ function deleteProyek(id: Proyek['id_proyek']) {
                   <q-item clickable>
                     <q-item-section
                       @click="editProyek(props.row)"
-                    >Edit</q-item-section>
+                    >
+                      Edit
+                    </q-item-section>
                   </q-item>
 
                   <q-separator />
@@ -236,7 +239,9 @@ function deleteProyek(id: Proyek['id_proyek']) {
                     <q-item-section
                       class="text-red"
                       @click="deleteProyek(props.row.id_proyek)"
-                    >Delete</q-item-section>
+                    >
+                      Delete
+                    </q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>

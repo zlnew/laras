@@ -31,13 +31,13 @@ class UsersController extends Controller
         $users = $usersQuery->select('users.*', 'roles.name as role_name')
             ->groupBy('users.id', 'roles.name')
             ->orderBy('users.id', 'desc')
-            ->paginate(10);
+            ->get(10);
 
         $roles = DB::table('roles')
             ->select('id', 'name')
             ->get();
 
-        return Inertia::render('Master/Users/Index', [
+        return Inertia::render('Master/UsersPage', [
             'users' => $users,
             'roles' => $roles
         ]);
@@ -54,7 +54,7 @@ class UsersController extends Controller
         });
     
         $usersQuery->when($request->get('role'), function ($query, $role) {
-            $query->where('roles.name', $role);
+            $query->whereIn('roles.name', $role);
         });
 
         return $usersQuery;

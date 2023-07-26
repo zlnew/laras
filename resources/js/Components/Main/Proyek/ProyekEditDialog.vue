@@ -2,14 +2,14 @@
 // cores
 import { useForm } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
-import { watch } from 'vue';
+import { ref } from 'vue';
 
 // utils
-import { getEndOfDate, countDaysBetweenDates } from '@/utils/date';
 import { toRupiah } from '@/utils/money';
+import { multiFilterOptions } from '@/utils/options';
 
 // types
-import { Proyek } from '@/types';
+import { Proyek, Rekening } from '@/types';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -18,8 +18,19 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
 const props = defineProps<{
-  proyek: Proyek;
+  proyek: Proyek & Rekening;
+  rekening: Array<Rekening>;
 }>();
+
+const rekeningOptionsRef = ref(props.rekening);
+
+function rekeningFilter (val: string, update: Function) {
+  update(() => {
+    rekeningOptionsRef.value = multiFilterOptions(
+      val, props.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
+    )
+  });
+}
 
 const form = useForm({
   nama_proyek: props.proyek.nama_proyek,
@@ -30,6 +41,7 @@ const form = useForm({
   waktu_mulai: props.proyek.waktu_mulai,
   waktu_selesai: props.proyek.waktu_selesai,
   pic: props.proyek.pic,
+  id_rekening: props.proyek.id_rekening,
 });
 
 function submit() {
@@ -42,16 +54,6 @@ function submit() {
     }
   });
 }
-
-// watch(form, (form) => {
-//   if (form.waktu_selesai && form.waktu_mulai) {    
-//     form.durasi = countDaysBetweenDates(form.waktu_mulai, form.waktu_selesai);
-//   }
-
-//   if (form.waktu_mulai) {    
-//     form.waktu_selesai = getEndOfDate(form.waktu_mulai, form.durasi);
-//   }
-// });
 </script>
 
 <template>
@@ -180,6 +182,43 @@ function submit() {
                 />
               </div>
             </div>
+
+            <q-select
+              outlined
+              clearable
+              use-input
+              use-chips
+              emit-value
+              map-options
+              hide-bottom-space
+              input-debounce="500"
+              label="Rekening Pembayaran"
+              v-model="form.id_rekening"
+              :error="form.errors.id_rekening ? true : false"
+              :error-message="form.errors.id_rekening"
+              option-value="id_rekening"
+              :option-label="(opt) => `${opt.nama_bank} | ${opt.nomor_rekening} - ${opt.nama_rekening}`"
+              :options="rekeningOptionsRef"
+              @filter="rekeningFilter"
+            >   
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <strong class="text-primary">
+                      {{ scope.opt.nama_bank }}
+                    </strong>
+                    {{ scope.opt.nomor_rekening }} - {{ scope.opt.nama_rekening }}
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
           </div>
         </q-card-section>
 

@@ -5,7 +5,21 @@ const filterOptions = (val: string, options: any[]) => {
 
   const needle = val.toLowerCase();
 
-  return options.filter((v) => v.toLowerCase().indexOf(needle) > -1);
+  return options.filter((v) =>v.toLowerCase().indexOf(needle) > -1);
+}
+
+const multiFilterOptions = (val: string, options: any[], search: string[]) => {
+  if (val === '') {
+    return options;
+  }
+
+  const needle = val.toLowerCase();
+
+  return options.filter((v) =>
+    search.some((prop) =>
+      v[prop] && v[prop].toString().toLowerCase().indexOf(needle.toLowerCase()) > -1
+    )
+  );
 }
 
 function createOptions(rows: any[], label: string) {
@@ -21,5 +35,6 @@ function createOptions(rows: any[], label: string) {
 
 export {
   filterOptions,
+  multiFilterOptions,
   createOptions
 };

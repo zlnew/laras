@@ -17,6 +17,7 @@ class UpdateRequest extends FormRequest
             'waktu_mulai' => 'tanggal mulai',
             'waktu_selesai' => 'tanggal selesai',
             'pic' => 'penanggung jawab',
+            'id_rekening' => 'rekening'
         ];
     }
 
@@ -28,8 +29,10 @@ class UpdateRequest extends FormRequest
             'pengguna_jasa' => ['required', 'string', 'max:50'],
             'nilai_kontrak' => ['required', 'numeric', 'min:1'],
             'waktu_mulai' => ['required', 'date'],
+            'durasi' => ['required', 'numeric', 'min:1'],
             'waktu_selesai' => ['required', 'date'],
             'pic' => ['required', 'string', 'max:50'],
+            'id_rekening' => ['required', 'exists:rekening,id_rekening']
         ];
     }
 }

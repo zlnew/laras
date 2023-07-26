@@ -2,17 +2,69 @@
 // cores
 import { useForm } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
-import { watch } from 'vue';
+import { ref } from 'vue';
 
 // utils
-import { getEndOfDate, countDaysBetweenDates } from '@/utils/date';
 import { toRupiah } from '@/utils/money';
+import { multiFilterOptions } from '@/utils/options';
+
+// types
+import { Rekening } from '@/types';
+import { daysDiff, endOfDate } from '@/utils/date';
 
 defineEmits([
   ...useDialogPluginComponent.emits
 ]);
 
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+
+const props = defineProps<{
+  rekening: Array<Rekening>;
+}>();
+
+const rekeningOptionsRef = ref(props.rekening);
+
+function rekeningFilter (val: string, update: Function) {
+  update(() => {
+    rekeningOptionsRef.value = multiFilterOptions(
+      val, props.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
+    )
+  });
+}
+
+function updateWaktuMulai (val: string) {
+  form.waktu_mulai = val;
+
+  updateDaysDiff();
+}
+
+function updateWaktuSelesai (val: string) {
+  form.waktu_selesai = val;
+
+  updateDaysDiff();
+}
+
+function updateDurasi (val: number) {
+  form.durasi = val;
+
+  updateEndOfDate();
+}
+
+function updateEndOfDate () {
+  const endDate = endOfDate(form.waktu_mulai, form.durasi);
+
+  if (endDate && endDate > form.waktu_mulai) {
+    form.waktu_selesai = endDate;
+  }
+}
+
+function updateDaysDiff () {
+  const days = daysDiff(form.waktu_mulai, form.waktu_selesai);
+
+  if (days >= 0) {
+    form.durasi = days;
+  }
+}
 
 const form = useForm({
   nama_proyek: null,
@@ -23,10 +75,16 @@ const form = useForm({
   waktu_mulai: '',
   waktu_selesai: '',
   pic: null,
+  id_rekening: null
 });
 
 function submit() {
-  form.post(route('proyek'), {
+  form
+  .transform(form => ({
+      ...form,
+      waktu_selesai: endOfDate(form.waktu_mulai, form.durasi)
+  }))
+  .post(route('proyek'), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
@@ -35,16 +93,6 @@ function submit() {
     }
   });
 }
-
-// watch(form, (form) => {
-//   if (form.waktu_selesai && form.waktu_mulai) {    
-//     form.durasi = countDaysBetweenDates(form.waktu_mulai, form.waktu_selesai);
-//   }
-
-//   if (form.waktu_mulai) {    
-//     form.waktu_selesai = getEndOfDate(form.waktu_mulai, form.durasi);
-//   }
-// });
 </script>
 
 <template>
@@ -122,7 +170,8 @@ function submit() {
                   hide-bottom-space
                   label="Tanggal Mulai"
                   type="date"
-                  v-model="form.waktu_mulai"
+                  :model-value="form.waktu_mulai"
+                  @update:model-value="updateWaktuMulai(($event as string))"
                   :error="form.errors.waktu_mulai ? true : false"
                   :error-message="form.errors.waktu_mulai"
                 />
@@ -137,8 +186,11 @@ function submit() {
                   min="1"
                   type="number"
                   suffix="Hari"
-                  v-model="form.durasi"
                   input-class="text-right"
+                  :model-value="form.durasi"
+                  @update:model-value="updateDurasi(($event as number))"
+                  :error="form.errors.durasi ? true : false"
+                  :error-message="form.errors.durasi"
                 />
               </div>
             </div>
@@ -150,7 +202,8 @@ function submit() {
                   hide-bottom-space
                   label="Tanggal Selesai"
                   type="date"
-                  v-model="form.waktu_selesai"
+                  :model-value="form.waktu_selesai"
+                  @update:model-value="updateWaktuSelesai(($event as string))"
                   :error="form.errors.waktu_selesai ? true : false"
                   :error-message="form.errors.waktu_selesai"
                 />
@@ -173,6 +226,40 @@ function submit() {
                 />
               </div>
             </div>
+
+            <q-select
+              outlined
+              clearable
+              use-input
+              use-chips
+              emit-value
+              map-options
+              input-debounce="500"
+              label="Rekening Pembayaran"
+              v-model="form.id_rekening"
+              option-value="id_rekening"
+              :option-label="(opt) => `${opt.nama_bank} | ${opt.nomor_rekening} - ${opt.nama_rekening}`"
+              :options="rekeningOptionsRef"
+              @filter="rekeningFilter"
+            > 
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <strong class="text-primary">
+                      {{ scope.opt.nama_bank }}
+                    </strong>
+                    {{ scope.opt.nomor_rekening }} - {{ scope.opt.nama_rekening }}
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
           </div>
         </q-card-section>
 

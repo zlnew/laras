@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props =defineProps<{
@@ -18,55 +19,94 @@ const menuList = [
     separator: true,
   },
   {
-    icon: 'send',
+    icon: 'group',
+    label: 'Users',
+    link: route('users'),
+    active: route().current('users'),
+    onlyAdmin: true,
+    separator: false,
+    sectionTitle: 'Master'
+  },
+  {
+    icon: 'payments',
+    label: 'Rekening',
+    link: route('rekening'),
+    active: route().current('rekening'),
+    onlyAdmin: true,
+    separator: false,
+  },
+  {
+    icon: 'straighten',
+    label: 'Satuan',
+    link: route('satuan'),
+    active: route().current('satuan'),
+    onlyAdmin: true,
+    separator: true,
+  },
+  {
+    icon: 'topic',
     label: 'Proyek',
     link: route('proyek'),
     active: route().current('proyek'),
-    separator: false
+    separator: false,
+    sectionTitle: 'Main'
   },
   {
-    icon: 'delete',
+    icon: 'list_alt',
     label: 'RAB',
     link: route('rab'),
     active: route().current('rab'),
     separator: false
   },
   {
-    icon: 'error',
+    icon: 'list_alt',
     label: 'RAP',
     link: route('rap'),
     active: route().current('rap'),
     separator: true
   },
   {
-    icon: 'settings',
+    icon: 'paid',
     label: 'Keuangan',
     link: route('keuangan'),
     active: route().current('keuangan'),
-    separator: false
+    separator: false,
+    sectionTitle: 'Payments'
   },
   {
-    icon: 'feedback',
+    icon: 'price_check',
     label: 'Penagihan/Invoice',
     link: route('keuangan'),
     active: route().current('keuangan'),
     separator: true
   },
   {
-    icon: 'report',
-    label: 'Laporan Pengajuan Dana',
+    icon: 'summarize',
+    label: 'Pengajuan Dana',
     link: route('laporan.pengajuan_dana'),
     active: route().current('laporan.pengajuan_dana'),
-    separator: false
+    separator: false,
+    sectionTitle: 'Reports'
   },
   {
-    icon: 'report',
-    label: 'Laporan Penagihan/Invoice',
+    icon: 'summarize',
+    label: 'Penagihan/Invoice',
     link: route('laporan.penagihan'),
     active: route().current('laporan.penagihan'),
     separator: false
   }
-]
+];
+
+function isAdmin(): boolean {
+  const page = usePage();
+  const role = page.props.role;
+
+  if (role === 'admin') {
+    return true;
+  }
+
+  return false;
+}
 </script>
 
 <template>
@@ -88,32 +128,40 @@ const menuList = [
     <q-list>
 
       <template v-for="(menuItem, index) in menuList" :key="index">
-        <q-item
-          clickable
-          v-ripple
-          v-in-link="menuItem.link"
-          :active="menuItem.active"
-        >
-          <q-item-section avatar>
-            <q-avatar
-              rounded
-              :color="menuItem.active ? 'primary' : 'blue-grey-1'"
-              :text-color="menuItem.active ? 'white' : 'blue-grey'"
-              :icon="menuItem.icon"
-            />
-          </q-item-section>
-
-          <q-item-section
-            :class="{
-              'text-weight-bold': menuItem.active,
-              'text-blue-grey-8': !menuItem.active
-            }"
+        <div v-if="menuItem.onlyAdmin ? isAdmin() : true">
+          <q-item v-if="menuItem.sectionTitle">
+            <q-item-section class="text-secondary text-weight-bold">
+              {{ menuItem.sectionTitle }}
+            </q-item-section>
+          </q-item>
+          
+          <q-item
+            clickable
+            v-ripple
+            v-in-link="menuItem.link"
+            :active="menuItem.active"
           >
-            {{ menuItem.label }}
-          </q-item-section>
-        </q-item>
-
-        <q-separator :key="'sep' + index"  v-if="menuItem.separator" />
+            <q-item-section avatar>
+              <q-avatar
+                rounded
+                :color="menuItem.active ? 'primary' : 'blue-grey-1'"
+                :text-color="menuItem.active ? 'white' : 'blue-grey'"
+                :icon="menuItem.icon"
+              />
+            </q-item-section>
+  
+            <q-item-section
+              :class="{
+                'text-weight-bold': menuItem.active,
+                'text-blue-grey-8': !menuItem.active
+              }"
+            >
+              {{ menuItem.label }}
+            </q-item-section>
+          </q-item>
+  
+          <q-separator :key="'sep' + index"  v-if="menuItem.separator" />
+        </div>
       </template>
 
     </q-list>

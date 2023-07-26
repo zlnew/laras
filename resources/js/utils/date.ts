@@ -1,45 +1,39 @@
 import { DateTime } from "luxon";
 
-function getEndOfDate(startDate: string, daysDuration: number): string {
-  const [day, month, year] = startDate.split('-');
+const config = {
+  locale: 'id'
+};
 
-  const startOfDate = DateTime.fromObject({
-    day: parseInt(day),
-    month: parseInt(month),
-    year: parseInt(year)
-  });
+function fullDate(date: string | null): string | null {
+  if (date) {
+    const formattedDate = DateTime.fromSQL(date).setLocale(config.locale).toLocaleString(DateTime.DATE_FULL);
+    return formattedDate;
+  }
 
-  const endOfDate = startOfDate.plus({
-    days: daysDuration
-  });
-  
-  const formattedEndOfDate = endOfDate.toFormat('dd-MM-yyyy');
+  return date;
+};
 
-  return formattedEndOfDate;
+function daysDiff(startDate: string, endDate: string): number {
+  const start = DateTime.fromSQL(startDate);
+  const end = DateTime.fromSQL(endDate);
+
+  const diff = end.diff(start, 'days');
+
+  return diff.as('days');
 }
 
-function countDaysBetweenDates(startDateStr: string, endDateStr: string): number {
-  const [startDay, startMonth, startYear] = startDateStr.split('-');
-  const [endDay, endMonth, endYear] = endDateStr.split('-');
+function endOfDate(startDate: string, days: number): string | null{
+  const start = DateTime.fromSQL(startDate);
 
-  const startDate = DateTime.fromObject({
-    day: parseInt(startDay),
-    month: parseInt(startMonth),
-    year: parseInt(startYear),
-  });
-  
-  const endDate = DateTime.fromObject({
-    day: parseInt(endDay),
-    month: parseInt(endMonth),
-    year: parseInt(endYear),
+  const end = start.plus({
+    days: days - 1
   });
 
-  const diffInDays = endDate.diff(startDate, 'days').days;
-
-  return diffInDays;
+  return end.toSQLDate();
 }
 
 export {
-  getEndOfDate,
-  countDaysBetweenDates
+  fullDate,
+  daysDiff,
+  endOfDate,
 }
