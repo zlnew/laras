@@ -11,18 +11,18 @@ class StoreRequest extends FormRequest
         return true;
     }
 
-    public function attributes()
+    public function attributes(): array
     {
         return [
-            'id_detail_rab' => 'Uraian RAB'
+            'id_proyek' => 'proyek',
         ];
     }
 
     public function rules(): array
     {
         return [
-            'id_detail_rab' => ['required', 'exists:detail_rab,id_detail_rab'],
-            'volume_penagihan' => ['required', 'numeric', 'min:1']
+            'id_proyek' => ['required', 'exists:proyek,id_proyek'],
+            'keperluan' => ['required', 'string', 'max:255'],
         ];
     }
 }

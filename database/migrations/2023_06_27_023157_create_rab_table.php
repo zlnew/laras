@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('rab', function (Blueprint $table) {
             $table->ulid('id_rab')->primary();
-            $table->foreignUlid('id_proyek');
-            $table->decimal('tax', 3, 0)->default(11);
-            $table->decimal('additional_tax', 3, 0)->default(4);
+            $table->decimal('tax', 3, 2, true);
+            $table->decimal('additional_tax', 3, 2, true);
             $table->enum('status_rab', [100, 400])->default(100);
             $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Disetujui'])->default('Dibuat');
+            $table->foreignUlid('id_proyek');
             $table->timestamps();
             $table->softDeletes();
         });

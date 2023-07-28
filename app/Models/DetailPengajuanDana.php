@@ -13,12 +13,12 @@ class DetailPengajuanDana extends Model
     protected $table = 'detail_pengajuan_dana';
     protected $primaryKey = 'id_detail_pengajuan_dana';
     protected $fillable = [
-        'id_pengajuan_dana',
-        'id_detail_rap',
-        'id_rekening',
         'uraian',
         'jumlah_pengajuan',
         'jenis_pembayaran',
         'status_persetujuan',
+        'id_pengajuan_dana',
+        'id_detail_rap',
+        'id_rekening'
     ];
 }

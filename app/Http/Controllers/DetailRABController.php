@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class DetailRABController extends Controller
 {
@@ -17,20 +18,37 @@ class DetailRABController extends Controller
     {
         $rab = DB::table('rab')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'rab.id_proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('rab.deleted_at', null)
             ->where('rab.id_rab', $rab->id_rab)
+            ->select(
+                'rab.tax', 'rab.additional_tax',
+                'rab.status_rab', 'rab.status_aktivitas',
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'user.id as id_user',
+                'user.name as user_name', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening'
+            )
             ->first();
 
         $detailRab = DB::table('detail_rab')
             ->leftJoin('satuan', 'satuan.id_satuan', '=', 'detail_rab.id_satuan')
             ->where('detail_rab.deleted_at', null)
             ->where('detail_rab.id_rab', $rab->id_rab)
+            ->select(
+                'detail_rab.id_detail_rab', 'detail_rab.uraian',
+                'detail_rab.volume', 'detail_rab.harga_satuan',
+                'detail_rab.keterangan', 'detail_rab.id_rab',
+                'detail_rab.id_satuan', 'satuan.nama_satuan'
+            )
             ->orderBy('detail_rab.id_detail_rab', 'asc')
-            ->get();
-
-        $satuan = DB::table('satuan')
-            ->where('deleted_at', null)
-            ->select('id_satuan', 'nama_satuan')
             ->get();
 
         $timeline = DB::table('timeline')
@@ -47,12 +65,28 @@ class DetailRABController extends Controller
             ->orderBy('timeline.created_at', 'asc')
             ->get();
 
+        $formOptions = $this->formOptions();
+        
         return Inertia::render('DetailRAB/Index', [
             'rab' => $rab,
-            'detail_rab' => $detailRab,
-            'satuan' => $satuan,
-            'timeline' => $timeline
+            'detailRab' => $detailRab,
+            'timeline' => $timeline,
+            'formOptions' => $formOptions
         ]);
+    }
+
+    private function formOptions(): stdClass
+    {
+        $satuan = DB::table('satuan')
+            ->where('deleted_at', null)
+            ->select('id_satuan', 'nama_satuan')
+            ->get();
+
+        $options = (object) [
+            'satuan' => $satuan,
+        ];
+
+        return $options;
     }
 
     public function store(StoreRequest $request, RAB $rab): RedirectResponse
@@ -97,5 +131,10 @@ class DetailRABController extends Controller
         $detailRab->delete();
 
         return redirect()->back()->with('success', 'Uraian RAB berhasil dihapus!');
+    }
+
+    public function import(): RedirectResponse
+    {
+        return redirect()->back()->with('success', 'Uraian RAB berhasil diimport!');
     }
 }

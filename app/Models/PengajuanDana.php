@@ -14,9 +14,10 @@ class PengajuanDana extends Model
     protected $table = 'pengajuan_dana';
     protected $primaryKey = 'id_pengajuan_dana';
     protected $fillable = [
-        'id_keuangan',
+        'keperluan',
         'status_pengajuan',
-        'status_aktivitas'
+        'status_aktivitas',
+        'id_proyek'
     ];
     
     public $autoIncrement = false;

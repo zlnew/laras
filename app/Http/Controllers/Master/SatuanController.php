@@ -27,7 +27,7 @@ class SatuanController extends Controller
             ->orderBy('id_satuan', 'desc')
             ->paginate(10);
 
-        return Inertia::render('Master/Satuan/Index', [
+        return Inertia::render('Master/SatuanPage', [
             'satuan' => $satuan,
         ]);
     }

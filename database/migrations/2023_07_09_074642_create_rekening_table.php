@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('nama_bank');
             $table->string('nomor_rekening');
             $table->string('nama_rekening');
+            $table->enum('tujuan_rekening', ['Penerimaan Invoice', 'Daftar Rekening Keluar']);
             $table->timestamps();
             $table->softDeletes();
         });

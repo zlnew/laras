@@ -11,18 +11,18 @@ class StoreRequest extends FormRequest
         return true;
     }
 
-    public function attributes()
+    public function attributes(): array
     {
         return [
-            'id_detail_pengajuan_dana' => 'Uraian Pengajuan Dana'
+            'id_proyek' => 'proyek',
         ];
     }
 
     public function rules(): array
     {
         return [
-            'id_detail_pengajuan_dana' => ['required', 'exists:detail_pengajuan_dana,id_detail_pengajuan_dana'],
-            'jumlah_pencairan' => ['required', 'numeric', 'min:1'],
+            'id_proyek' => ['required', 'exists:proyek,id_proyek'],
+            'keperluan' => ['required', 'string', 'max:255'],
         ];
     }
 }

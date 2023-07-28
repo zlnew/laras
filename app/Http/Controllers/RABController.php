@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class RABController extends Controller
 {
@@ -19,39 +20,72 @@ class RABController extends Controller
     {
         $rabQuery = DB::table('rab')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'rab.id_proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('rab.deleted_at', null);
+
+        $role = $request->user()->role->first()->name;
+
+        if ($role === 'manajer proyek') {
+            $rabQuery->where('id_user', $request->user()->id);
+        }
 
         if ($request->isMethod('get') && $request->all()) {
             $rabQuery = $this->filter($request, $rabQuery);
         }
 
-        $rab = $rabQuery->select(
+        $rab = $rabQuery->group_by('rab.id_rab')
+            ->select(
                 'rab.id_rab', 'rab.status_rab',
                 'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran', 'proyek.pengguna_jasa',
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'user.id as id_user',
+                'user.name as user_name', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
             ->orderBy('rab.id_rab', 'desc')
-            ->paginate(10);
+            ->get();
 
+        $formOptions = $this->formOptions();
+            
+        return Inertia::render('Main/RABPage', [
+            'rab' => $rab,
+            'formOptions' => $formOptions
+        ]);
+    }
+
+    private function formOptions(): stdClass {
         $proyek = DB::table('proyek')
             ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
             ->where('rab.deleted_at', null)
-            ->where('rab.id_rab', null)
+            ->where('rab.id_proyek', null)
+            ->groupBy('proyek.id_proyek')
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.tahun_anggaran'
             )
             ->get();
-            
-        return Inertia::render('RAB/Index', [
-            'rab' => $rab,
+
+        $options = (object) [
             'proyek' => $proyek
-        ]);
+        ];
+
+        return $options;
     }
 
     private function filter($searchRequest, $rabQuery) {
-        $rabQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
-            $query->where('proyek.nama_proyek', 'like', $input . '%');
+        $rabQuery->when($searchRequest->get('id_proyek'), function($query, $input) {
+            $query->whereIn('rab.id_proyek', 'like', $input . '%');
+        });
+
+        $rabQuery->when($searchRequest->get('status_rab'), function($query, $input) {
+            $query->where('rab.status_rab', $input);
         });
 
         return $rabQuery;

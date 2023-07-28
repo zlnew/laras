@@ -14,14 +14,20 @@ return new class extends Migration
         Schema::create('proyek', function (Blueprint $table) {
             $table->ulid('id_proyek')->primary();
             $table->string('nama_proyek');
-            $table->string('tahun_anggaran', 15);
-            $table->string('pengguna_jasa', 50);
+            $table->string('nomor_kontrak', 25);
+            $table->date('tanggal_kontrak');
+            $table->string('pengguna_jasa', 128);
+            $table->string('penyedia_jasa', 128);
+            $table->year('tahun_anggaran');
+            $table->string('nomor_spmk');
+            $table->string('tanggal_spmk');
             $table->decimal('nilai_kontrak', 12, 2, true);
-            $table->date('waktu_mulai');
-            $table->date('waktu_selesai');
-            $table->string('pic', 50);
+            $table->date('tanggal_mulai');
+            $table->unsignedInteger('durasi');
+            $table->date('tanggal_selesai');
             $table->enum('status_proyek', [100, 400])->default(100);
-            $table->text('slug');
+            $table->foreignId('id_user');
+            $table->foreignUlid('id_rekening');
             $table->timestamps();
             $table->softDeletes();
         });

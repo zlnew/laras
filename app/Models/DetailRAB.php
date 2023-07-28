@@ -13,11 +13,11 @@ class DetailRAB extends Model
     protected $table = 'detail_rab';
     protected $primaryKey = 'id_detail_rab';
     protected $fillable = [
-        'id_rab',
-        'id_satuan',
         'uraian',
         'volume',
         'harga_satuan',
         'keterangan',
+        'id_rab',
+        'id_satuan'
     ];
 }

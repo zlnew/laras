@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Keuangan;
+namespace App\Http\Requests\PencairanDana;
 
 use Illuminate\Foundation\Http\FormRequest;
 

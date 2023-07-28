@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class RAPController extends Controller
 {
@@ -18,20 +19,46 @@ class RAPController extends Controller
     {
         $rapQuery = DB::table('rap')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'rap.id_proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('rap.deleted_at', null);
+
+        $role = $request->user()->role->first()->name;
+
+        if ($role === 'manajer proyek') {
+            $rapQuery->where('id_user', $request->user()->id);
+        }
 
         if ($request->isMethod('get') && $request->all()) {
             $rapQuery = $this->filter($request, $rapQuery);
         }
 
-        $rap = $rapQuery->select(
+        $rap = $rapQuery->group_by('rap.id_rap')
+            ->select(
                 'rap.id_rap', 'rap.status_rap',
                 'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran', 'proyek.pengguna_jasa',
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'user.id as id_user',
+                'user.name as user_name', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
             ->orderBy('rap.id_rap', 'desc')
-            ->paginate(10);
+            ->get();
 
+        $formOptions = $this->formOptions();
+            
+        return Inertia::render('RAP/Index', [
+            'rap' => $rap,
+            'formOptions' => $formOptions
+        ]);
+    }
+
+    private function formOptions(): stdClass {
         $proyek = DB::table('proyek')
             ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
@@ -43,16 +70,21 @@ class RAPController extends Controller
                 'proyek.tahun_anggaran'
             )
             ->get();
-            
-        return Inertia::render('RAP/Index', [
-            'rap' => $rap,
+
+        $options = (object) [
             'proyek' => $proyek
-        ]);
+        ];
+
+        return $options;
     }
 
     private function filter($searchRequest, $rapQuery) {
-        $rapQuery->when($searchRequest->get('nama_proyek'), function($query, $input) {
-            $query->where('proyek.nama_proyek', 'like', $input . '%');
+        $rapQuery->when($searchRequest->get('id_proyek'), function($query, $input) {
+            $query->whereIn('rap.id_proyek', $input);
+        });
+
+        $rapQuery->when($searchRequest->get('status_rap'), function($query, $input) {
+            $query->where('rap.status_rap', $input);
         });
 
         return $rapQuery;

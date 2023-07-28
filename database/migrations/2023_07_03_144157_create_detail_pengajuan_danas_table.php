@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('detail_pengajuan_dana', function (Blueprint $table) {
             $table->id('id_detail_pengajuan_dana');
-            $table->foreignUlid('id_pengajuan_dana');
-            $table->foreignUlid('id_detail_rap');
-            $table->foreignUlid('id_rekening');
             $table->string('uraian');
             $table->decimal('jumlah_pengajuan', 12, 2);
             $table->enum('jenis_pembayaran', ['Cash', 'Transfer']);
             $table->enum('status_persetujuan', [100, 400])->default(100);
+            $table->foreignUlid('id_pengajuan_dana');
+            $table->foreignUlid('id_detail_rap');
+            $table->foreignUlid('id_rekening');
             $table->timestamps();
             $table->softDeletes();
         });

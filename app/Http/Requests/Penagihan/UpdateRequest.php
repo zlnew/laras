@@ -11,18 +11,10 @@ class UpdateRequest extends FormRequest
         return true;
     }
 
-    public function attributes()
-    {
-        return [
-            'id_detail_rab' => 'Uraian RAB'
-        ];
-    }
-
     public function rules(): array
     {
         return [
-            'id_detail_rab' => ['required', 'exists:detail_rab,id_detail_rab'],
-            'volume_penagihan' => ['required', 'numeric', 'min:1']
+            'keperluan' => ['required', 'string', 'max:255'],
         ];
     }
 }

@@ -10,26 +10,46 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class DetailRAPController extends Controller
 {
-    public function index(RAP $rap): Response {
+    public function index(RAP $rap): Response
+    {
         $rap = DB::table('rap')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'rap.id_proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('rap.deleted_at', null)
             ->where('rap.id_rap', $rap->id_rap)
+            ->select(
+                'rap.tax', 'rap.additional_tax',
+                'rap.status_rap', 'rap.status_aktivitas',
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'user.id as id_user',
+                'user.name as user_name', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening'
+            )
             ->first();
 
         $detailRap = DB::table('detail_rap')
             ->leftJoin('satuan', 'satuan.id_satuan', '=', 'detail_rap.id_satuan')
             ->where('detail_rap.deleted_at', null)
             ->where('detail_rap.id_rap', $rap->id_rap)
+            ->select(
+                'detail_rap.id_detail_rap', 'detail_rap.uraian',
+                'detail_rap.volume', 'detail_rap.harga_satuan',
+                'detail_rap.status_uraian', 'detail_rap.keterangan',
+                'detail_rap.id_rab', 'detail_rap.id_satuan',
+                'satuan.nama_satuan'
+            )
             ->orderBy('detail_rap.id_detail_rap', 'asc')
-            ->get();
-
-        $satuan = DB::table('satuan')
-            ->where('deleted_at', null)
-            ->select('id_satuan', 'nama_satuan')
             ->get();
 
         $timeline = DB::table('timeline')
@@ -46,12 +66,28 @@ class DetailRAPController extends Controller
             ->orderBy('timeline.created_at', 'asc')
             ->get();
 
+        $formOptions = $this->formOptions();
+
         return Inertia::render('DetailRAP/Index', [
             'rap' => $rap,
             'detail_rap' => $detailRap,
-            'satuan' => $satuan,
-            'timeline' => $timeline
+            'timeline' => $timeline,
+            'formOptions' => $formOptions
         ]);
+    }
+
+    private function formOptions(): stdClass
+    {
+        $satuan = DB::table('satuan')
+            ->where('deleted_at', null)
+            ->select('id_satuan', 'nama_satuan')
+            ->get();
+
+        $options = (object) [
+            'satuan' => $satuan,
+        ];
+
+        return $options;
     }
 
     public function store(StoreRequest $request, RAP $rap): RedirectResponse

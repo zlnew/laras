@@ -13,12 +13,12 @@ class DetailRAP extends Model
     protected $table = 'detail_rap';
     protected $primaryKey = 'id_detail_rap';
     protected $fillable = [
-        'id_rap',
-        'id_satuan',
         'uraian',
         'volume',
         'harga_satuan',
-        'keterangan',
         'status_uraian',
+        'keterangan',
+        'id_rap',
+        'id_satuan'
     ];
 }

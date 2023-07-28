@@ -23,6 +23,8 @@
         "vue-tsc": "^1.2.0"
     },
     "dependencies": {
+        "@dicebear/collection": "^6.0.4",
+        "@dicebear/core": "^6.0.4",
         "@quasar/extras": "^1.16.5",
         "luxon": "^3.3.0",
         "quasar": "^2.12.3"

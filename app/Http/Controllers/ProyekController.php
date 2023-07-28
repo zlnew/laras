@@ -8,7 +8,6 @@ use App\Models\Proyek;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use stdClass;
@@ -18,6 +17,7 @@ class ProyekController extends Controller
     public function index(Request $request): Response
     {
         $proyekQuery = DB::table('proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('proyek.deleted_at', NULL);
 
@@ -28,45 +28,45 @@ class ProyekController extends Controller
         $proyek = $proyekQuery
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran', 'proyek.pengguna_jasa',
-                'proyek.penyedia_jasa', 'proyek.durasi',
-                'proyek.waktu_mulai', 'proyek.waktu_selesai',
-                'proyek.nilai_kontrak', 'proyek.pic',
-                'proyek.status_proyek', 'rekening.id_rekening',
-                'rekening.nama_bank', 'rekening.nomor_rekening',
-                'rekening.nama_rekening'
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'user.id as id_user',
+                'user.name as user_name', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
             ->orderBy('proyek.id_proyek', 'desc')
             ->get();
-
-        $rekening = DB::table('rekening')
-            ->where('deleted_at', null)
-            ->select(
-                'rekening.id_rekening', 'rekening.nama_bank',
-                'rekening.nomor_rekening', 'rekening.nama_rekening'
-            )->get();
         
-        $filterOptions = $this->createOptions();
+        $formOptions = $this->formOptions();
 
         return Inertia::render('Main/ProyekPage', [
             'proyek' => $proyek,
-            'rekening' => $rekening,
-            'filterOptions' => $filterOptions
+            'formOptions' => $formOptions
         ]);
     }
 
-    private function createOptions(): stdClass {
+    private function formOptions(): stdClass {
         $penggunaJasaOptions = DB::table('proyek')
             ->groupBy('pengguna_jasa')
             ->pluck('pengguna_jasa');
+
+        $penyediaJasaOptions = DB::table('proyek')
+            ->groupBy('penyedia_jasa')
+            ->pluck('penyedia_jasa');
         
         $tahunAnggaranOptions = DB::table('proyek')
             ->groupBy('tahun_anggaran')
             ->pluck('tahun_anggaran');
 
         $picOptions = DB::table('proyek')
-            ->groupBy('pic')
-            ->pluck('pic');
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->groupBy('proyek.id_user')
+            ->select('proyek.id_user', 'users.name')
+            ->get();
         
         $rekeningOptions = DB::table('proyek')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
@@ -77,12 +77,13 @@ class ProyekController extends Controller
                 'rekening.nomor_rekening', 'rekening.nama_rekening'
             )->get();
     
-        $options = new stdClass;
-
-        $options->pengguna_jasa = $penggunaJasaOptions;
-        $options->tahun_anggaran = $tahunAnggaranOptions;
-        $options->pic = $picOptions;
-        $options->rekening = $rekeningOptions;
+        $options = (object) [
+            'pengguna_jasa' => $penggunaJasaOptions,
+            'penyedia_jasa' => $penyediaJasaOptions,
+            'tahun_anggaran' => $tahunAnggaranOptions,
+            'pic' => $picOptions,
+            'rekening' => $rekeningOptions,
+        ];
 
         return $options;
     }
@@ -92,20 +93,32 @@ class ProyekController extends Controller
             $query->where('proyek.nama_proyek', 'like', '%' . $input . '%');
         });
 
-        $proyekQuery->when($searchRequest->get('tahun_anggaran'), function($query, $input) {
-            $query->whereIn('proyek.tahun_anggaran', $input);
+        $proyekQuery->when($searchRequest->get('nomor_kontrak'), function($query, $input) {
+            $query->where('proyek.nomor_kontrak', $input);
         });
-        
+
+        $proyekQuery->when($searchRequest->get('tanggal_kontrak'), function($query, $input) {
+            $query->where('proyek.tanggal_kontrak', $input);
+        });
+
         $proyekQuery->when($searchRequest->get('pengguna_jasa'), function($query, $input) {
             $query->whereIn('proyek.pengguna_jasa', $input);
         });
 
-        $proyekQuery->when($searchRequest->get('waktu_mulai'), function($query, $input) {
-            $query->where('proyek.waktu_mulai', '>=', $input);
+        $proyekQuery->when($searchRequest->get('penyedia_jasa'), function($query, $input) {
+            $query->whereIn('proyek.penyedia_jasa', $input);
         });
 
-        $proyekQuery->when($searchRequest->get('waktu_selesai'), function($query, $input) {
-            $query->where('proyek.waktu_selesai', '<=', $input);
+        $proyekQuery->when($searchRequest->get('tahun_anggaran'), function($query, $input) {
+            $query->whereIn('proyek.tahun_anggaran', $input);
+        });
+
+        $proyekQuery->when($searchRequest->get('nomor_spmk'), function($query, $input) {
+            $query->where('proyek.nomor_spmk', $input);
+        });
+
+        $proyekQuery->when($searchRequest->get('tanggal_spmk'), function($query, $input) {
+            $query->where('proyek.tanggal_spmk', $input);
         });
 
         $proyekQuery->when($searchRequest->get('nilai_kontrak_min'), function($query, $input) {
@@ -116,8 +129,16 @@ class ProyekController extends Controller
             $query->where('proyek.nilai_kontrak', '<=', $input);
         });
 
+        $proyekQuery->when($searchRequest->get('tanggal_mulai'), function($query, $input) {
+            $query->where('proyek.tanggal_mulai', '>=', $input);
+        });
+
+        $proyekQuery->when($searchRequest->get('tanggal_selesai'), function($query, $input) {
+            $query->where('proyek.tanggal_selesai', '<=', $input);
+        });
+
         $proyekQuery->when($searchRequest->get('pic'), function($query, $input) {
-            $query->whereIn('proyek.pic', $input);
+            $query->whereIn('proyek.user_id', $input);
         });
 
         $proyekQuery->when($searchRequest->get('rekening'), function($query, $input) {
@@ -139,14 +160,19 @@ class ProyekController extends Controller
 
         $proyek->fill([
             'nama_proyek' => $validated->nama_proyek,
-            'tahun_anggaran' => $validated->tahun_anggaran,
+            'nomor_kontrak' => $validated->nomor_kontrak,
+            'tanggal_kontrak' => $validated->tanggal_kontrak,
             'pengguna_jasa' => $validated->pengguna_jasa,
+            'penyedia_jasa' => $validated->penyedia_jasa,
+            'tahun_anggaran' => $validated->tahun_anggaran,
+            'nomor_spmk' => $validated->nomor_spmk,
+            'tanggal_spmk' => $validated->tanggal_spmk,
             'nilai_kontrak' => $validated->nilai_kontrak,
-            'waktu_mulai' => $validated->waktu_mulai,
-            'waktu_selesai' => $validated->waktu_selesai,
-            'pic' => $validated->pic,
+            'tanggal_mulai' => $validated->tanggal_mulai,
+            'durasi' => $validated->durasi,
+            'tanggal_selesai' => $validated->tanggal_selesai,
+            'id_user' => $validated->id_user,
             'id_rekening' => $validated->id_rekening,
-            'slug' => Str::slug($validated->nama_proyek),
         ]);
 
         $proyek->save();
@@ -160,14 +186,19 @@ class ProyekController extends Controller
 
         $proyek->fill([
             'nama_proyek' => $validated->nama_proyek,
-            'tahun_anggaran' => $validated->tahun_anggaran,
+            'nomor_kontrak' => $validated->nomor_kontrak,
+            'tanggal_kontrak' => $validated->tanggal_kontrak,
             'pengguna_jasa' => $validated->pengguna_jasa,
+            'penyedia_jasa' => $validated->penyedia_jasa,
+            'tahun_anggaran' => $validated->tahun_anggaran,
+            'nomor_spmk' => $validated->nomor_spmk,
+            'tanggal_spmk' => $validated->tanggal_spmk,
             'nilai_kontrak' => $validated->nilai_kontrak,
-            'waktu_mulai' => $validated->waktu_mulai,
-            'waktu_selesai' => $validated->waktu_selesai,
-            'pic' => $validated->pic,
+            'tanggal_mulai' => $validated->tanggal_mulai,
+            'durasi' => $validated->durasi,
+            'tanggal_selesai' => $validated->tanggal_selesai,
+            'id_user' => $validated->id_user,
             'id_rekening' => $validated->id_rekening,
-            'slug' => Str::slug($validated->nama_proyek),
         ]);
 
         $proyek->save();
@@ -180,5 +211,13 @@ class ProyekController extends Controller
         $proyek->delete();
 
         return redirect()->route('proyek')->with('success', 'Proyek berhasil dihapus!');
+    }
+
+    public function close(Proyek $proyek): RedirectResponse
+    {
+        $proyek->status_proyek = '400';
+        $proyek->save();
+
+        return redirect()->route('proyek')->with('success', 'Status Proyek berhasil ditutup!');
     }
 }

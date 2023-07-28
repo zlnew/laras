@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { avatar } from '@/utils/avatar';
+
 defineEmits(['toggleLeftDrawer']);
 </script>
 
@@ -16,7 +18,7 @@ defineEmits(['toggleLeftDrawer']);
       <q-item clickable v-ripple class="rounded-borders">
         <q-item-section side>
           <q-avatar size="48px">
-            <img src="https://cdn.quasar.dev/img/avatar.png" />
+            <img :src="avatar($page.props.auth.user.name)" />
           </q-avatar>
         </q-item-section>
 

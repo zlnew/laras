@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('keuangan', function (Blueprint $table) {
-            $table->ulid('id_keuangan')->primary();
-            $table->foreignUlid('id_proyek');
-            $table->string('keperluan');
+        Schema::create('files', function (Blueprint $table) {
+            $table->id('id_file');
+            $table->string('file_name')->nullable();
+            $table->binary('file_path');
+            $table->string('model_type');
+            $table->foreignUlid('model_id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('keuangan');
+        Schema::dropIfExists('files');
     }
 };
