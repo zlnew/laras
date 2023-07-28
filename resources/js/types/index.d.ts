@@ -43,14 +43,19 @@ export interface Flash {
 export interface Proyek {
     id_proyek: string;
     nama_proyek: string;
-    tahun_anggaran: string;
+    nomor_kontrak: string;
+    tanggal_kontrak: string;
     pengguna_jasa: string;
     penyedia_jasa: string;
-    waktu_mulai: string;
-    durasi: number;
-    waktu_selesai: string;
+    tahun_anggaran: string;
+    nomor_spmk: string;
+    tanggal_spmk: string;
     nilai_kontrak: number;
-    pic: string;
+    tanggal_mulai: string;
+    durasi: number;
+    tanggal_selesai: string;
+    id_user: number;
+    id_rekening: string;
     status_proyek: 100 | 400;
     created_at: string;
     updated_at: string;
@@ -208,6 +213,7 @@ export interface Rekening {
     nama_bank: string;
     nomor_rekening: string;
     nama_rekening: string;
+    tujuan_rekening: string;
     created_at: string;
     updated_at: string;
     deleted_at: string;

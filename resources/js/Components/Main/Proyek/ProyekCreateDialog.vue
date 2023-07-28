@@ -6,11 +6,11 @@ import { ref } from 'vue';
 
 // utils
 import { toRupiah } from '@/utils/money';
-import { multiFilterOptions } from '@/utils/options';
+import { filterOptions, multiFilterOptions } from '@/utils/options';
+import { daysDiff, endOfDate } from '@/utils/date';
 
 // types
-import { Rekening } from '@/types';
-import { daysDiff, endOfDate } from '@/utils/date';
+import { FormOptions } from '@/Pages/Main/ProyekPage.vue';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -19,27 +19,57 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
 const props = defineProps<{
-  rekening: Array<Rekening>;
+  options: FormOptions;
 }>();
 
-const rekeningOptionsRef = ref(props.rekening);
+const penggunaJasaOptionsRef = ref(props.options.penggunaJasa);
+const penyediaJasaOptionsRef = ref(props.options.penyediaJasa);
+const tahunAnggaranOptionsRef = ref(props.options.tahunAnggaran);
+const rekeningOptionsRef = ref(props.options.rekening);
+const picOptionsRef = ref(props.options.pic);
+
+function penggunaJasaFilter (val: string, update: Function) {
+  update(() => {
+    penggunaJasaOptionsRef.value = filterOptions(val, props.options.penggunaJasa)
+  });
+}
+
+function penyediaJasaFilter (val: string, update: Function) {
+  update(() => {
+    penyediaJasaOptionsRef.value = filterOptions(val, props.options.penyediaJasa)
+  });
+}
+
+function tahunAnggaranFilter (val: string, update: Function) {
+  update(() => {
+    tahunAnggaranOptionsRef.value = filterOptions(val, props.options.tahunAnggaran)
+  });
+}
 
 function rekeningFilter (val: string, update: Function) {
   update(() => {
     rekeningOptionsRef.value = multiFilterOptions(
-      val, props.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
+      val, props.options.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
     )
   });
 }
 
-function updateWaktuMulai (val: string) {
-  form.waktu_mulai = val;
+function picFilter (val: string, update: Function) {
+  update(() => {
+    picOptionsRef.value = multiFilterOptions(
+      val, props.options.pic, ['id', 'name']
+    )
+  });
+}
+
+function updateTanggalMulai (val: string) {
+  form.tanggal_mulai = val;
 
   updateDaysDiff();
 }
 
-function updateWaktuSelesai (val: string) {
-  form.waktu_selesai = val;
+function updateTanggalSelesai (val: string) {
+  form.tanggal_selesai = val;
 
   updateDaysDiff();
 }
@@ -51,15 +81,15 @@ function updateDurasi (val: number) {
 }
 
 function updateEndOfDate () {
-  const endDate = endOfDate(form.waktu_mulai, form.durasi);
+  const endDate = endOfDate(form.tanggal_mulai, form.durasi);
 
-  if (endDate && endDate > form.waktu_mulai) {
-    form.waktu_selesai = endDate;
+  if (endDate && endDate > form.tanggal_mulai) {
+    form.tanggal_selesai = endDate;
   }
 }
 
 function updateDaysDiff () {
-  const days = daysDiff(form.waktu_mulai, form.waktu_selesai);
+  const days = daysDiff(form.tanggal_mulai, form.tanggal_selesai);
 
   if (days >= 0) {
     form.durasi = days;
@@ -68,13 +98,18 @@ function updateDaysDiff () {
 
 const form = useForm({
   nama_proyek: null,
+  nomor_kontrak: null,
+  tanggal_kontrak: '',
   pengguna_jasa: null,
+  penyedia_jasa: null,
   tahun_anggaran: null,
+  nomor_spmk: null,
+  tanggal_spmk: '',
   nilai_kontrak: 0,
+  tanggal_mulai: '',
   durasi: 1,
-  waktu_mulai: '',
-  waktu_selesai: '',
-  pic: null,
+  tanggal_selesai: '',
+  id_user: null,
   id_rekening: null
 });
 
@@ -82,9 +117,9 @@ function submit() {
   form
   .transform(form => ({
       ...form,
-      waktu_selesai: endOfDate(form.waktu_mulai, form.durasi)
+      tanggal_selesai: endOfDate(form.tanggal_mulai, form.durasi)
   }))
-  .post(route('proyek'), {
+  .post(route('proyek.store'), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
@@ -130,38 +165,161 @@ function submit() {
               :error-message="form.errors.nama_proyek"
             />
 
-            <q-input
+            <div class="row">
+              <div class="col-12 col-md-6 q-pr-sm">
+                <q-input
+                  outlined
+                  autogrow
+                  hide-bottom-space
+                  clear-icon="close"
+                  label="Nomor Kontrak"
+                  v-model="form.nomor_kontrak"
+                  :error="form.errors.nomor_kontrak ? true : false"
+                  :error-message="form.errors.nomor_kontrak"
+                />
+              </div>
+
+              <div class="col-12 col-md-6 q-pl-sm">
+                <q-input
+                  outlined
+                  hide-bottom-space
+                  label="Tanggal Kontrak"
+                  type="date"
+                  v-model="form.tanggal_kontrak"
+                  :error="form.errors.tanggal_kontrak ? true : false"
+                  :error-message="form.errors.tanggal_kontrak"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 col-md-6 q-pr-sm">
+                <q-select
+                  outlined
+                  clearable
+                  use-input
+                  hide-bottom-space
+                  input-debounce="500"
+                  new-value-mode="add-unique"
+                  label="Pengguna Jasa"
+                  v-model="form.pengguna_jasa"
+                  :options="penggunaJasaOptionsRef"
+                  :error="form.errors.pengguna_jasa ? true : false"
+                  :error-message="form.errors.pengguna_jasa"
+                  @filter="penggunaJasaFilter"
+                > 
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Enter to add new pengguna jasa
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
+              <div class="col-12 col-md-6 q-pl-sm">
+                <q-select
+                  outlined
+                  clearable
+                  use-input
+                  hide-bottom-space
+                  input-debounce="500"
+                  new-value-mode="add-unique"
+                  label="Penyedia Jasa"
+                  v-model="form.penyedia_jasa"
+                  :options="penyediaJasaOptionsRef"
+                  :error="form.errors.penyedia_jasa ? true : false"
+                  :error-message="form.errors.penyedia_jasa"
+                  @filter="penyediaJasaFilter"
+                > 
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        Enter to add new penyedia jasa
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
+            </div>
+
+            <q-select
               outlined
+              clearable
+              use-input
+              use-chips
               hide-bottom-space
-              clear-icon="close"
+              input-debounce="500"
+              new-value-mode="add-unique"
               label="Tahun Anggaran"
-              mask="####"
               v-model="form.tahun_anggaran"
+              :options="tahunAnggaranOptionsRef"
               :error="form.errors.tahun_anggaran ? true : false"
               :error-message="form.errors.tahun_anggaran"
-            />
+              @filter="tahunAnggaranFilter"
+            > 
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    Enter to add new tahun anggaran
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
 
-            <q-input
-              outlined
-              autogrow
-              hide-bottom-space
-              clear-icon="close"
-              label="Pengguna Jasa"
-              v-model="form.pengguna_jasa"
-              :error="form.errors.pengguna_jasa ? true : false"
-              :error-message="form.errors.pengguna_jasa"
-            />
+            <div class="row">
+              <div class="col-12 col-md-6 q-pr-sm">
+                <q-input
+                  outlined
+                  autogrow
+                  hide-bottom-space
+                  clear-icon="close"
+                  label="Nomor SPMK"
+                  v-model="form.nomor_spmk"
+                  :error="form.errors.nomor_spmk ? true : false"
+                  :error-message="form.errors.nomor_spmk"
+                />
+              </div>
 
-            <q-input
+              <div class="col-12 col-md-6 q-pl-sm">
+                <q-input
+                  outlined
+                  hide-bottom-space
+                  label="Tanggal SPMK"
+                  type="date"
+                  v-model="form.tanggal_spmk"
+                  :error="form.errors.tanggal_spmk ? true : false"
+                  :error-message="form.errors.tanggal_spmk"
+                />
+              </div>
+            </div>
+
+            <q-select
               outlined
-              autogrow
+              clearable
+              use-input
+              use-chips
+              emit-value
+              map-options
               hide-bottom-space
-              clear-icon="close"
-              label="Penanggung Jawab (PIC)"
-              v-model="form.pic"
-              :error="form.errors.pic ? true : false"
-              :error-message="form.errors.pic"
-            />
+              input-debounce="500"
+              label="PIC/Penanggung Jawab"
+              v-model="form.id_user"
+              option-value="id"
+              option-label="name"
+              :options="picOptionsRef"
+              :error="form.errors.id_user ? true : false"
+              :error-message="form.errors.id_user"
+              @filter="picFilter"
+            > 
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
 
             <div class="row">
               <div class="col-12 col-md-6 q-pr-sm">
@@ -170,10 +328,10 @@ function submit() {
                   hide-bottom-space
                   label="Tanggal Mulai"
                   type="date"
-                  :model-value="form.waktu_mulai"
-                  @update:model-value="updateWaktuMulai(($event as string))"
-                  :error="form.errors.waktu_mulai ? true : false"
-                  :error-message="form.errors.waktu_mulai"
+                  :model-value="form.tanggal_mulai"
+                  @update:model-value="updateTanggalMulai(($event as string))"
+                  :error="form.errors.tanggal_mulai ? true : false"
+                  :error-message="form.errors.tanggal_mulai"
                 />
               </div>
 
@@ -202,10 +360,10 @@ function submit() {
                   hide-bottom-space
                   label="Tanggal Selesai"
                   type="date"
-                  :model-value="form.waktu_selesai"
-                  @update:model-value="updateWaktuSelesai(($event as string))"
-                  :error="form.errors.waktu_selesai ? true : false"
-                  :error-message="form.errors.waktu_selesai"
+                  :model-value="form.tanggal_selesai"
+                  @update:model-value="updateTanggalSelesai(($event as string))"
+                  :error="form.errors.tanggal_selesai ? true : false"
+                  :error-message="form.errors.tanggal_selesai"
                 />
               </div>
 
@@ -234,12 +392,15 @@ function submit() {
               use-chips
               emit-value
               map-options
+              hide-bottom-space
               input-debounce="500"
               label="Rekening Pembayaran"
               v-model="form.id_rekening"
               option-value="id_rekening"
               :option-label="(opt) => `${opt.nama_bank} | ${opt.nomor_rekening} - ${opt.nama_rekening}`"
               :options="rekeningOptionsRef"
+              :error="form.errors.id_rekening ? true : false"
+              :error-message="form.errors.id_rekening"
               @filter="rekeningFilter"
             > 
               <template v-slot:option="scope">

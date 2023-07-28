@@ -67,17 +67,24 @@ const menuList = [
   },
   {
     icon: 'paid',
-    label: 'Keuangan',
-    link: route('keuangan'),
-    active: route().current('keuangan'),
+    label: 'Pengajuan Dana',
+    link: route('pengajuan_dana'),
+    active: route().current('pengajuan_dana'),
     separator: false,
-    sectionTitle: 'Payments'
+    sectionTitle: 'Keuangan'
+  },
+  {
+    icon: 'paid',
+    label: 'Pencairan Dana',
+    link: route('pencairan_dana'),
+    active: route().current('pencairan_dana'),
+    separator: false
   },
   {
     icon: 'price_check',
     label: 'Penagihan/Invoice',
-    link: route('keuangan'),
-    active: route().current('keuangan'),
+    link: route('penagihan'),
+    active: route().current('penagihan'),
     separator: true
   },
   {

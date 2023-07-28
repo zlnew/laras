@@ -9,24 +9,25 @@ import Layout from '@/Layouts/AuthenticatedLayout.vue';
 import { ProyekTable } from '@/Components/Main/proyek-page';
 
 // types
-import { Proyek, Rekening } from '@/types';
+import { Proyek, Rekening, User } from '@/types';
 
 const breadcrumbs = [
   { label: 'Main', url: '#' },
   { label: 'Proyek', url: '#' }
 ];
 
-export interface ProyekFilterOptions {
-  pengguna_jasa: string[];
-  tahun_anggaran: string[];
-  pic: string[];
+export interface FormOptions {
+  penggunaJasa: string[];
+  penyediaJasa: string[];
+  tahunAnggaran: string[];
+  pic: Array<User>;
+  currentPic: Array<User>;
   rekening: Array<Rekening>;
 }
 
 defineProps<{
   proyek: Array<Proyek>;
-  rekening: Array<Rekening>;
-  filterOptions: ProyekFilterOptions;
+  formOptions: FormOptions;
 }>();
 </script>
 
@@ -46,8 +47,7 @@ defineProps<{
 
     <proyek-table
       :rows="proyek"
-      :rekening="rekening"
-      :filter-options="filterOptions"
+      :form-options="formOptions"
     />
 
   </layout>

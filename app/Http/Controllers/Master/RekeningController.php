@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class RekeningController extends Controller
 {
@@ -30,17 +31,30 @@ class RekeningController extends Controller
                 'tujuan_rekening'
             )
             ->orderBy('id_rekening', 'desc')
-            ->paginate(10);
-
-        $banks = DB::table('rekening')
-            ->groupBy('nama_bank')
-            ->select('nama_bank')
             ->get();
+
+        $formOptions = $this->formOptions();
 
         return Inertia::render('Master/RekeningPage', [
             'rekening' => $rekening,
-            'banks' => $banks,
+            'formOptions' => $formOptions
         ]);
+    }
+
+    public function formOptions(): stdClass
+    {
+        $banks = DB::table('rekening')
+            ->groupBy('nama_bank')
+            ->pluck('nama_bank');
+
+        $tujuanRekening = ['Penerimaan Invoice', 'Daftar Rekening Keluar'];
+
+        $options = (object) [
+            'banks' => $banks,
+            'tujuanRekening' => $tujuanRekening
+        ];
+
+        return $options;
     }
 
     public function filter(Request $request, $rekeningQuery): Builder

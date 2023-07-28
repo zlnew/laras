@@ -1,4 +1,5 @@
 export {default as ProyekTable} from '@/Components/Main/Proyek/ProyekTable.vue';
+export {default as ProyekDetailDialog} from '@/Components/Main/Proyek/ProyekDetailDialog.vue'
 export {default as ProyekSearchDialog} from '@/Components/Main/Proyek/ProyekSearchDialog.vue';
 export {default as ProyekCreateDialog} from '@/Components/Main/Proyek/ProyekCreateDialog.vue';
 export {default as ProyekEditDialog} from '@/Components/Main/Proyek/ProyekEditDialog.vue';

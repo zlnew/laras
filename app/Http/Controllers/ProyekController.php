@@ -33,8 +33,8 @@ class ProyekController extends Controller
                 'proyek.tahun_anggaran', 'proyek.nomor_spmk',
                 'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
                 'proyek.tanggal_mulai', 'proyek.durasi',
-                'proyek.tanggal_selesai', 'user.id as id_user',
-                'user.name as user_name', 'proyek.status_proyek',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
                 'rekening.id_rekening', 'rekening.nama_bank',
                 'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
@@ -51,37 +51,44 @@ class ProyekController extends Controller
 
     private function formOptions(): stdClass {
         $penggunaJasaOptions = DB::table('proyek')
+            ->where('deleted_at', null)
             ->groupBy('pengguna_jasa')
             ->pluck('pengguna_jasa');
 
         $penyediaJasaOptions = DB::table('proyek')
+            ->where('deleted_at', null)
             ->groupBy('penyedia_jasa')
             ->pluck('penyedia_jasa');
         
         $tahunAnggaranOptions = DB::table('proyek')
+            ->where('deleted_at', null)
             ->groupBy('tahun_anggaran')
             ->pluck('tahun_anggaran');
 
-        $picOptions = DB::table('proyek')
+        $picOptions = DB::table('users')
+            ->select('id', 'name')
+            ->get();
+
+        $currentPicOptions = DB::table('proyek')
+            ->where('proyek.deleted_at', null)
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->groupBy('proyek.id_user')
-            ->select('proyek.id_user', 'users.name')
+            ->select('proyek.id_user as id', 'users.name')
             ->get();
         
-        $rekeningOptions = DB::table('proyek')
-            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
-            ->where('proyek.id_rekening', '!=', NULL)
-            ->groupBy('proyek.id_rekening')
+        $rekeningOptions = DB::table('rekening')
+            ->where('deleted_at', null)
             ->select(
-                'rekening.id_rekening', 'rekening.nama_bank',
-                'rekening.nomor_rekening', 'rekening.nama_rekening'
+                'id_rekening', 'nama_bank',
+                'nomor_rekening', 'nama_rekening'
             )->get();
     
         $options = (object) [
-            'pengguna_jasa' => $penggunaJasaOptions,
-            'penyedia_jasa' => $penyediaJasaOptions,
-            'tahun_anggaran' => $tahunAnggaranOptions,
+            'penggunaJasa' => $penggunaJasaOptions,
+            'penyediaJasa' => $penyediaJasaOptions,
+            'tahunAnggaran' => $tahunAnggaranOptions,
             'pic' => $picOptions,
+            'currentPic' => $currentPicOptions,
             'rekening' => $rekeningOptions,
         ];
 
@@ -137,11 +144,11 @@ class ProyekController extends Controller
             $query->where('proyek.tanggal_selesai', '<=', $input);
         });
 
-        $proyekQuery->when($searchRequest->get('pic'), function($query, $input) {
-            $query->whereIn('proyek.user_id', $input);
+        $proyekQuery->when($searchRequest->get('id_user'), function($query, $input) {
+            $query->whereIn('proyek.id_user', $input);
         });
 
-        $proyekQuery->when($searchRequest->get('rekening'), function($query, $input) {
+        $proyekQuery->when($searchRequest->get('id_rekening'), function($query, $input) {
             $query->whereIn('proyek.id_rekening', $input);
         });
 

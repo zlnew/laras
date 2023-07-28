@@ -27,7 +27,7 @@ class UpdateRequest extends FormRequest
             'tanggal_kontrak' => ['required', 'date'],
             'pengguna_jasa' => ['required', 'string', 'max:128'],
             'penyedia_jasa' => ['required', 'string', 'max:128'],
-            'tahun_anggaran' => ['required', 'numeric', 'max:4'],
+            'tahun_anggaran' => ['required', 'numeric', 'digits:4'],
             'nomor_spmk' => ['required', 'string', 'max:255'],
             'tanggal_spmk' => ['required', 'date'],
             'nilai_kontrak' => ['required', 'numeric', 'min:1'],

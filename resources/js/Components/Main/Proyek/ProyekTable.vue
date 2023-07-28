@@ -5,15 +5,16 @@ import { ref } from 'vue';
 
 // utils
 import { toRupiah } from '@/utils/money';
-import { fullDate, endOfDate } from '@/utils/date';
+import { fullDate } from '@/utils/date';
 
 // types
-import { Proyek, Rekening } from '@/types';
+import { Proyek } from '@/types';
 import { QTableColumn, useQuasar } from 'quasar';
-import { ProyekFilterOptions } from '@/Pages/Main/ProyekPage.vue';
+import { FormOptions } from '@/Pages/Main/ProyekPage.vue';
 
 // comps
 import {
+  ProyekDetailDialog,
   ProyekSearchDialog,
   ProyekCreateDialog,
   ProyekEditDialog,
@@ -22,18 +23,26 @@ import {
 
 const props = defineProps<{
   rows: Array<Proyek>;
-  rekening: Array<Rekening>;
-  filterOptions: ProyekFilterOptions; 
+  formOptions: FormOptions; 
 }>();
 
 const $q = useQuasar();
+
+function detailProyek(data: Proyek) {
+  $q.dialog({
+    component: ProyekDetailDialog,
+    componentProps: {
+      proyek: data,
+    }
+  });
+}
 
 function searchProyek() {
   $q.dialog({
     component: ProyekSearchDialog,
     componentProps: {
       rows: props.rows,
-      options: props.filterOptions
+      options: props.formOptions
     }
   });
 }
@@ -42,7 +51,7 @@ function createProyek() {
   $q.dialog({
     component: ProyekCreateDialog,
     componentProps: {
-      rekening: props.rekening
+      options: props.formOptions
     }
   }).onOk((payload) => {
     $q.notify({
@@ -58,7 +67,7 @@ function editProyek(data: Proyek) {
     component: ProyekEditDialog,
     componentProps: {
       proyek: data,
-      rekening: props.rekening
+      options: props.formOptions
     }
   }).onOk((payload) => {
     $q.notify({
@@ -90,16 +99,15 @@ const columns: Array<QTableColumn> = [
     label: 'Nama Proyek',
     field: 'nama_proyek',
     align: 'left',
-    classes: 'text-primary',
     sortable: true
   },
   { name: 'pengguna_jasa', label: 'Pengguna Jasa', field: 'pengguna_jasa', align: 'left', sortable: true },
   { name: 'penyedia_jasa', label: 'Penyedia Jasa', field: 'penyedia_jasa', align: 'left', sortable: true },
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'nilai_kontrak', label: 'Nilai Kontrak', field: 'nilai_kontrak', align: 'right', sortable: true },
-  { name: 'waktu_mulai', label: 'Tanggal Mulai', field: 'waktu_mulai', align: 'left', sortable: true },
+  { name: 'tanggal_mulai', label: 'Tanggal Mulai', field: 'tanggal_mulai', align: 'left', sortable: true },
   { name: 'durasi', label: 'Durasi (Hari)', field: 'durasi', align: 'left', sortable: true },
-  { name: 'waktu_selesai', label: 'Tanggal Selesai', field: 'waktu_selesai', align: 'left', sortable: true },
+  { name: 'tanggal_selesai', label: 'Tanggal Selesai', field: 'tanggal_selesai', align: 'left', sortable: true },
   { name: 'status_proyek', label: 'Status', field: 'status_proyek', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
 ];
@@ -174,7 +182,19 @@ function toggleFullscreen() {
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="nama_proyek" :props="props">
-            {{ props.row.nama_proyek }}
+            <q-btn
+              flat
+              no-caps
+              dense
+              color="primary"
+              :ripple="false"
+              :label="props.row.nama_proyek"
+              @click="detailProyek(props.row)"
+            >
+              <q-tooltip anchor="bottom middle" self="top middle">
+                Lihat Detail
+              </q-tooltip>
+          </q-btn>
           </q-td>
 
           <q-td key="pengguna_jasa" :props="props">
@@ -193,16 +213,16 @@ function toggleFullscreen() {
             {{ toRupiah(props.row.nilai_kontrak) }}
           </q-td>
           
-          <q-td key="waktu_mulai" :props="props">
-            {{ fullDate(props.row.waktu_mulai) }}
+          <q-td key="tanggal_mulai" :props="props">
+            {{ fullDate(props.row.tanggal_mulai) }}
           </q-td>
 
           <q-td key="durasi" :props="props">
             {{ props.row.durasi }} Hari
           </q-td>
 
-          <q-td key="waktu_selesai" :props="props">
-            {{ fullDate(endOfDate(props.row.waktu_mulai, props.row.durasi)) }}
+          <q-td key="tanggal_selesai" :props="props">
+            {{ fullDate(props.row.tanggal_selesai) }}
           </q-td>
           
           <q-td key="status_proyek" :props="props">
