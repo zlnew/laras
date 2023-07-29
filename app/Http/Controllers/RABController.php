@@ -24,7 +24,7 @@ class RABController extends Controller
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('rab.deleted_at', null);
 
-        $role = $request->user()->role->first()->name;
+        $role = $request->user()->roles->first()->name;
 
         if ($role === 'manajer proyek') {
             $rabQuery->where('id_user', $request->user()->id);
@@ -34,7 +34,7 @@ class RABController extends Controller
             $rabQuery = $this->filter($request, $rabQuery);
         }
 
-        $rab = $rabQuery->group_by('rab.id_rab')
+        $rab = $rabQuery->groupBy('rab.id_rab')
             ->select(
                 'rab.id_rab', 'rab.status_rab',
                 'proyek.id_proyek', 'proyek.nama_proyek',
@@ -43,8 +43,8 @@ class RABController extends Controller
                 'proyek.tahun_anggaran', 'proyek.nomor_spmk',
                 'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
                 'proyek.tanggal_mulai', 'proyek.durasi',
-                'proyek.tanggal_selesai', 'user.id as id_user',
-                'user.name as user_name', 'proyek.status_proyek',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
                 'rekening.id_rekening', 'rekening.nama_bank',
                 'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
@@ -72,8 +72,20 @@ class RABController extends Controller
             )
             ->get();
 
+        $currentProyek = DB::table('proyek')
+            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('rab.deleted_at', null)
+            ->groupBy('proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+            ->get();
+
         $options = (object) [
-            'proyek' => $proyek
+            'proyek' => $proyek,
+            'currentProyek' => $currentProyek
         ];
 
         return $options;
@@ -81,7 +93,7 @@ class RABController extends Controller
 
     private function filter($searchRequest, $rabQuery) {
         $rabQuery->when($searchRequest->get('id_proyek'), function($query, $input) {
-            $query->whereIn('rab.id_proyek', 'like', $input . '%');
+            $query->whereIn('rab.id_proyek', $input);
         });
 
         $rabQuery->when($searchRequest->get('status_rab'), function($query, $input) {
@@ -98,7 +110,9 @@ class RABController extends Controller
 
             // Create A RAB
             $rab = new RAB;
+
             $rab->id_proyek = $validated->id_proyek;
+
             $rab->save();
             
             // Create A Timeline
@@ -121,6 +135,7 @@ class RABController extends Controller
         $validated = $request->safe();
 
         $rab->id_proyek = $validated->id_proyek;
+
         $rab->save();
 
         return redirect()->back()->with('success', 'RAB berhasil diperbarui!');
@@ -141,6 +156,7 @@ class RABController extends Controller
             'tax' => $validated->tax,
             'additional_tax' => $validated->additional_tax,
         ]);
+        
         $rab->save();
 
         return redirect()->back();

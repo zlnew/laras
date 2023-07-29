@@ -23,7 +23,7 @@ class RAPController extends Controller
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('rap.deleted_at', null);
 
-        $role = $request->user()->role->first()->name;
+        $role = $request->user()->roles->first()->name;
 
         if ($role === 'manajer proyek') {
             $rapQuery->where('id_user', $request->user()->id);
@@ -33,7 +33,7 @@ class RAPController extends Controller
             $rapQuery = $this->filter($request, $rapQuery);
         }
 
-        $rap = $rapQuery->group_by('rap.id_rap')
+        $rap = $rapQuery->groupBy('rap.id_rap')
             ->select(
                 'rap.id_rap', 'rap.status_rap',
                 'proyek.id_proyek', 'proyek.nama_proyek',
@@ -42,8 +42,8 @@ class RAPController extends Controller
                 'proyek.tahun_anggaran', 'proyek.nomor_spmk',
                 'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
                 'proyek.tanggal_mulai', 'proyek.durasi',
-                'proyek.tanggal_selesai', 'user.id as id_user',
-                'user.name as user_name', 'proyek.status_proyek',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
                 'rekening.id_rekening', 'rekening.nama_bank',
                 'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
@@ -52,7 +52,7 @@ class RAPController extends Controller
 
         $formOptions = $this->formOptions();
             
-        return Inertia::render('RAP/Index', [
+        return Inertia::render('Main/RAPPage', [
             'rap' => $rap,
             'formOptions' => $formOptions
         ]);
@@ -60,11 +60,22 @@ class RAPController extends Controller
 
     private function formOptions(): stdClass {
         $proyek = DB::table('proyek')
-            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
             ->where('proyek.deleted_at', null)
-            ->where('rap.id_rap', null)
-            ->where('rab.status_rab', '400')
+            ->where('rap.deleted_at', null)
+            ->where('rap.id_proyek', null)
+            ->groupBy('proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+            ->get();
+
+        $currentProyek = DB::table('proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('rap.deleted_at', null)
+            ->groupBy('proyek.id_proyek')
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.tahun_anggaran'
@@ -72,7 +83,8 @@ class RAPController extends Controller
             ->get();
 
         $options = (object) [
-            'proyek' => $proyek
+            'proyek' => $proyek,
+            'currentProyek' => $currentProyek
         ];
 
         return $options;
@@ -97,11 +109,14 @@ class RAPController extends Controller
 
             // Create A RAP
             $rap = new RAP;
+
             $rap->id_proyek = $validated->id_proyek;
+
             $rap->save();
             
             // Create A Timeline
             $timeline = new Timeline;
+
             $timeline->fill([
                 'user_id' => $request->user()->id,
                 'model_id' => $rap->id_rap,
@@ -109,6 +124,7 @@ class RAPController extends Controller
                 'catatan' => $request->post('catatan'),
                 'status_aktivitas' => 'Dibuat'
             ]);
+
             $timeline->save();
         });
 
@@ -120,6 +136,7 @@ class RAPController extends Controller
         $validated = $request->safe();
 
         $rap->id_proyek = $validated->id_proyek;
+        
         $rap->save();
 
         return redirect()->back()->with('success', 'RAP berhasil diperbarui!');

@@ -66,12 +66,15 @@ class ProyekController extends Controller
             ->pluck('tahun_anggaran');
 
         $picOptions = DB::table('users')
-            ->select('id', 'name')
+            ->leftJoin('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
+            ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('roles.name', 'manajer proyek')
+            ->select('users.id', 'users.name')
             ->get();
 
         $currentPicOptions = DB::table('proyek')
-            ->where('proyek.deleted_at', null)
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->where('proyek.deleted_at', null)
             ->groupBy('proyek.id_user')
             ->select('proyek.id_user as id', 'users.name')
             ->get();

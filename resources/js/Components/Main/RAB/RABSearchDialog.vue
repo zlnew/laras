@@ -5,12 +5,11 @@ import { useDialogPluginComponent } from 'quasar';
 import { ref } from 'vue';
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { filterOptions } from '@/utils/options';
+import { multiFilterOptions } from '@/utils/options';
 
 // types
-import { Proyek } from '@/types';
-import { ProyekFilterOptions } from '@/Pages/Main/ProyekPage.vue';
+import { RAB } from '@/types';
+import { FormOptions } from '@/Pages/Main/RABPage.vue';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -18,54 +17,28 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
-interface ProyekSearch {
-  nilai_kontrak_min: number;
-  nilai_kontrak_max: number;
-}
-
 const props = defineProps<{
-  rows: Array<Proyek>;
-  options: ProyekFilterOptions;
+  options: FormOptions;
 }>();
 
-const tahunAnggaranOptionsRef = ref(props.options.tahun_anggaran);
-const penggunaJasaOptionsRef = ref(props.options.pengguna_jasa);
-const picOptionsRef = ref(props.options.pic);
+const proyekOptionsRef = ref(props.options.currentProyek);
 
-function tahunAnggaranFilter (val: string, update: Function) {
+function proyekFilter (val: string, update: Function) {
   update(() => {
-    tahunAnggaranOptionsRef.value = filterOptions(val, props.options.tahun_anggaran)
-  });
-}
-
-function penggunaJasaFilter (val: string, update: Function) {
-  update(() => {
-    penggunaJasaOptionsRef.value = filterOptions(val, props.options.pengguna_jasa)
-  });
-}
-
-function picFilter (val: string, update: Function) {    
-  update(() => {
-    picOptionsRef.value = filterOptions(val, props.options.pic)
+    proyekOptionsRef.value = multiFilterOptions(val, props.options.currentProyek, ['nama_proyek', 'tahun_anggaran']);
   });
 }
 
 const page = usePage();
-const params = page.props.query as Proyek & ProyekSearch;
+const params = page.props.query as RAB;
 
 const form = useForm({
-  nama_proyek: params.nama_proyek,
-  pengguna_jasa: params.pengguna_jasa,
-  tahun_anggaran: params.tahun_anggaran,
-  nilai_kontrak_max: params.nilai_kontrak_max || 0,
-  nilai_kontrak_min: params.nilai_kontrak_min || 0,
-  waktu_mulai: params.waktu_mulai,
-  waktu_selesai: params.waktu_selesai,
-  pic: params.pic,
+  id_proyek: params.id_proyek,
+  status_rab: params.status_rab
 });
 
 function search() {
-  form.get(route('proyek'), {
+  form.get(route('rab'), {
     onSuccess: () => onDialogOK()
   });
 }
@@ -74,12 +47,11 @@ function search() {
 <template>
   <q-dialog
     ref="dialogRef"
-    :no-backdrop-dismiss="true"
     @hide="onDialogHide"
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Pencarian Proyek</div>
+          <div class="text-h6">Pencarian RAB</div>
           <q-space />
           <q-btn
             flat
@@ -95,30 +67,42 @@ function search() {
       <q-form @submit.prevent="search">
         <q-card-section class="scroll">
           <div class="q-gutter-md">
-            <q-input
-              outlined
-              clearable
-              autogrow
-              hide-bottom-space
-              clear-icon="close"
-              label="Nama Proyek"
-              v-model="form.nama_proyek"
-            />
-
             <q-select
               outlined
               clearable
-              hide-bottom-space
               use-input
-              fill-input
-              hide-selected
-              input-debounce="0"
-              mask="####"
-              label="Tahun Anggaran"
-              v-model="form.tahun_anggaran"
-              :options="tahunAnggaranOptionsRef"
-              @filter="tahunAnggaranFilter"
-            >
+              use-chips
+              emit-value
+              map-options
+              multiple
+              hide-bottom-space
+              input-debounce="500"
+              label="Proyek"
+              v-model="form.id_proyek"
+              option-value="id_proyek"
+              :option-label="(opt) => `${opt.nama_proyek} | ${opt.tahun_anggaran}`"
+              :options="proyekOptionsRef"
+              :error="form.errors.id_proyek ? true : false"
+              :error-message="form.errors.id_proyek"
+              @filter="proyekFilter"
+            > 
+              <template v-slot:option="{itemProps, opt, selected, toggleOption}">
+                <q-item v-bind="itemProps">
+                  <q-item-section side>
+                    <q-checkbox
+                      size="sm"
+                      :model-value="selected"
+                      @update:model-value="toggleOption(opt)"
+                    />
+                  </q-item-section>
+                  <q-item-section>
+                    <strong class="text-primary">
+                      {{ opt.nama_proyek }}
+                    </strong>
+                    {{ opt.tahun_anggaran }}
+                  </q-item-section>
+                </q-item>
+              </template>
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -131,100 +115,26 @@ function search() {
             <q-select
               outlined
               clearable
-              hide-bottom-space
-              use-input
               fill-input
-              hide-selected
-              input-debounce="0"
-              label="Pengguna jasa"
-              v-model="form.pengguna_jasa"
-              :options="penggunaJasaOptionsRef"
-              @filter="penggunaJasaFilter"
+              label="Status RAB"
+              v-model="form.status_rab"
+              :options="[100, 400]"
             >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
+              <template v-slot:selected-item="scope">
+                <q-badge
+                  :color="scope.opt == 400 ? 'red' : 'primary'"
+                  :label="scope.opt == 400 ? 'Closed' : 'Open'"
+                />
+              </template>
+
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    {{ scope.opt == 400 ? 'Closed' :  'Open'}}
                   </q-item-section>
                 </q-item>
               </template>
             </q-select>
-
-            <q-select
-              outlined
-              clearable
-              hide-bottom-space
-              use-input
-              fill-input
-              hide-selected
-              input-debounce="0"
-              label="Penanggung Jawab (PIC)"
-              v-model="form.pic"
-              :options="picOptionsRef"
-              @filter="picFilter"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-
-            <div class="row">
-              <div class="col-12 col-md-6 q-pr-sm">
-                <q-input
-                  outlined
-                  clearable
-                  hide-bottom-space
-                  label="Tanggal Mulai"
-                  type="date"
-                  v-model="form.waktu_mulai"
-                />
-              </div>
-              <div class="col-12 col-md-6 q-pl-sm">
-                <q-input
-                  outlined
-                  clearable
-                  hide-bottom-space
-                  label="Tanggal Selesai"
-                  type="date"
-                  v-model="form.waktu_selesai"
-                />
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12 col-md-6 q-pr-sm">
-                <q-input
-                  outlined
-                  reverse-fill-mask
-                  hide-bottom-space
-                  label="Nilai Kontrak Min"
-                  mask="#.##"
-                  fill-mask="0"
-                  v-model="form.nilai_kontrak_min"
-                  :hint="toRupiah(form.nilai_kontrak_min)"
-                  :hide-hint="form.nilai_kontrak_min < 1"
-                  input-class="text-right"
-                />
-              </div>
-              <div class="col-12 col-md-6 q-pl-sm">
-                <q-input
-                  outlined
-                  reverse-fill-mask
-                  hide-bottom-space
-                  label="Nilai Kontrak Max"
-                  mask="#.##"
-                  fill-mask="0"
-                  v-model="form.nilai_kontrak_max"
-                  :hint="toRupiah(form.nilai_kontrak_max)"
-                  :hide-hint="form.nilai_kontrak_max < 1"
-                  input-class="text-right"
-                />
-              </div>
-            </div>
           </div>
         </q-card-section>
 

@@ -4,7 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
 
 // types
-import { Proyek } from '@/types';
+import { RAB } from '@/types';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -13,15 +13,15 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
 const props = defineProps<{
-  id_proyek: Proyek['id_proyek'];
+  id_rab: RAB['id_rab'];
 }>();
 
 const form = useForm({
-  id_proyek: props.id_proyek,
+  id_rab: props.id_rab,
 });
 
 function destroy() {
-  form.delete(route('proyek.destroy', props.id_proyek), {
+  form.delete(route('rab.destroy', props.id_rab), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',

@@ -2,11 +2,13 @@
 // cores
 import { useForm } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
-import { watch } from 'vue';
+import { ref } from 'vue';
 
 // utils
-import { getEndOfDate, countDaysBetweenDates } from '@/utils/date';
-import { toRupiah } from '@/utils/money';
+import { multiFilterOptions } from '@/utils/options';
+
+// types
+import { FormOptions } from '@/Pages/Main/RABPage.vue';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -14,19 +16,24 @@ defineEmits([
 
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
+const props = defineProps<{
+  options: FormOptions;
+}>();
+
+const proyekOptionsRef = ref(props.options.proyek);
+
+function proyekFilter (val: string, update: Function) {
+  update(() => {
+    proyekOptionsRef.value = multiFilterOptions(val, props.options.proyek, ['nama_proyek', 'tahun_anggaran']);
+  });
+}
+
 const form = useForm({
-  nama_proyek: null,
-  pengguna_jasa: null,
-  tahun_anggaran: null,
-  nilai_kontrak: 0,
-  durasi: 1,
-  waktu_mulai: '',
-  waktu_selesai: '',
-  pic: null,
+  id_proyek: null,
 });
 
 function submit() {
-  form.post(route('proyek'), {
+  form.post(route('rab.store'), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
@@ -35,16 +42,6 @@ function submit() {
     }
   });
 }
-
-// watch(form, (form) => {
-//   if (form.waktu_selesai && form.waktu_mulai) {    
-//     form.durasi = countDaysBetweenDates(form.waktu_mulai, form.waktu_selesai);
-//   }
-
-//   if (form.waktu_mulai) {    
-//     form.waktu_selesai = getEndOfDate(form.waktu_mulai, form.durasi);
-//   }
-// });
 </script>
 
 <template>
@@ -55,7 +52,7 @@ function submit() {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Tambah Proyek Baru</div>
+          <div class="text-h6">Tambah RAB</div>
           <q-space />
           <q-btn
             flat
@@ -71,108 +68,42 @@ function submit() {
       <q-form @submit.prevent="submit">
         <q-card-section class="scroll">
           <div class="q-gutter-md">
-            <q-input
+            <q-select
               outlined
-              autogrow
+              clearable
+              use-input
+              use-chips
+              emit-value
+              map-options
               hide-bottom-space
-              clear-icon="close"
-              label="Nama Proyek"
-              v-model="form.nama_proyek"
-              :error="form.errors.nama_proyek ? true : false"
-              :error-message="form.errors.nama_proyek"
-            />
-
-            <q-input
-              outlined
-              hide-bottom-space
-              clear-icon="close"
-              label="Tahun Anggaran"
-              mask="####"
-              v-model="form.tahun_anggaran"
-              :error="form.errors.tahun_anggaran ? true : false"
-              :error-message="form.errors.tahun_anggaran"
-            />
-
-            <q-input
-              outlined
-              autogrow
-              hide-bottom-space
-              clear-icon="close"
-              label="Pengguna Jasa"
-              v-model="form.pengguna_jasa"
-              :error="form.errors.pengguna_jasa ? true : false"
-              :error-message="form.errors.pengguna_jasa"
-            />
-
-            <q-input
-              outlined
-              autogrow
-              hide-bottom-space
-              clear-icon="close"
-              label="Penanggung Jawab (PIC)"
-              v-model="form.pic"
-              :error="form.errors.pic ? true : false"
-              :error-message="form.errors.pic"
-            />
-
-            <div class="row">
-              <div class="col-12 col-md-6 q-pr-sm">
-                <q-input
-                  outlined
-                  hide-bottom-space
-                  label="Tanggal Mulai"
-                  type="date"
-                  v-model="form.waktu_mulai"
-                  :error="form.errors.waktu_mulai ? true : false"
-                  :error-message="form.errors.waktu_mulai"
-                />
-              </div>
-
-              <div class="col-12 col-md-6 q-pl-sm">
-                <q-input
-                  outlined
-                  hide-bottom-space
-                  clear-icon="close"
-                  label="Durasi (Hari)"
-                  min="1"
-                  type="number"
-                  suffix="Hari"
-                  v-model="form.durasi"
-                  input-class="text-right"
-                />
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-12 col-md-6 q-pr-sm">
-                <q-input
-                  outlined
-                  hide-bottom-space
-                  label="Tanggal Selesai"
-                  type="date"
-                  v-model="form.waktu_selesai"
-                  :error="form.errors.waktu_selesai ? true : false"
-                  :error-message="form.errors.waktu_selesai"
-                />
-              </div>
-
-              <div class="col-12 col-md-6 q-pl-sm">
-                <q-input
-                  outlined
-                  reverse-fill-mask
-                  hide-bottom-space
-                  label="Nilai Kontrak"
-                  mask="#.##"
-                  fill-mask="0"
-                  v-model="form.nilai_kontrak"
-                  :hint="toRupiah(form.nilai_kontrak)"
-                  :hide-hint="form.nilai_kontrak < 1"
-                  :error="form.errors.nilai_kontrak ? true : false"
-                  :error-message="form.errors.nilai_kontrak"
-                  input-class="text-right"
-                />
-              </div>
-            </div>
+              input-debounce="500"
+              label="Pilih Proyek"
+              v-model="form.id_proyek"
+              option-value="id_proyek"
+              :option-label="(opt) => `${opt.nama_proyek} | ${opt.tahun_anggaran}`"
+              :options="proyekOptionsRef"
+              :error="form.errors.id_proyek ? true : false"
+              :error-message="form.errors.id_proyek"
+              @filter="proyekFilter"
+            > 
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <strong class="text-primary">
+                      {{ scope.opt.nama_proyek }}
+                    </strong>
+                    {{ scope.opt.tahun_anggaran }}
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
           </div>
         </q-card-section>
 
