@@ -207,7 +207,7 @@ class RABController extends Controller
         return redirect()->route('rab')->with('success', 'RAB berhasil disetujui!');
     }
 
-    public function refuse(Request $request, RAB $rab): RedirectResponse
+    public function reject(Request $request, RAB $rab): RedirectResponse
     {
         DB::transaction(function () use ($request, $rab) {
             // Update The RAB Status

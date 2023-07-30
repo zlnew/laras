@@ -192,7 +192,7 @@ export interface Timeline {
     model_id: RAB['id_rab'] | RAP['id_rap'] | PengajuanDana['id_pengajuan_dana'] | PencairanDana['id_pencairan_dana'];
     model_type: string;
     catatan: string;
-    status_aktivitas: string;
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Diperiksa' | 'Disetujui';
     created_at: string;
     updated_at: string;
     deleted_at: string;

@@ -88,11 +88,12 @@ Route::middleware('auth')->group(function() {
             Route::post('/detail/{rab}', [DetailRABController::class,'store'])->name('detail_rab.store');
             Route::patch('/detail/{detailRab}', [DetailRABController::class, 'update'])->name('detail_rab.update');
             Route::delete('/detail/{detailRab}', [DetailRABController::class, 'destroy'])->name('detail_rab.destroy');
+            Route::post('/detail/{rab}/import', [DetailRABController::class,'import'])->name('detail_rab.import');
         });
 
         Route::group(['middleware' => ['permission:approve rab']], function () {
             Route::post('/approve/{rab}', [RABController::class, 'approve'])->name('rab.approve');
-            Route::post('/refuse/{rab}', [RABController::class, 'refuse'])->name('rab.refuse');
+            Route::post('/reject/{rab}', [RABController::class, 'reject'])->name('rab.reject');
         });
     });
 

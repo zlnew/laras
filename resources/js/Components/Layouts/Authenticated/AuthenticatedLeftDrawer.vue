@@ -55,14 +55,14 @@ const menuList = [
     icon: 'list_alt',
     label: 'RAB',
     link: route('rab'),
-    active: route().current('rab'),
+    active: route().current('rab') || route().current('detail_rab'),
     separator: false
   },
   {
     icon: 'list_alt',
     label: 'RAP',
     link: route('rap'),
-    active: route().current('rap'),
+    active: route().current('rap') || route().current('detail_rap'),
     separator: true
   },
   {

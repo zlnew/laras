@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DetailRAB\StoreRequest;
 use App\Http\Requests\DetailRAB\UpdateRequest;
+use App\Http\Requests\DetailRAB\ImportRequest;
+use App\Imports\RABItemImport;
 use App\Models\DetailRAB;
 use App\Models\RAB;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 
 class DetailRABController extends Controller
@@ -23,6 +27,7 @@ class DetailRABController extends Controller
             ->where('rab.deleted_at', null)
             ->where('rab.id_rab', $rab->id_rab)
             ->select(
+                'rab.id_rab',
                 'rab.tax', 'rab.additional_tax',
                 'rab.status_rab', 'rab.status_aktivitas',
                 'proyek.id_proyek', 'proyek.nama_proyek',
@@ -31,8 +36,8 @@ class DetailRABController extends Controller
                 'proyek.tahun_anggaran', 'proyek.nomor_spmk',
                 'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
                 'proyek.tanggal_mulai', 'proyek.durasi',
-                'proyek.tanggal_selesai', 'user.id as id_user',
-                'user.name as user_name', 'proyek.status_proyek',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
                 'rekening.id_rekening', 'rekening.nama_bank',
                 'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
@@ -67,7 +72,7 @@ class DetailRABController extends Controller
 
         $formOptions = $this->formOptions();
         
-        return Inertia::render('DetailRAB/Index', [
+        return Inertia::render('Main/DetailRABPage', [
             'rab' => $rab,
             'detailRab' => $detailRab,
             'timeline' => $timeline,
@@ -133,8 +138,12 @@ class DetailRABController extends Controller
         return redirect()->back()->with('success', 'Uraian RAB berhasil dihapus!');
     }
 
-    public function import(): RedirectResponse
+    public function import(ImportRequest $request, RAB $rab): RedirectResponse
     {
+        $validated = $request->safe();
+
+        Excel::import(new RABItemImport($rab->id_rab), $validated->file);
+
         return redirect()->back()->with('success', 'Uraian RAB berhasil diimport!');
     }
 }
