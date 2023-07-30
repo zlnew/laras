@@ -204,11 +204,11 @@ class RAPController extends Controller
         return redirect()->back()->with('success', 'RAP berhasil disetujui!');
     }
 
-    public function refuse(Request $request, RAP $rap): RedirectResponse
+    public function reject(Request $request, RAP $rap): RedirectResponse
     {
         DB::transaction(function () use ($request, $rap) {
             // Update The RAP Status
-            $rap->status_aktivitas = 'Dibuat';
+            $rap->status_aktivitas = 'Ditolak';
             $rap->save();
 
             // Create A Timeline

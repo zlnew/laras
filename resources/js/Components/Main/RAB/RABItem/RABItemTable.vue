@@ -6,7 +6,7 @@ import { useForm } from '@inertiajs/vue3';
 
 // utils
 import { toRupiah } from '@/utils/money';
-import { can, isEditable } from '@/utils/permissions';
+import { can, isAdmin, isEditable } from '@/utils/permissions';
 
 // types
 import { DetailRAB, RAB } from '@/types';
@@ -152,16 +152,14 @@ const filter = ref('');
       row-key="id_detail_rab"
       :rows="rows"
       :columns="columns"
-      :rows-per-page-options="[ 5, 10, 15, 20, 25, 50, 0 ]"
+      :rows-per-page-options="[ 10, 15, 20, 25, 50, 0 ]"
       :fullscreen="tableFullscreen"
       :filter="filter"
     >
-      <template
-        v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
-        v-slot:top-left
-      >
+      <template v-slot:top-left>
         <div class="q-gutter-sm">
           <q-btn
+            v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
             no-caps
             label="Tambah Uraian RAB"
             icon="add"
@@ -169,6 +167,7 @@ const filter = ref('');
             @click="createRABItem"
           />
           <q-btn
+            v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
             no-caps
             label="Import dari CSV/XLS"
             icon="upload_file"
@@ -241,12 +240,9 @@ const filter = ref('');
             {{ props.row.keterangan }}
           </q-td>
 
-          <q-td
-            v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
-            key="actions"
-            :props="props"
-          >
+          <q-td key="actions" :props="props">
             <q-btn
+              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
               dense
               flat
               color="blue-grey"
@@ -279,6 +275,16 @@ const filter = ref('');
                 </q-list>
               </q-menu>
             </q-btn>
+
+            <q-btn
+              v-else
+              dense
+              flat
+              color="grey-6"
+              icon="block"
+            >
+              <q-tooltip>Required permission</q-tooltip>
+            </q-btn>
           </q-td>
         </q-tr>
       </template>
@@ -291,7 +297,7 @@ const filter = ref('');
           </q-td>
           <q-td class="text-right">
             <q-input
-              v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
+              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
               dense
               reverse-fill-mask
               hide-bottom-space
@@ -307,7 +313,7 @@ const filter = ref('');
                 </q-btn>
               </template>
             </q-input>
-            <span v-else>{{ data.rab.tax }}</span>
+            <span v-else>{{ data.rab.tax }}%</span>
           </q-td>
           <q-td colspan="2" style="border: none;"></q-td>
         </q-tr>
@@ -319,7 +325,7 @@ const filter = ref('');
           </q-td>
           <q-td class="text-right">
             <q-input
-              v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
+              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
               dense
               reverse-fill-mask
               hide-bottom-space
@@ -335,7 +341,7 @@ const filter = ref('');
                 </q-btn>
               </template>
             </q-input>
-            <span v-else>{{ data.rab.additional_tax }}</span>
+            <span v-else>{{ data.rab.additional_tax }}%</span>
           </q-td>
           <q-td colspan="2" style="border: none;"></q-td>
         </q-tr>

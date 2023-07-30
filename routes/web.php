@@ -116,7 +116,7 @@ Route::middleware('auth')->group(function() {
 
         Route::group(['middleware' => ['permission:approve rap']], function () {
             Route::post('/approve/{rap}', [RAPController::class, 'approve'])->name('rap.approve');
-            Route::post('/refuse/{rap}', [RAPController::class, 'refuse'])->name('rap.refuse');
+            Route::post('/reject/{rap}', [RAPController::class, 'reject'])->name('rap.reject');
         });
     });
 

@@ -31,19 +31,46 @@ const userPermissions = () => {
   return page.props.permissions;
 }
 
+const userRole = () => {
+  const page = usePage();
+  return page.props.role;
+}
+
+const isAdmin = () => {
+  const role = userRole();
+
+  if (role === 'admin') return true;
+
+  return false;
+}
+
 export type ActivityStatus = 'Dibuat' | 'Diajukan' | 'Diperiksa' | 'Dievaluasi' | 'Disetujui' | 'Ditolak';
+export type ModuleStatus = 400 | 100 | '400' | '100';
 
 function can(permissions: PermissionsModules) {
   return userPermissions().includes(permissions);
 }
 
-function isEditable(status: ActivityStatus) {
-  if (status === 'Dibuat' || status === 'Ditolak') return true;
+function isEditable(status: ActivityStatus | ModuleStatus) {
+  if (typeof status === 'string') {
+    if (status === 'Dibuat' || status === 'Ditolak') return true;
+  }
+  
+  if (status == 100) return true;
+
   return false;
 }
 
-function isApprovable(status: ActivityStatus) {
+function isApprovable(status: ActivityStatus, twoApproval: boolean = false) {
+  if (twoApproval) {
+    const role = userRole();
+
+    if (role === 'kepala divisi' && status === 'Diperiksa') return false;
+    if (role === 'direktur utama' && status === 'Diajukan') return false;
+  }
+  
   if (status === 'Diajukan' || status === 'Dievaluasi' || status === 'Diperiksa') return true;
+
   return false;
 }
 
@@ -68,6 +95,7 @@ export {
   isApprovable,
   isSubmitted,
   isRejected,
-  isApproved
+  isApproved,
+  isAdmin
 };
 

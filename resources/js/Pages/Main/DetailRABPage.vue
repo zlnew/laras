@@ -70,7 +70,7 @@ const breadcrumbs = [
     />
 
     <RAB-submission-form
-      v-if="can('create & modify rab') && isEditable(rab.status_aktivitas)"
+      v-if="can('create & modify rab') && isEditable(rab.status_aktivitas) && detailRab.length"
       :data="{
         id_rab: rab.id_rab,
       }"

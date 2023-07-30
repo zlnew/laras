@@ -6,6 +6,7 @@ import { ref } from 'vue';
 // utils
 import { toRupiah } from '@/utils/money';
 import { fullDate } from '@/utils/date';
+import { can } from '@/utils/permissions';
 
 // types
 import { Proyek } from '@/types';
@@ -127,11 +128,12 @@ function toggleFullscreen() {
       row-key="nama_proyek"
       :rows="rows"
       :columns="columns"
-      :rows-per-page-options="[ 5, 10, 15, 20, 25, 50, 0 ]"
+      :rows-per-page-options="[ 10, 15, 20, 25, 50, 0 ]"
       :fullscreen="tableFullscreen"
     >
       <template v-slot:top-left>
         <q-btn
+          v-if="can('create & modify proyek')"
           no-caps
           label="Proyek Baru"
           icon="add"
@@ -234,6 +236,7 @@ function toggleFullscreen() {
 
           <q-td key="actions" :props="props">
             <q-btn
+              v-if="can('create & modify proyek')"
               dense
               flat
               color="blue-grey"
@@ -265,6 +268,16 @@ function toggleFullscreen() {
                   </q-item>
                 </q-list>
               </q-menu>
+            </q-btn>
+
+            <q-btn
+              v-else
+              dense
+              flat
+              color="grey-6"
+              icon="block"
+            >
+              <q-tooltip>Required permission</q-tooltip>
             </q-btn>
           </q-td>
         </q-tr>

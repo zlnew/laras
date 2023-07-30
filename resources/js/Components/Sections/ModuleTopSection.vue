@@ -50,7 +50,7 @@ function timeline() {
 </script>
 
 <template>
-  <div class="q-px-md">
+  <div class="q-px-md q-pt-md">
     <q-card flat bordered>
       <div class="row justify-between items-center">
         <q-card-section class="flex items-center">

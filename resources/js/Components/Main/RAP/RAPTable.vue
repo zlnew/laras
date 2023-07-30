@@ -3,6 +3,9 @@
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+// utils
+import { can, isAdmin, isEditable } from '@/utils/permissions';
+
 // types
 import { Proyek, RAP } from '@/types';
 import { QTableColumn, useQuasar } from 'quasar';
@@ -123,6 +126,7 @@ function toggleFullscreen() {
     >
       <template v-slot:top-left>
         <q-btn
+          v-if="can('create & modify rap')"
           no-caps
           label="Tambah RAP"
           icon="add"
@@ -210,6 +214,7 @@ function toggleFullscreen() {
 
           <q-td key="actions" :props="props">
             <q-btn
+              v-if="isAdmin() ? true : can('create & modify rap') && isEditable(props.row.status_rap)"
               dense
               flat
               color="blue-grey"
@@ -241,6 +246,16 @@ function toggleFullscreen() {
                   </q-item>
                 </q-list>
               </q-menu>
+            </q-btn>
+
+            <q-btn
+              v-else
+              dense
+              flat
+              color="grey-6"
+              icon="block"
+            >
+              <q-tooltip>Required permission</q-tooltip>
             </q-btn>
           </q-td>
         </q-tr>

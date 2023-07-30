@@ -5,7 +5,7 @@ defineEmits(['toggleLeftDrawer']);
 </script>
 
 <template>
-  <q-header class="bg-transparent text-blue-grey-10">
+  <q-header bordered class="bg-white text-blue-grey-10">
     <q-toolbar class="q-pa-sm">
       <q-btn dense flat round icon="menu" @click="$emit('toggleLeftDrawer')" />
       

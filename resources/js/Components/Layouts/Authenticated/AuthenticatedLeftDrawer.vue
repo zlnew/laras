@@ -60,7 +60,7 @@ const menuList = [
   },
   {
     icon: 'list_alt',
-    label: 'RAP',
+    label: 'RAPP',
     link: route('rap'),
     active: route().current('rap') || route().current('detail_rap'),
     separator: true
