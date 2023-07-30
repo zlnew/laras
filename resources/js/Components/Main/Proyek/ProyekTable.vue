@@ -6,7 +6,7 @@ import { ref } from 'vue';
 // utils
 import { toRupiah } from '@/utils/money';
 import { fullDate } from '@/utils/date';
-import { can } from '@/utils/permissions';
+import { can, isAdmin, isEditable } from '@/utils/permissions';
 
 // types
 import { Proyek } from '@/types';
@@ -236,7 +236,7 @@ function toggleFullscreen() {
 
           <q-td key="actions" :props="props">
             <q-btn
-              v-if="can('create & modify proyek')"
+              v-if="isAdmin() ? true : can('create & modify proyek') && isEditable(props.row.status_proyek)"
               dense
               flat
               color="blue-grey"
