@@ -15,7 +15,7 @@ class ImportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', File::types(['csv', 'xlsx'])]
+            'file' => ['required', File::types(['csv', 'xlsx', 'xls'])]
         ];
     }
 }

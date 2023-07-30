@@ -240,7 +240,6 @@ function search() {
               use-chips
               multiple
               input-debounce="500"
-              mask="####"
               label="Tahun Anggaran"
               v-model="form.tahun_anggaran"
               :options="tahunAnggaranOptionsRef"

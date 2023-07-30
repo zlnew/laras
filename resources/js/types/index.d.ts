@@ -68,7 +68,7 @@ export interface RAB {
     tax: number;
     additional_tax: number;
     status_rab: 100 | 400;
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Disetujui';
     created_at: string;
     updated_at: string;
     deleted_at: string;
@@ -91,7 +91,7 @@ export interface RAP {
     id_rap: string;
     id_proyek: Proyek['id_proyek'];
     status_rap: 100 | 400;
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diperiksa' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diperiksa' | 'Ditolak' | 'Disetujui';
     created_at: string;
     updated_at: string;
     deleted_at: string;
@@ -124,7 +124,7 @@ export interface PengajuanDana {
     id_pengajuan_dana: string;
     id_keuangan: Keuangan['id_keuangan'];
     status_pengajuan: 100 | 400;
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak' | 'Disetujui';
     tanggal_pengajuan: string;
     created_at: string;
     updated_at: string;
@@ -189,10 +189,10 @@ export interface DetailPenagihan {
 export interface Timeline {
     id_timeline: number;
     user_id: User['id'];
-    model_id: RAB['id_rab'] | RAP['id_rap'] | PengajuanDana['id_pengajuan_dana'] | PencairanDana['id_pencairan_dana'];
+    model_id: string | number;
     model_type: string;
     catatan: string;
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Diperiksa' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diperiksa' | 'Dievaluasi' | 'Ditolak' | 'Disetujui';
     created_at: string;
     updated_at: string;
     deleted_at: string;

@@ -3,7 +3,7 @@
 import { Head } from '@inertiajs/vue3';
 
 // utils
-import { can } from '@/utils/permissions';
+import { can, isApprovable, isEditable } from '@/utils/permissions';
 
 // layout
 import Layout from '@/Layouts/AuthenticatedLayout.vue';
@@ -13,8 +13,8 @@ import {
   RABItemTable,
   RABSubmissionForm,
   RABApprovalForm,
-  RABTopSection,
 } from '@/Components/Main/detail-rab-page';
+import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue';
 
 // types
 import { DetailRAB, Proyek, RAB, Satuan, Timeline } from '@/types';
@@ -51,9 +51,12 @@ const breadcrumbs = [
       </q-breadcrumbs>
     </template>
 
-    <RAB-top-section
+    <module-top-section
+      title="RAB"
+      timeline-title="Timeline Pengajuan RAB"
       :data="{
-        rab: rab,
+        proyek: rab,
+        status: rab.status_rab,
         timeline: timeline
       }"
     />
@@ -67,14 +70,14 @@ const breadcrumbs = [
     />
 
     <RAB-submission-form
-      v-if="can('create & modify rab') && rab.status_aktivitas === 'Dibuat' && detailRab.length"
+      v-if="can('create & modify rab') && isEditable(rab.status_aktivitas)"
       :data="{
         id_rab: rab.id_rab,
       }"
     />
 
     <RAB-approval-form
-      v-if="can('approve rab') && rab.status_aktivitas === 'Diajukan'"
+      v-if="can('approve rab') && isApprovable(rab.status_aktivitas)"
       :data="{
         id_rab: rab.id_rab,
       }"

@@ -1,0 +1,1 @@
+const i=(e,t)=>{if(e==="")return t;const r=e.toLowerCase();return t.filter(o=>o.toLowerCase().indexOf(r)>-1)},f=(e,t,r)=>{if(e==="")return t;const o=e.toLowerCase();return t.filter(n=>r.some(s=>n[s]&&n[s].toString().toLowerCase().indexOf(o.toLowerCase())>-1))};export{i as f,f as m};

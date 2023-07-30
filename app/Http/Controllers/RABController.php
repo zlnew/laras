@@ -211,7 +211,7 @@ class RABController extends Controller
     {
         DB::transaction(function () use ($request, $rab) {
             // Update The RAB Status
-            $rab->status_aktivitas = 'Dibuat';
+            $rab->status_aktivitas = 'Ditolak';
             $rab->save();
             
             // Create A Timeline

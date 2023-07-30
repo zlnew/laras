@@ -31,11 +31,43 @@ const userPermissions = () => {
   return page.props.permissions;
 }
 
+export type ActivityStatus = 'Dibuat' | 'Diajukan' | 'Diperiksa' | 'Dievaluasi' | 'Disetujui' | 'Ditolak';
+
 function can(permissions: PermissionsModules) {
   return userPermissions().includes(permissions);
 }
 
+function isEditable(status: ActivityStatus) {
+  if (status === 'Dibuat' || status === 'Ditolak') return true;
+  return false;
+}
+
+function isApprovable(status: ActivityStatus) {
+  if (status === 'Diajukan' || status === 'Dievaluasi' || status === 'Diperiksa') return true;
+  return false;
+}
+
+function isSubmitted(status: ActivityStatus) {
+  if (status === 'Diajukan') return true;
+  return false;
+}
+
+function isRejected(status: ActivityStatus) {
+  if (status === 'Ditolak') return true;
+  return false;
+}
+
+function isApproved(status: ActivityStatus) {
+  if (status === 'Disetujui') return true;
+  return false;
+}
+
 export {
-  can
+  can,
+  isEditable,
+  isApprovable,
+  isSubmitted,
+  isRejected,
+  isApproved
 };
 

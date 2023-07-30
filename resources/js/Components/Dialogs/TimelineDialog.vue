@@ -20,6 +20,7 @@ interface JoinedWithTimeline {
 }
 
 defineProps<{
+  title: string;
   timeline: Array<Timeline & JoinedWithTimeline>;
 }>();
 
@@ -28,6 +29,7 @@ const icon = (status: Timeline['status_aktivitas']) => {
     case 'Dibuat': return 'commit';
     case 'Diajukan': return 'send';
     case 'Ditolak': return 'priority_high';
+    case 'Diperiksa': return 'done';
     case 'Disetujui': return 'done_all';
    }
 };
@@ -37,6 +39,7 @@ const color = (status: Timeline['status_aktivitas']) => {
     case 'Dibuat': return 'secondary';
     case 'Diajukan': return 'primary';
     case 'Ditolak': return 'red';
+    case 'Diperiksa': return 'green';
     case 'Disetujui': return 'green';
    }
 };
@@ -49,7 +52,7 @@ const color = (status: Timeline['status_aktivitas']) => {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Timeline Pengajuan RAB</div>
+          <div class="text-h6">{{ title }}</div>
           <q-space />
           <q-btn
             flat

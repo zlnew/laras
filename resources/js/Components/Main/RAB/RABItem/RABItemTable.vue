@@ -6,7 +6,7 @@ import { useForm } from '@inertiajs/vue3';
 
 // utils
 import { toRupiah } from '@/utils/money';
-import { can } from '@/utils/permissions';
+import { can, isEditable } from '@/utils/permissions';
 
 // types
 import { DetailRAB, RAB } from '@/types';
@@ -157,7 +157,7 @@ const filter = ref('');
       :filter="filter"
     >
       <template
-        v-if="can('create & modify rab') && data.rab.status_aktivitas === 'Dibuat'"
+        v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
         v-slot:top-left
       >
         <div class="q-gutter-sm">
@@ -242,7 +242,7 @@ const filter = ref('');
           </q-td>
 
           <q-td
-            v-if="can('create & modify rab') && data.rab.status_aktivitas === 'Dibuat'"
+            v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
             key="actions"
             :props="props"
           >
@@ -291,7 +291,7 @@ const filter = ref('');
           </q-td>
           <q-td class="text-right">
             <q-input
-              v-if="can('create & modify rab') && data.rab.status_aktivitas === 'Dibuat'"
+              v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
               dense
               reverse-fill-mask
               hide-bottom-space
@@ -319,7 +319,7 @@ const filter = ref('');
           </q-td>
           <q-td class="text-right">
             <q-input
-              v-if="can('create & modify rab') && data.rab.status_aktivitas === 'Dibuat'"
+              v-if="can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
               dense
               reverse-fill-mask
               hide-bottom-space
