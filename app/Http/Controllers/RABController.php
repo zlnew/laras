@@ -36,7 +36,8 @@ class RABController extends Controller
 
         $rab = $rabQuery->groupBy('rab.id_rab')
             ->select(
-                'rab.id_rab', 'rab.status_rab',
+                'rab.id_rab',
+                'rab.status_rab', 'rab.status_aktivitas',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
                 'proyek.pengguna_jasa', 'proyek.penyedia_jasa',

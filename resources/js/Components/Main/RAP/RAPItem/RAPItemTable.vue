@@ -2,7 +2,6 @@
 // cores
 import { ref, computed } from 'vue';
 import { QTableColumn, useQuasar } from 'quasar';
-import { useForm } from '@inertiajs/vue3';
 
 // utils
 import { toRupiah } from '@/utils/money';
@@ -14,6 +13,7 @@ import { FormOptions } from '@/Pages/Main/RAPPage.vue';
 
 // comps
 import {
+  RAPItemImportDialog,
   RAPItemCreateDialog,
   RAPItemEditDialog,
   RAPItemDeleteDialog
@@ -54,6 +54,21 @@ const totalAmount = computed(() => {
 });
 
 const $q = useQuasar();
+
+function importRAPItem() {
+  $q.dialog({
+    component: RAPItemImportDialog,
+    componentProps: {
+      id_rap: props.data.rap.id_rap
+    }
+  }).onOk((payload) => {
+    $q.notify({
+      type: payload.type,
+      message: payload.message,
+      position: 'top',
+    });
+  });
+}
 
 function createRAPItem() {
   $q.dialog({
@@ -150,6 +165,14 @@ const filter = ref('');
             icon="add"
             color="primary"
             @click="createRAPItem"
+          />
+          <q-btn
+            v-if="isAdmin() ? true : can('create & modify rap') && isEditable(data.rab.status_aktivitas)"
+            no-caps
+            label="Import dari CSV/XLS"
+            icon="upload_file"
+            color="green-8"
+            @click="importRAPItem"
           />
         </div>
       </template>

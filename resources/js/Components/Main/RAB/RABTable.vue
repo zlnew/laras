@@ -4,7 +4,7 @@ import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // utils
-import { can, isAdmin, isEditable } from '@/utils/permissions';
+import { can, isAdmin, isEditable, isRejected } from '@/utils/permissions';
 
 // types
 import { Proyek, RAB } from '@/types';
@@ -205,6 +205,18 @@ function toggleFullscreen() {
           </q-td>
           
           <q-td key="status_rab" :props="props">
+            <q-btn
+              v-if="isRejected(props.row.status_aktivitas)"
+              flat
+              dense
+              round
+              color="grey-6"
+              icon="warning"
+              size="sm"
+            >
+              <q-tooltip>Ditolak</q-tooltip>
+            </q-btn>
+            
             <q-badge
               :color="props.row.status_rab == 400 ? 'red' : 'primary'"
               :label="props.row.status_rab == 400 ? 'Closed' : 'Open'"

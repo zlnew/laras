@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function() {
             Route::post('/detail/{rap}', [DetailRAPController::class,'store'])->name('detail_rap.store');
             Route::patch('/detail/{detailRap}', [DetailRAPController::class, 'update'])->name('detail_rap.update');
             Route::delete('/detail/{detailRap}', [DetailRAPController::class, 'destroy'])->name('detail_rap.destroy');
+            Route::post('/detail/{rap}/import', [DetailRAPController::class,'import'])->name('detail_rap.import');
         });
 
         Route::group(['middleware' => ['permission:approve rap']], function () {

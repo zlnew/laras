@@ -35,7 +35,8 @@ class RAPController extends Controller
 
         $rap = $rapQuery->groupBy('rap.id_rap')
             ->select(
-                'rap.id_rap', 'rap.status_rap',
+                'rap.id_rap',
+                'rap.status_rap', 'rap.status_aktivitas',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
                 'proyek.pengguna_jasa', 'proyek.penyedia_jasa',

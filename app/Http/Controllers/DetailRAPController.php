@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DetailRAP\ImportRequest;
 use App\Http\Requests\DetailRAP\StoreRequest;
 use App\Http\Requests\DetailRAP\UpdateRequest;
+use App\Imports\RAPItemImport;
 use App\Models\DetailRAP;
 use App\Models\RAP;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
 
 class DetailRAPController extends Controller
@@ -148,5 +151,14 @@ class DetailRAPController extends Controller
         $detailRap->delete();
 
         return redirect()->back()->with('success', 'Uraian RAP berhasil dihapus!');
+    }
+
+    public function import(ImportRequest $request, RAP $rap): RedirectResponse
+    {
+        $validated = $request->safe();
+
+        Excel::import(new RAPItemImport($rap->id_rap), $validated->file);
+
+        return redirect()->back()->with('success', 'Uraian RAP berhasil diimport!');
     }
 }
