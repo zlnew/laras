@@ -5,7 +5,7 @@ import { QTableColumn, useQuasar } from 'quasar';
 
 // utils
 import { toRupiah } from '@/utils/money';
-import { can, isAdmin, isEditable } from '@/utils/permissions';
+import { can, isAdmin, isEditable, isEvaluated, isSubmitted } from '@/utils/permissions';
 
 // types
 import { DetailPengajuanDana, PengajuanDana } from '@/types';
@@ -121,7 +121,13 @@ const columns: Array<QTableColumn> = [
 const visibleColumn = () => {
   let column = [] as string[];
 
-  if (can('approve pengajuan dana') && isApprovable(props.data.pengajuanDana)) {
+  if (can('approve pengajuan dana') && isEvaluated(props.data.pengajuanDana)) {
+    columns.map(col => {
+      return column.push(col.name);
+    });
+  }
+  
+  else if (can('evaluate pengajuan dana') && isSubmitted(props.data.pengajuanDana)) {
     columns.map(col => {
       return column.push(col.name);
     });
@@ -358,7 +364,7 @@ defineExpose({
       </q-tr>
 
       <q-tr
-        v-if="isApprovable(data.pengajuanDana)"
+        v-if="visibleColumn().includes('persetujuan')"
         no-hover
       >
         <q-td colspan="5" style="border: none;"></q-td>
@@ -372,7 +378,7 @@ defineExpose({
       </q-tr>
 
       <q-tr
-        v-if="isApprovable(data.pengajuanDana)"
+        v-if="visibleColumn().includes('persetujuan')"
         no-hover
       >
         <q-td colspan="5" style="border: none;"></q-td>

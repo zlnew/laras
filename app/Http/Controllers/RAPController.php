@@ -172,22 +172,34 @@ class RAPController extends Controller
         return redirect()->back()->with('success', 'RAP berhasil diajukan!');
     }
 
+    public function evaluate(Request $request, RAP $rap): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $rap) {
+            // Update The RAP Status
+            $rap->status_aktivitas = 'Dievaluasi';
+            $rap->save();
+            
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $rap->id_rap,
+                'model_type' => get_class($rap),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Dievaluasi'
+            ]);
+            $timeline->save();
+        });
+
+        return redirect()->back()->with('success', 'RAP berhasil disetujui!');
+    }
+
     public function approve(Request $request, RAP $rap): RedirectResponse
     {
         DB::transaction(function () use ($request, $rap) {
-            $role = $request->user()->roles->first()->name;
-
-            if ($role === 'kepala divisi') {
-                $status_rap = '100';
-                $status_aktivitas_rap = 'Diperiksa';
-            } else if ($role === 'direktur utama' || $role === 'admin') {
-                $status_rap = '400';
-                $status_aktivitas_rap = 'Disetujui';
-            }
-
             // Update The RAP Status
-            $rap->status_rap = $status_rap;
-            $rap->status_aktivitas = $status_aktivitas_rap;
+            $rap->status_rap = '400';
+            $rap->status_aktivitas = 'Disetujui';
             $rap->save();
             
             // Create A Timeline

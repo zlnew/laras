@@ -13,6 +13,7 @@ import {
   RAPItemTable,
   RAPSubmissionForm,
   RAPApprovalForm,
+  RAPEvaluateForm
 } from '@/Components/Main/detail-rap-page';
 import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue';
 
