@@ -11,10 +11,9 @@ import TimelineDialog from '@/Components/Dialogs/TimelineDialog.vue';
 
 // types
 import { Proyek, Timeline } from '@/types';
-import { ActivityStatus } from '@/utils/permissions';
 
 interface JoinedWithProyek {
-  status_aktivitas: ActivityStatus;
+  status_aktivitas: Timeline['status_aktivitas'];
 }
 
 const props = defineProps<{
@@ -64,7 +63,7 @@ function timeline() {
 
         <q-card-section class="q-gutter-x-sm">
           <q-btn
-            v-if="isRejected(data.proyek.status_aktivitas)"
+            v-if="isRejected(data.proyek)"
             flat
             dense
             round
@@ -75,7 +74,7 @@ function timeline() {
           </q-btn>
 
           <q-btn
-            v-if="isApproved(data.proyek.status_aktivitas)"
+            v-if="isApproved(data.proyek)"
             flat
             dense
             round
@@ -86,7 +85,7 @@ function timeline() {
           </q-btn>
 
           <q-btn
-            v-if="isSubmitted(data.proyek.status_aktivitas) || isEvaluated(data.proyek.status_aktivitas)"
+            v-if="isSubmitted(data.proyek) || isEvaluated(data.proyek)"
             flat
             dense
             round

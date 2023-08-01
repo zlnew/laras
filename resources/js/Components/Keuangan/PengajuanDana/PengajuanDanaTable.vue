@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import { QTableColumn, useQuasar } from 'quasar';
 
 // utils
-import { can, isAdmin, isEditable, isRejected } from '@/utils/permissions';
+import { can, isAdmin, isEditable, isModuleEditable, isRejected } from '@/utils/permissions';
 
 // types
 import { PengajuanDana, Proyek } from '@/types';
@@ -221,7 +221,7 @@ function toggleFullscreen() {
 
           <q-td key="actions" :props="props">
             <q-btn
-              v-if="isAdmin() ? true : can('create & modify pengajuan dana') && isEditable(props.row.status_pengajuan)"
+              v-if="isAdmin() ? true : can('create & modify pengajuan dana') && isModuleEditable(props.row.status_pengajuan)"
               dense
               flat
               color="blue-grey"

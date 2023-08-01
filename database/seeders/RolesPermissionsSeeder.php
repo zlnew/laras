@@ -18,13 +18,7 @@ class RolesPermissionsSeeder extends Seeder
       app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
       // Permission modules
-        $master_modules = [
-          'master users',
-          'master rekening',
-          'master satuan',
-          'master roles & permissions'
-        ];
-
+      
         $proyek_modules = [
           'view proyek',
           'create & modify proyek'
@@ -39,19 +33,20 @@ class RolesPermissionsSeeder extends Seeder
         $rap_modules = [
           'view rap',
           'create & modify rap',
+          'evaluate rap',
           'approve rap'
         ];
 
         $pengajuan_dana_modules = [
           'view pengajuan dana',
           'create & modify pengajuan dana',
+          'evaluate pengajuan dana',
           'approve pengajuan dana'
         ];
 
         $pencairan_dana_modules = [
           'view pencairan dana',
           'create & modify pencairan dana',
-          'approve pencairan dana',
           'receipt pencairan dana'
         ];
 
@@ -61,16 +56,7 @@ class RolesPermissionsSeeder extends Seeder
           'receipt penagihan'
         ];
 
-        $laporan_modules = [
-          'view laporan',
-          'generate laporan'
-        ];
-
-
       // Creating Permissions
-        foreach ($master_modules as $module) {
-          Permission::create(['name' => $module]);
-        }
 
         foreach ($proyek_modules as $module) {
           Permission::create(['name' => $module]);
@@ -96,11 +82,6 @@ class RolesPermissionsSeeder extends Seeder
           Permission::create(['name' => $module]);
         }
 
-        foreach ($laporan_modules as $module) {
-          Permission::create(['name' => $module]);
-        }
-
-
       // Creating roles
 
         $admin = Role::create(['name' => 'admin']);
@@ -121,17 +102,15 @@ class RolesPermissionsSeeder extends Seeder
           'view pengajuan dana', 'create & modify pengajuan dana',
           'view pencairan dana', 'receipt pencairan dana',
           'view penagihan',
-          'generate laporan'
         ]);
 
         $kepala_divisi->givePermissionTo([
           'view proyek', 'create & modify proyek',
           'view rab', 'create & modify rab',
-          'view rap', 'approve rap',
-          'view pengajuan dana', 'create & modify pengajuan dana', 'approve pengajuan dana',
+          'view rap', 'evaluate rap',
+          'view pengajuan dana', 'create & modify pengajuan dana', 'evaluate pengajuan dana',
           'view pencairan dana',
           'view penagihan',
-          'view laporan'
         ]);
 
         $direktur_utama->givePermissionTo([
@@ -139,9 +118,8 @@ class RolesPermissionsSeeder extends Seeder
           'view rab', 'approve rab',
           'view rap', 'approve rap',
           'view pengajuan dana', 'create & modify pengajuan dana', 'approve pengajuan dana',
-          'view pencairan dana', 'approve pengajuan dana',
+          'view pencairan dana',
           'view penagihan', 'receipt penagihan',
-          'view laporan'
         ]);
 
         $keuangan->givePermissionTo([
@@ -151,7 +129,6 @@ class RolesPermissionsSeeder extends Seeder
           'view pengajuan dana', 'create & modify pengajuan dana',
           'view pencairan dana', 'create & modify pencairan dana',
           'view penagihan', 'create & modify penagihan',
-          'generate laporan'
         ]);
 
 

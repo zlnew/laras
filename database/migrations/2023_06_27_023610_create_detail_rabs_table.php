@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('detail_rab', function (Blueprint $table) {
             $table->id('id_detail_rab');
             $table->string('uraian');
-            $table->decimal('volume', 3, 2);
-            $table->decimal('harga_satuan', 12, 2);
+            $table->decimal('volume', 5, 2);
+            $table->decimal('harga_satuan', 20, 2);
             $table->string('keterangan')->nullable();
             $table->foreignUlid('id_rab');
             $table->foreignId('id_satuan');

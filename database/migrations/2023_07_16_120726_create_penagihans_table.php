@@ -20,14 +20,14 @@ return new class extends Migration
             $table->date('tanggal_terbit')->nullable();
             $table->date('tanggal_cair')->nullable();
             
-            $table->decimal('potongan_ppn', 12, 2)->nullable();
-            $table->decimal('potongan_pph', 12, 2)->nullable();
-            $table->decimal('potongan_lainnya', 12, 2)->nullable();
+            $table->decimal('potongan_ppn', 20, 2)->nullable();
+            $table->decimal('potongan_pph', 20, 2)->nullable();
+            $table->decimal('potongan_lainnya', 20, 2)->nullable();
             $table->text('keterangan_potongan_lainnya')->nullable();
 
             $table->enum('kas_masuk', ['Utang', 'Setoran Modal']);
             $table->enum('status_penagihan', [100, 400])->default(100);
-            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Diterima'])->default('Dibuat');
+            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Ditolak', 'Diterima Bertahap', 'Diterima'])->default('Dibuat');
             
             $table->foreignUlid('id_proyek');
             $table->foreignUlid('id_rekening');

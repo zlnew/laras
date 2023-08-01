@@ -17,6 +17,7 @@ const { dialogRef, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 interface JoinedWithTimeline {
   user_name: string;
   user_role: string;
+  created_at: string;
 }
 
 defineProps<{
@@ -30,8 +31,9 @@ const icon = (status: Timeline['status_aktivitas']) => {
     case 'Diajukan': return 'send';
     case 'Ditolak': return 'priority_high';
     case 'Dievaluasi': return 'done';
-    case 'Diperiksa': return 'done';
     case 'Disetujui': return 'done_all';
+    case 'Diterima Bertahap': return 'done';
+    case 'Diterima': return 'done_all';
    }
 };
 
@@ -41,8 +43,9 @@ const color = (status: Timeline['status_aktivitas']) => {
     case 'Diajukan': return 'primary';
     case 'Ditolak': return 'red';
     case 'Dievaluasi': return 'green';
-    case 'Diperiksa': return 'green';
     case 'Disetujui': return 'green';
+    case 'Diterima Bertahap': return 'green';
+    case 'Diterima': return 'green';
    }
 };
 </script>

@@ -159,7 +159,7 @@ const filter = ref('');
       <template v-slot:top-left>
         <div class="q-gutter-sm">
           <q-btn
-            v-if="isAdmin() ? true : can('create & modify rap') && isEditable(data.rap.status_aktivitas)"
+            v-if="isAdmin() ? true : can('create & modify rap') && isEditable(data.rap)"
             no-caps
             label="Tambah Uraian RAP"
             icon="add"
@@ -167,7 +167,7 @@ const filter = ref('');
             @click="createRAPItem"
           />
           <q-btn
-            v-if="isAdmin() ? true : can('create & modify rap') && isEditable(data.rab.status_aktivitas)"
+            v-if="isAdmin() ? true : can('create & modify rap') && isEditable(data.rab)"
             no-caps
             label="Import dari CSV/XLS"
             icon="upload_file"
@@ -246,7 +246,7 @@ const filter = ref('');
 
           <q-td key="actions" :props="props">
             <q-btn
-              v-if="isAdmin() ? true : can('create & modify rap') && isEditable(data.rap.status_aktivitas)"
+              v-if="isAdmin() ? true : can('create & modify rap') && isEditable(data.rap)"
               dense
               flat
               color="blue-grey"

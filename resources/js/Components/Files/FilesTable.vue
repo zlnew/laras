@@ -3,10 +3,10 @@
 import { ref } from 'vue';
 
 // utils
-import { ActivityStatus, can, isAdmin, isEditable, PermissionsModules } from '@/utils/permissions';
+import { can, isAdmin, isEditable } from '@/utils/permissions';
 
 // types
-import { File } from '@/types';
+import { File, Timeline, UserPermissions } from '@/types';
 import { QTableColumn, useQuasar } from 'quasar';
 
 // comps
@@ -20,8 +20,8 @@ const props = defineProps<{
   rows: Array<File>;
   data: {
     model_id: string | number;
-    permissions: PermissionsModules;
-    status: ActivityStatus;
+    permissions: UserPermissions;
+    status_aktivitas: Timeline['status_aktivitas'];
   }
 }>();
 
@@ -102,7 +102,7 @@ const filter = ref('');
   >
     <template v-slot:top-left>
       <q-btn
-        v-if="isAdmin() ? true : can(data.permissions) && isEditable(data.status)"
+        v-if="isAdmin() ? true : can(data.permissions) && isEditable(data)"
         no-caps
         label="Tambah File"
         icon="add"
@@ -166,7 +166,7 @@ const filter = ref('');
 
         <q-td key="actions" :props="props">
           <q-btn
-            v-if="isAdmin() ? true : can(data.permissions) && isEditable(data.status)"
+            v-if="isAdmin() ? true : can(data.permissions) && isEditable(data)"
             dense
             flat
             color="blue-grey"

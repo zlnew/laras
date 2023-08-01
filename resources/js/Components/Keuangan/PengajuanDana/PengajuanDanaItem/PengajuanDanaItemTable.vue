@@ -121,7 +121,7 @@ const columns: Array<QTableColumn> = [
 const visibleColumn = () => {
   let column = [] as string[];
 
-  if (can('approve pengajuan dana') && isApprovable(props.data.pengajuanDana.status_aktivitas)) {
+  if (can('approve pengajuan dana') && isApprovable(props.data.pengajuanDana)) {
     columns.map(col => {
       return column.push(col.name);
     });
@@ -211,7 +211,7 @@ defineExpose({
     <template v-slot:top-left>
       <div class="q-gutter-sm">
         <q-btn
-          v-if="isAdmin() ? true : can('create & modify pengajuan dana') && isEditable(data.pengajuanDana.status_aktivitas)"
+          v-if="isAdmin() ? true : can('create & modify pengajuan dana') && isEditable(data.pengajuanDana)"
           no-caps
           label="Tambah Uraian"
           icon="add"
@@ -298,7 +298,7 @@ defineExpose({
 
         <q-td key="actions" :props="props">
           <q-btn
-            v-if="isAdmin() ? true : can('create & modify pengajuan dana') && isEditable(data.pengajuanDana.status_aktivitas)"
+            v-if="isAdmin() ? true : can('create & modify pengajuan dana') && isEditable(data.pengajuanDana)"
             dense
             flat
             color="blue-grey"
@@ -358,7 +358,7 @@ defineExpose({
       </q-tr>
 
       <q-tr
-        v-if="isApprovable(data.pengajuanDana.status_aktivitas)"
+        v-if="isApprovable(data.pengajuanDana)"
         no-hover
       >
         <q-td colspan="5" style="border: none;"></q-td>
@@ -372,7 +372,7 @@ defineExpose({
       </q-tr>
 
       <q-tr
-        v-if="isApprovable(data.pengajuanDana.status_aktivitas)"
+        v-if="isApprovable(data.pengajuanDana)"
         no-hover
       >
         <q-td colspan="5" style="border: none;"></q-td>

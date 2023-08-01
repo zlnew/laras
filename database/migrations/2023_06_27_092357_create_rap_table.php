@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rap', function (Blueprint $table) {
             $table->ulid('id_rap')->primary();
             $table->enum('status_rap', [100, 400])->default(100);
-            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Diperiksa', 'Disetujui'])->default('Dibuat');
+            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Dievaluasi', 'Ditolak', 'Disetujui'])->default('Dibuat');
             $table->foreignUlid('id_proyek');
             $table->timestamps();
             $table->softDeletes();

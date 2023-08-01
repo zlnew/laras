@@ -3,7 +3,7 @@
 import { Head } from '@inertiajs/vue3';
 
 // utils
-import { can, isApprovable, isEditable } from '@/utils/permissions';
+import { can, isApprovable, isEditable, isSubmitted } from '@/utils/permissions';
 
 // layout
 import Layout from '@/Layouts/AuthenticatedLayout.vue';
@@ -74,14 +74,21 @@ const breadcrumbs = [
     />
 
     <RAP-submission-form
-      v-if="can('create & modify rap') && isEditable(rap.status_aktivitas) && detailRap.length"
+      v-if="can('create & modify rap') && isEditable(rap) && detailRap.length"
+      :data="{
+        id_rap: rap.id_rap,
+      }"
+    />
+
+    <RAP-evaluate-form
+      v-if="can('evaluate rap') && isSubmitted(rap)"
       :data="{
         id_rap: rap.id_rap,
       }"
     />
 
     <RAP-approval-form
-      v-if="can('approve rap') && isApprovable(rap.status_aktivitas, true)"
+      v-if="can('approve rap') && isApprovable(rap)"
       :data="{
         id_rap: rap.id_rap,
       }"

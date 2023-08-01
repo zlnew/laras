@@ -143,7 +143,7 @@ const table = ref<{
               :data="{
                 model_id: pengajuanDana.id_pengajuan_dana,
                 permissions: 'create & modify pengajuan dana',
-                status: pengajuanDana.status_aktivitas
+                status_aktivitas: pengajuanDana.status_aktivitas
               }"
             />
           </q-tab-panel>
@@ -152,14 +152,14 @@ const table = ref<{
     </div>
 
     <pengajuan-dana-submission-form
-      v-if="can('create & modify pengajuan dana') && isEditable(pengajuanDana.status_aktivitas) && detailPengajuanDana.length"
+      v-if="can('create & modify pengajuan dana') && isEditable(pengajuanDana) && detailPengajuanDana.length"
       :data="{
         id_pengajuan_dana: pengajuanDana.id_pengajuan_dana,
       }"
     />
 
     <pengajuan-dana-evaluate-form
-      v-if="can('approve pengajuan dana') && isSubmitted(pengajuanDana.status_aktivitas)"
+      v-if="can('evaluate pengajuan dana') && isSubmitted(pengajuanDana)"
       :data="{
         evaluasi: evaluasi,
         approvedPengajuanSaatIni: table?.approvedPengajuanSaatIni,
@@ -169,7 +169,7 @@ const table = ref<{
     />
 
     <pengajuan-dana-approval-form
-      v-if="can('approve pengajuan dana') && isEvaluated(pengajuanDana.status_aktivitas)"
+      v-if="can('approve pengajuan dana') && isEvaluated(pengajuanDana)"
       :data="{
         id_pengajuan_dana: pengajuanDana.id_pengajuan_dana,
         selected_ids_detail_pengajuan_dana: table?.selectedIds

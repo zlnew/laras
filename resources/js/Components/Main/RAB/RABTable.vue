@@ -4,7 +4,7 @@ import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // utils
-import { can, isAdmin, isEditable, isRejected } from '@/utils/permissions';
+import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions';
 
 // types
 import { Proyek, RAB } from '@/types';
@@ -226,7 +226,7 @@ function toggleFullscreen() {
 
           <q-td key="actions" :props="props">
             <q-btn
-              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(props.row.status_rab)"
+              v-if="isAdmin() ? true : can('create & modify rab') && isModuleEditable(props.row.status_rab)"
               dense
               flat
               color="blue-grey"

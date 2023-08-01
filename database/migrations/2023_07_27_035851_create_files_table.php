@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id('id_file');
             $table->string('file_name')->nullable();
             $table->binary('file_path');
-            $table->string('model_type');
             $table->foreignUlid('model_id');
             $table->timestamps();
             $table->softDeletes();

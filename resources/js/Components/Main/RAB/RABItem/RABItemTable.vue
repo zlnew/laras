@@ -159,7 +159,7 @@ const filter = ref('');
       <template v-slot:top-left>
         <div class="q-gutter-sm">
           <q-btn
-            v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
+            v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab)"
             no-caps
             label="Tambah Uraian RAB"
             icon="add"
@@ -167,7 +167,7 @@ const filter = ref('');
             @click="createRABItem"
           />
           <q-btn
-            v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
+            v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab)"
             no-caps
             label="Import dari CSV/XLS"
             icon="upload_file"
@@ -242,7 +242,7 @@ const filter = ref('');
 
           <q-td key="actions" :props="props">
             <q-btn
-              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
+              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab)"
               dense
               flat
               color="blue-grey"
@@ -297,7 +297,7 @@ const filter = ref('');
           </q-td>
           <q-td class="text-right">
             <q-input
-              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
+              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab)"
               dense
               reverse-fill-mask
               hide-bottom-space
@@ -325,7 +325,7 @@ const filter = ref('');
           </q-td>
           <q-td class="text-right">
             <q-input
-              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab.status_aktivitas)"
+              v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab)"
               dense
               reverse-fill-mask
               hide-bottom-space
