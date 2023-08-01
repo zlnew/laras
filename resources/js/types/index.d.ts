@@ -40,6 +40,13 @@ export interface Flash {
     error: string;
 }
 
+export interface File {
+    id_file: number;
+    file_name: string;
+    file_path: string;
+    model_id: string;
+}
+
 export interface Proyek {
     id_proyek: string;
     nama_proyek: string;
@@ -122,10 +129,11 @@ export interface Keuangan {
 
 export interface PengajuanDana {
     id_pengajuan_dana: string;
-    id_keuangan: Keuangan['id_keuangan'];
+    keperluan: string;
+    tanggal_pengajuan: string;
     status_pengajuan: 100 | 400;
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak' | 'Disetujui';
-    tanggal_pengajuan: string;
+    id_proyek: Proyek['id_proyek'];
     created_at: string;
     updated_at: string;
     deleted_at: string;

@@ -122,7 +122,6 @@ class RABController extends Controller
                 'user_id' => $request->user()->id,
                 'model_id' => $rab->id_rab,
                 'model_type' => get_class($rab),
-                'catatan' => $request->post('catatan'),
                 'status_aktivitas' => 'Dibuat'
             ]);
             $timeline->save();
@@ -205,7 +204,7 @@ class RABController extends Controller
             $timeline->save();
         });
 
-        return redirect()->route('rab')->with('success', 'RAB berhasil disetujui!');
+        return redirect()->back()->with('success', 'RAB berhasil disetujui!');
     }
 
     public function reject(Request $request, RAB $rab): RedirectResponse

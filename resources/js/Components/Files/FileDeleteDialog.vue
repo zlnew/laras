@@ -4,7 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
 
 // types
-import { DetailPengajuanDana } from '@/types';
+import { File } from '@/types';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -13,15 +13,15 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
 const props = defineProps<{
-  id_detail_pengajuan_dana: DetailPengajuanDana['id_detail_pengajuan_dana'];
+  id_file: File['id_file'];
 }>();
 
 const form = useForm({
-  id_detail_pengajuan_dana: props.id_detail_pengajuan_dana,
+  id_file: props.id_file,
 });
 
 function destroy() {
-  form.delete(route('detail_pengajuan_dana.destroy', props.id_detail_pengajuan_dana), {
+  form.delete(route('file.destroy', props.id_file), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',

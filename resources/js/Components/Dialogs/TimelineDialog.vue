@@ -29,6 +29,7 @@ const icon = (status: Timeline['status_aktivitas']) => {
     case 'Dibuat': return 'commit';
     case 'Diajukan': return 'send';
     case 'Ditolak': return 'priority_high';
+    case 'Dievaluasi': return 'done';
     case 'Diperiksa': return 'done';
     case 'Disetujui': return 'done_all';
    }
@@ -39,6 +40,7 @@ const color = (status: Timeline['status_aktivitas']) => {
     case 'Dibuat': return 'secondary';
     case 'Diajukan': return 'primary';
     case 'Ditolak': return 'red';
+    case 'Dievaluasi': return 'green';
     case 'Diperiksa': return 'green';
     case 'Disetujui': return 'green';
    }

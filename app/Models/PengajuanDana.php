@@ -15,6 +15,7 @@ class PengajuanDana extends Model
     protected $primaryKey = 'id_pengajuan_dana';
     protected $fillable = [
         'keperluan',
+        'tanggal_pengajuan',
         'status_pengajuan',
         'status_aktivitas',
         'id_proyek'

@@ -3,7 +3,7 @@
 import { useQuasar } from 'quasar';
 
 // utils
-import { isRejected, isApproved, isSubmitted } from '@/utils/permissions';
+import { isRejected, isApproved, isSubmitted, isEvaluated } from '@/utils/permissions';
 
 // comps
 import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
@@ -53,17 +53,12 @@ function timeline() {
   <div class="q-px-md q-pt-md">
     <q-card flat bordered>
       <div class="row justify-between items-center">
-        <q-card-section class="flex items-center">
-          <div class="text-h6">{{ title }} - {{ data.proyek.nama_proyek }}</div>
-          <q-btn
-            flat
-            round
-            color="secondary"
-            icon="info"
-            @click="detailProyek"
-            class="q-ml-sm"
-          >
-            <q-tooltip>Detail Proyek</q-tooltip>
+        <q-card-section class="col-6">
+          <q-btn flat no-caps dense @click="detailProyek">
+            <div class="text-h6 line-clamp">
+              {{ title }} - {{ data.proyek.nama_proyek }}
+            </div>
+            <q-tooltip>{{ data.proyek.nama_proyek }}</q-tooltip>
           </q-btn>
         </q-card-section>
 
@@ -91,7 +86,7 @@ function timeline() {
           </q-btn>
 
           <q-btn
-            v-if="isSubmitted(data.proyek.status_aktivitas)"
+            v-if="isSubmitted(data.proyek.status_aktivitas) || isEvaluated(data.proyek.status_aktivitas)"
             flat
             dense
             round

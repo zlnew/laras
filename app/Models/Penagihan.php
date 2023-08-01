@@ -24,6 +24,7 @@ class Penagihan extends Model
         'potongan_lainnya',
         'keterangan_potongan_lainnya',
         'kas_masuk',
+        'tanggal_pengajuan',
         'status_penagihan',
         'status_aktivitas',
         'id_proyek',

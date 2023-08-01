@@ -19,6 +19,7 @@ use App\Http\Controllers\PenagihanController;
 use App\Http\Controllers\DetailPengajuanDanaController;
 use App\Http\Controllers\DetailPencairanDanaController;
 use App\Http\Controllers\DetailPenagihanController;
+use App\Http\Controllers\FilesController;
 use App\Http\Controllers\LaporanController;
 
 /*
@@ -42,6 +43,12 @@ Route::middleware('auth')->group(function() {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/password', [PasswordController::class, 'update'])->name('password.update');
+
+    Route::prefix('file')->group(function() {
+        Route::post('/{model_id}', [FilesController::class, 'store'])->name('file.store');
+        Route::post('/{file}/update', [FilesController::class, 'update'])->name('file.update');
+        Route::delete('/{file}', [FilesController::class, 'destroy'])->name('file.destroy');
+    });
 
     Route::prefix('master')->middleware('role:admin')->group(function() {
         Route::get('/users', [UsersController::class, 'index'])->name('users');
@@ -132,16 +139,17 @@ Route::middleware('auth')->group(function() {
                 Route::post('/', [PengajuanDanaController::class, 'store'])->name('pengajuan_dana.store');
                 Route::patch('/{pengajuanDana}', [PengajuanDanaController::class, 'update'])->name('pengajuan_dana.update');
                 Route::delete('/{pengajuanDana}', [PengajuanDanaController::class, 'destroy'])->name('pengajuan_dana.destroy');
+                Route::post('/submit/{pengajuanDana}', [PengajuanDanaController::class, 'submit'])->name('pengajuan_dana.submit');
 
                 Route::post('/detail/{pengajuanDana}', [DetailPengajuanDanaController::class,'store'])->name('detail_pengajuan_dana.store');
                 Route::patch('/detail/{detailPengajuanDana}', [DetailPengajuanDanaController::class, 'update'])->name('detail_pengajuan_dana.update');
                 Route::delete('/detail/{detailPengajuanDana}', [DetailPengajuanDanaController::class, 'destroy'])->name('detail_pengajuan_dana.destroy');
-                Route::post('/detail/{pengajuanDana}/submit', [DetailPengajuanDanaController::class, 'submit'])->name('detail_pengajuan_dana.submit');
             });
 
             Route::middleware(['permission:approve pengajuan dana'])->group(function() {
-                Route::post('/detail/{pengajuanDana}/approve', [DetailPengajuanDanaController::class, 'approve'])->name('detail_pengajuan_dana.approve');
-                Route::post('/detail/{pengajuanDana}/refuse', [DetailPengajuanDanaController::class, 'refuse'])->name('detail_pengajuan_dana.refuse');
+                Route::post('/evaluate/{pengajuanDana}', [PengajuanDanaController::class, 'evaluate'])->name('pengajuan_dana.evaluate');
+                Route::post('/approve/{pengajuanDana}', [PengajuanDanaController::class, 'approve'])->name('pengajuan_dana.approve');
+                Route::post('/reject/{pengajuanDana}', [PengajuanDanaController::class, 'reject'])->name('pengajuan_dana.reject');
             });
         });
     

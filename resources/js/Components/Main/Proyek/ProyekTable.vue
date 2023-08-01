@@ -196,7 +196,7 @@ function toggleFullscreen() {
               <q-tooltip anchor="bottom middle" self="top middle">
                 Lihat Detail
               </q-tooltip>
-          </q-btn>
+            </q-btn>
           </q-td>
 
           <q-td key="pengguna_jasa" :props="props">

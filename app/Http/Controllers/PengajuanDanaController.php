@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PengajuanDana\StoreRequest;
 use App\Http\Requests\PengajuanDana\UpdateRequest;
+use App\Models\DetailPengajuanDana;
+use App\Models\PencairanDana;
 use App\Models\PengajuanDana;
+use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,13 +25,19 @@ class PengajuanDanaController extends Controller
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('pengajuan_dana.deleted_at', NULL);
 
+        $role = $request->user()->roles->first()->name;
+
+        if ($role === 'manajer proyek') {
+            $pengajuanDanaQuery->where('proyek.id_user', $request->user()->id);
+        }
+
         if ($request->isMethod('get') && $request->all()) {
             $pengajuanDanaQuery = $this->filter($request, $pengajuanDanaQuery);
         }
 
-        $pengajuanDana = $pengajuanDanaQuery->group_by('pengajuan_dana.id_pengajuan_dana')
+        $pengajuanDana = $pengajuanDanaQuery->groupBy('pengajuan_dana.id_pengajuan_dana')
             ->select(
-                'pengajuan_dana.id_pengajuan_dana',
+                'pengajuan_dana.id_pengajuan_dana', 'pengajuan_dana.status_aktivitas',
                 'pengajuan_dana.keperluan', 'pengajuan_dana.status_pengajuan',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
@@ -36,12 +45,12 @@ class PengajuanDanaController extends Controller
                 'proyek.tahun_anggaran', 'proyek.nomor_spmk',
                 'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
                 'proyek.tanggal_mulai', 'proyek.durasi',
-                'proyek.tanggal_selesai', 'user.id as id_user',
-                'user.name as user_name', 'proyek.status_proyek',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
                 'rekening.id_rekening', 'rekening.nama_bank',
                 'rekening.nomor_rekening', 'rekening.nama_rekening' 
             )
-            ->orderBy('keuangan.id_keuangan', 'desc')
+            ->orderBy('pengajuan_dana.id_pengajuan_dana', 'desc')
             ->get();
 
         $formOptions = $this->formOptions();
@@ -55,22 +64,36 @@ class PengajuanDanaController extends Controller
     private function formOptions(): stdClass
     {
         $proyek = DB::table('proyek')
-            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
             ->where('proyek.deleted_at', null)
-            ->where('rab.status_rab', '400')
+            ->where('rap.deleted_at', null)
             ->where('rap.status_rap', '400')
+            ->groupBy('proyek.id_proyek')
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.tahun_anggaran'
             )
             ->get();
 
-        $statusPengajuanDana = ['Open', 'Closed'];
+        $currentProyek = DB::table('proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('rap.deleted_at', null)
+            ->where('pengajuan_dana.deleted_at', null)
+            ->where('rap.status_rap', '400')
+            ->where('pengajuan_dana.id_proyek', '!=', null)
+            ->groupBy('proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+            ->get();
 
+            
         $options = (object) [
             'proyek' => $proyek,
-            'statusPengajuanDana' => $statusPengajuanDana
+            'currentProyek' => $currentProyek
         ];
 
         return $options;
@@ -78,14 +101,14 @@ class PengajuanDanaController extends Controller
 
     public function filter($searchRequest, $pengajuanDanaQuery) {
         $pengajuanDanaQuery->when($searchRequest->get('id_proyek'), function($query, $input) {
-            $query->whereIn('proyek.id_proyek', $input);
+            $query->whereIn('pengajuan_dana.id_proyek', $input);
         });
 
         $pengajuanDanaQuery->when($searchRequest->get('status_pengajuan'), function($query, $input) {
             $query->where('pengajuan_dana.status_pengajuan', $input);
         });
 
-        $pengajuanDanaQuery->when($searchRequest->get('ditolak'), function($query) {
+        $pengajuanDanaQuery->when($searchRequest->get('ditolak') === true, function($query) {
             $query->where('pengajuan_dana.status_aktivitas', 'Ditolak');
         });
 
@@ -98,11 +121,23 @@ class PengajuanDanaController extends Controller
             $validated = $request->safe();
     
             $pengajuanDana = new PengajuanDana;
+
             $pengajuanDana->fill([
                 'id_proyek' => $validated->id_proyek,
                 'keperluan' => $validated->keperluan,
             ]);
+            
             $pengajuanDana->save();
+
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pengajuanDana->id_pengajuan_dana,
+                'model_type' => get_class($pengajuanDana),
+                'status_aktivitas' => 'Dibuat'
+            ]);
+            $timeline->save();
         });
 
         return redirect()->back()->with('success', 'Pengajuan Dana berhasil dibuat!');
@@ -112,7 +147,10 @@ class PengajuanDanaController extends Controller
     {
         $validated = $request->safe();
 
-        $pengajuanDana->keperluan = $validated->keperluan;
+        $pengajuanDana->fill([
+            'id_proyek' => $validated->id_proyek,
+            'keperluan' => $validated->keperluan,
+        ]);
 
         $pengajuanDana->save();
 
@@ -124,5 +162,125 @@ class PengajuanDanaController extends Controller
         $pengajuanDana->delete();
 
         return redirect()->back()->with('success', 'Pengajuan Dana berhasil dihapus!');
+    }
+
+    public function submit(Request $request, PengajuanDana $pengajuanDana): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $pengajuanDana) {
+            // Create A Timeline  
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pengajuanDana->id_pengajuan_dana,
+                'model_type' => get_class($pengajuanDana),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Diajukan'
+            ]);
+            $timeline->save();
+
+            // Update The Pengajuan Dana Status
+            $pengajuanDana->status_aktivitas = 'Diajukan';
+            $pengajuanDana->tanggal_pengajuan = now();
+            $pengajuanDana->save();
+        });
+
+        return redirect()->back()->with('success', 'Pengajuan Dana berhasil diajukan!');
+    }
+
+    public function evaluate(Request $request, PengajuanDana $pengajuanDana): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $pengajuanDana) {
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pengajuanDana->id_pengajuan_dana,
+                'model_type' => get_class($pengajuanDana),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Dievaluasi',
+            ]);
+            $timeline->save();
+
+            // Update The Detail Pengajuan Dana
+            DetailPengajuanDana::query()
+                ->where('id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
+                ->whereIn('id_detail_pengajuan_dana', $request->post('selected_ids_detail_pengajuan_dana'))
+                ->update(['status_persetujuan' => '400']);
+
+            // Delete The Detail Pengajuan Dana
+            DetailPengajuanDana::query()
+                ->where('id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
+                ->whereNotIn('id_detail_pengajuan_dana', $request->post('selected_ids_detail_pengajuan_dana'))
+                ->delete();
+
+            // Update The Pengajuan Dana Status
+            $pengajuanDana->status_aktivitas = 'Dievaluasi';
+            $pengajuanDana->save();
+        });
+
+        return redirect()->back()->with('success', 'Pengajuan Dana berhasil disetujui!');
+    }
+
+    public function approve(Request $request, PengajuanDana $pengajuanDana): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $pengajuanDana) {
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pengajuanDana->id_pengajuan_dana,
+                'model_type' => get_class($pengajuanDana),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Disetujui'
+            ]);
+            $timeline->save();
+
+            // Update The Detail Pengajuan Dana
+            DetailPengajuanDana::query()
+                ->where('id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
+                ->whereIn('id_detail_pengajuan_dana', $request->post('selected_ids_detail_pengajuan_dana'))
+                ->update(['status_persetujuan' => '400']);
+
+            // Delete The Detail Pengajuan Dana
+            DetailPengajuanDana::query()
+                ->where('id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
+                ->whereNotIn('id_detail_pengajuan_dana', $request->post('selected_ids_detail_pengajuan_dana'))
+                ->delete();
+
+            // Update The Pengajuan Dana Status
+            $pengajuanDana->status_pengajuan = '400';
+            $pengajuanDana->status_aktivitas = 'Disetujui';
+            $pengajuanDana->save();
+
+            // Create A Pencairan Dana
+            $pencairanDana = new PencairanDana;
+            $pencairanDana->id_proyek = $pengajuanDana->id_proyek;
+            $pencairanDana->keperluan = $pengajuanDana->keperluan;
+            $pencairanDana->save();
+        });
+
+        return redirect()->back()->with('success', 'Pengajuan Dana berhasil disetujui!');
+    }
+
+    public function reject(Request $request, PengajuanDana $pengajuanDana): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $pengajuanDana) {
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pengajuanDana->id_pengajuan_dana,
+                'model_type' => get_class($pengajuanDana),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Ditolak'
+            ]);
+            $timeline->save();
+    
+            // Update The Pengajuan Dana Status
+            $pengajuanDana->status_aktivitas = 'Ditolak';
+            $pengajuanDana->save();
+        });
+
+        return redirect()->back()->with('success', 'Pengajuan Dana berhasil ditolak!');
     }
 }

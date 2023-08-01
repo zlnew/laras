@@ -69,7 +69,7 @@ const menuList = [
     icon: 'paid',
     label: 'Pengajuan Dana',
     link: route('pengajuan_dana'),
-    active: route().current('pengajuan_dana'),
+    active: route().current('pengajuan_dana') || route().current('detail_pengajuan_dana'),
     separator: false,
     sectionTitle: 'Keuangan'
   },
@@ -77,14 +77,14 @@ const menuList = [
     icon: 'paid',
     label: 'Pencairan Dana',
     link: route('pencairan_dana'),
-    active: route().current('pencairan_dana'),
+    active: route().current('pencairan_dana') || route().current('detail_pencairan_dana'),
     separator: false
   },
   {
     icon: 'price_check',
     label: 'Penagihan/Invoice',
     link: route('penagihan'),
-    active: route().current('penagihan'),
+    active: route().current('penagihan') || route().current('detail_penagihan'),
     separator: true
   },
   {

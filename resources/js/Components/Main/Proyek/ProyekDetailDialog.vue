@@ -66,7 +66,7 @@ defineProps<{
             </div>
 
             <div class="col-6">
-              <div class="text-secondary text-weight-bold text-caption">Tanngal Kontrak</div>
+              <div class="text-secondary text-weight-bold text-caption">Tanggal Kontrak</div>
               <div class="text-subtitle-2">{{ fullDate(proyek.tanggal_kontrak) }}</div>
             </div>
           </div>
@@ -80,7 +80,7 @@ defineProps<{
             </div>
 
             <div class="col-6">
-              <div class="text-secondary text-weight-bold text-caption">Tanngal SPMK</div>
+              <div class="text-secondary text-weight-bold text-caption">Tanggal SPMK</div>
               <div class="text-subtitle-2">{{ fullDate(proyek.tanggal_spmk) }}</div>
             </div>
           </div>

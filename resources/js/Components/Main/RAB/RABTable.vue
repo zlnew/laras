@@ -121,7 +121,7 @@ function toggleFullscreen() {
       row-key="id_rab"
       :rows="rows"
       :columns="columns"
-      :rows-per-page-options="[ 5, 10, 15, 20, 25, 50, 0 ]"
+      :rows-per-page-options="[ 10, 15, 20, 25, 50, 0 ]"
       :fullscreen="tableFullscreen"
     >
       <template v-slot:top-left>

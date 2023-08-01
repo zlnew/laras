@@ -1,6 +1,6 @@
 import { usePage } from "@inertiajs/vue3";
 
-type PermissionsModules =
+export type PermissionsModules =
   'master users'|
   'master rekening'|
   'master satuan'|
@@ -74,6 +74,11 @@ function isApprovable(status: ActivityStatus, twoApproval: boolean = false) {
   return false;
 }
 
+function isEvaluated(status: ActivityStatus) {
+  if (status === 'Dievaluasi') return true;
+  return false;
+}
+
 function isSubmitted(status: ActivityStatus) {
   if (status === 'Diajukan') return true;
   return false;
@@ -93,6 +98,7 @@ export {
   can,
   isEditable,
   isApprovable,
+  isEvaluated,
   isSubmitted,
   isRejected,
   isApproved,
