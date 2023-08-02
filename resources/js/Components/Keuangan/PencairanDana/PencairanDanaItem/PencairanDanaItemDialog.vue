@@ -1,8 +1,13 @@
 <script setup lang="ts">
 // cores
-import { File } from '@/types';
 import { useForm } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
+
+// utils
+import { toRupiah } from '@/utils/money';
+
+// types
+import { DetailPencairanDana, PencairanDana } from '@/types';
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -11,16 +16,17 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
 const props = defineProps<{
-  file: File;
+  id_pencairan_dana: PencairanDana['id_pencairan_dana'];
+  id_detail_pengajuan_dana: DetailPencairanDana['id_detail_pencairan_dana'];
 }>();
 
 const form = useForm({
-  file_name: props.file.file_name,
-  file: null,
+  id_detail_pengajuan_dana: props.id_detail_pengajuan_dana,
+  jumlah_pencairan: 0
 });
 
 function submit() {
-  form.post(route('file.update', props.file.id_file), {
+  form.post(route('detail_pencairan_dana.store', props.id_pencairan_dana), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
@@ -37,9 +43,9 @@ function submit() {
     :no-backdrop-dismiss="true"
     @hide="onDialogHide"
   >
-    <q-card style="width: 700px; max-width: 80vw;">
+    <q-card style="width: 400px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Edit File</div>
+          <div class="text-h6">Pencairan Dana</div>
           <q-space />
           <q-btn
             flat
@@ -57,21 +63,17 @@ function submit() {
           <div class="q-gutter-md">
             <q-input
               outlined
+              reverse-fill-mask
               hide-bottom-space
-              v-model="form.file_name"
-              label="Nama File"
-              :error="form.errors.file_name ? true : false"
-              :error-message="form.errors.file_name"
-            />
-            <q-file
-              outlined
-              counter
-              hide-bottom-space
-              v-model="form.file"
-              label="Pick file"
-              hint="Format: png, jpeg, jpg, pdf"
-              :error="form.errors.file ? true : false"
-              :error-message="form.errors.file"
+              label="Masukkan Jumlah Pencairan"
+              mask="#.##"
+              fill-mask="0"
+              v-model="form.jumlah_pencairan"
+              :hint="toRupiah(form.jumlah_pencairan)"
+              :hide-hint="form.jumlah_pencairan < 1"
+              :error="form.errors.jumlah_pencairan ? true : false"
+              :error-message="form.errors.jumlah_pencairan"
+              input-class="text-right"
             />
           </div>
         </q-card-section>
@@ -94,7 +96,7 @@ function submit() {
           <q-btn
             flat
             type="submit"
-            label="Update"
+            label="Confirm"
             color="primary"
             :loading="form.processing"
           />

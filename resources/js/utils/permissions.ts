@@ -36,7 +36,7 @@ function isModuleEditable(code: DataStatusCode) {
 function isEditable(data: DataActivityStatus) {
   const status = data.status_aktivitas;
 
-  if (status === 'Dibuat' || status === 'Ditolak') return true;
+  if (status === 'Dibuat' || status === 'Ditolak' || status === 'Diterima Bertahap') return true;
   return false;
 }
 
@@ -50,7 +50,7 @@ function isApprovable(data: DataActivityStatus) {
 function isSubmitted(data: DataActivityStatus) {
   const status = data.status_aktivitas;
   
-  if (status === 'Diajukan') return true;
+  if (status === 'Diajukan' || status === 'Dibayar') return true;
   return false;
 }
 

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PencairanDana\StoreRequest;
-use App\Http\Requests\PencairanDana\UpdateRequest;
+use App\Models\DetailPencairanDana;
 use App\Models\PencairanDana;
+use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,8 @@ class PencairanDanaController extends Controller
     public function index(Request $request): Response
     {
         $pencairanDana = DB::table('pencairan_dana')
-            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'pengagjuan_dana.id_proyek')
+            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_pengajuan_dana', '=', 'pencairan_dana.id_pengajuan_dana')
+            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'pengajuan_dana.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('pencairan_dana.deleted_at', NULL);
@@ -26,22 +27,22 @@ class PencairanDanaController extends Controller
             $pencairanDana = $this->filter($request, $pencairanDana);
         }
 
-        $pencairanDana = $pencairanDana->group_by('pencairan_dana.id_pencairan_dana')
+        $pencairanDana = $pencairanDana->groupBy('pencairan_dana.id_pencairan_dana')
             ->select(
-                'pencairan_dana.id_pencairan_dana',
-                'pencairan_dana.keperluan', 'pencairan_dana.status_pengajuan',
+                'pencairan_dana.id_pencairan_dana', 'pencairan_dana.status_aktivitas',
+                'pengajuan_dana.keperluan', 'pencairan_dana.status_pencairan',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
                 'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
                 'proyek.tahun_anggaran', 'proyek.nomor_spmk',
                 'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
                 'proyek.tanggal_mulai', 'proyek.durasi',
-                'proyek.tanggal_selesai', 'user.id as id_user',
-                'user.name as user_name', 'proyek.status_proyek',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
                 'rekening.id_rekening', 'rekening.nama_bank',
                 'rekening.nomor_rekening', 'rekening.nama_rekening' 
             )
-            ->orderBy('keuangan.id_keuangan', 'desc')
+            ->orderBy('pencairan_dana.id_pencairan_dana', 'desc')
             ->get();
 
         $formOptions = $this->formOptions();
@@ -52,36 +53,21 @@ class PencairanDanaController extends Controller
         ]);
     }
 
-    private function formOptions(): stdClass
+    public function formOptions(): stdClass
     {
-        $proyek = DB::table('proyek')
-            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
-            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+        $currentProyek = DB::table('proyek')
+            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_proyek', '=', 'proyek.id_proyek')
             ->where('proyek.deleted_at', null)
-            ->where('rab.status_rab', '400')
-            ->where('rap.status_rap', '400')
+            ->where('pengajuan_dana.deleted_at', null)
+            ->groupBy('proyek.id_proyek')
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.tahun_anggaran'
             )
             ->get();
 
-        $pengajuanDana = DB::table('pengajuan_dana')
-            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'pengajuan_dana.id_proyek')
-            ->where('pengajuan_dana.deleted_at', null)
-            ->where('pengajuan_dana.status_pengajuan', '400')
-            ->select(
-                'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran', 'pengajuan_dana.keperluan'
-            )
-            ->get();
-
-        $statusPencairanDana = ['Open', 'Closed'];
-
         $options = (object) [
-            'proyek' => $proyek,
-            'pengajuanDana' => $pengajuanDana,
-            'statusPencairanDana' => $statusPencairanDana
+            'currentProyek' => $currentProyek
         ];
 
         return $options;
@@ -96,44 +82,95 @@ class PencairanDanaController extends Controller
             $query->where('pencairan_dana.status_pencairan', $input);
         });
 
-        $pencairanDana->when($searchRequest->get('ditolak'), function($query) {
+        $pencairanDana->when($searchRequest->get('ditolak') === 'true', function($query) {
             $query->where('pencairan_dana.status_aktivitas', 'Ditolak');
         });
 
         return $pencairanDana;
     }
 
-    public function store(StoreRequest $request): RedirectResponse
+    public function submit(Request $request, PencairanDana $pencairanDana): RedirectResponse
     {
-        $validated = $request->safe();
+        DB::transaction(function () use ($request, $pencairanDana) {   
+            // Create A Timeline 
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pencairanDana->id_pencairan_dana,
+                'model_type' => get_class($pencairanDana),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Dibayar'
+            ]);
+            $timeline->save();
 
-        $pencairanDana = new PencairanDana;
+            // Update The Item of Pencairan Dana Status
+            DetailPencairanDana::query()
+                ->where([
+                    'id_pencairan_dana' => $pencairanDana->id_pencairan_dana,
+                    'status_pembayaran' => '100'
+                ])
+                ->update(['status_pembayaran' => '400']);
 
-        $pencairanDana->fill([
-            'id_proyek' => $validated->id_proyek,
-            'keperluan' => $validated->keperluan,
-        ]);
+            // Update The Pencairan Dana Status
+            $pencairanDana->status_aktivitas = 'Dibayar';
+            $pencairanDana->save();
+        });
 
-        $pencairanDana->save();
-
-        return redirect()->back()->with('success', 'Pencairan Dana berhasil dibuat!');
+        return redirect()->back()->with('success', 'Pencairan Dana berhasil dibayar!');
     }
 
-    public function update(UpdateRequest $request, PencairanDana $pencairanDana): RedirectResponse
+    public function confirm(Request $request, PencairanDana $pencairanDana): RedirectResponse
     {
-        $validated = $request->safe();
+        DB::transaction(function () use ($request, $pencairanDana) {
+            $bertahap = $request->post('bertahap');
 
-        $pencairanDana->keperluan = $validated->keperluan;
+            $status_pencairan = '400';
+            $status_aktivitas = 'Diterima';
 
-        $pencairanDana->save();
+            if ($bertahap) {
+                $status_pencairan = '100';
+                $status_aktivitas = 'Diterima Bertahap';
+            }
 
-        return redirect()->back()->with('success', 'Pencairan Dana berhasil diperbarui!');
+            // Create A Timeline
+            $Timeline = new Timeline;
+            $Timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pencairanDana->id_pencairan_dana,
+                'model_type' => get_class($pencairanDana),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => $status_aktivitas,
+            ]);
+            $Timeline->save();
+
+            // Update The Pencairan Dana Status
+            $pencairanDana->status_pencairan = $status_pencairan;
+            $pencairanDana->status_aktivitas = $status_aktivitas;
+            $pencairanDana->save();
+        });
+
+        return redirect()->back()->with('success', 'Pencairan Dana berhasil diterima!');
     }
 
-    public function destroy(PencairanDana $pencairanDana): RedirectResponse
+    public function reject(Request $request, PencairanDana $pencairanDana): RedirectResponse
     {
-        $pencairanDana->delete();
+        DB::transaction(function () use ($request, $pencairanDana) {
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pencairanDana->id_pengajuan_dana,
+                'model_type' => get_class($pencairanDana),
+                'catatan' => $request->post('catatan'),
+                'status_aktivitas' => 'Ditolak'
+            ]);
+            $timeline->save();
+    
+            // Update The Pencairan Dana Status
+            $pencairanDana->status_aktivitas = 'Ditolak';
+            $pencairanDana->save();
+        });
 
-        return redirect()->back()->with('success', 'Pencairan Dana berhasil dihapus!');
+        return redirect()->back()->with('success', 'Pencairan Dana berhasil ditolak!');
     }
 }

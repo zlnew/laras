@@ -93,7 +93,7 @@ class DetailRAPController extends Controller
         ]);
     }
 
-    private function formOptions(): stdClass
+    public function formOptions(): stdClass
     {
         $satuan = DB::table('satuan')
             ->where('deleted_at', null)

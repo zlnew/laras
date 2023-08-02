@@ -59,7 +59,7 @@ class RAPController extends Controller
         ]);
     }
 
-    private function formOptions(): stdClass {
+    public function formOptions(): stdClass {
         $proyek = DB::table('proyek')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
             ->where('proyek.deleted_at', null)
@@ -91,7 +91,7 @@ class RAPController extends Controller
         return $options;
     }
 
-    private function filter($searchRequest, $rapQuery) {
+    public function filter($searchRequest, $rapQuery) {
         $rapQuery->when($searchRequest->get('id_proyek'), function($query, $input) {
             $query->whereIn('rap.id_proyek', $input);
         });

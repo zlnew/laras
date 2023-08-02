@@ -14,10 +14,9 @@ class PencairanDana extends Model
     protected $table = 'pencairan_dana';
     protected $primaryKey = 'id_pencairan_dana';
     protected $fillable = [
-        'keperluan',
         'status_pencairan',
         'status_aktivitas',
-        'id_proyek'
+        'id_pengajuan_dana'
     ];
 
     public $autoIncrement = false;

@@ -2,15 +2,15 @@
 // cores
 import { useForm } from '@inertiajs/vue3';
 import { QTableColumn, useDialogPluginComponent } from 'quasar';
+import { computed, ref } from 'vue';
 
 // utils
 import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number';
 
 // types
-import { Evaluasi } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue';
 import { DetailPengajuanDana, PengajuanDana } from '@/types';
-import { ref } from 'vue';
-import { computed } from 'vue';
+import { Evaluasi } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue';
 import { ApprovedPengajuanSaatIni } from './PengajuanDanaItem/PengajuanDanaItemTable.vue';
 
 defineEmits([
@@ -20,11 +20,11 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
 
 interface JoinedWithEvaluasi {
-  total_harga: number;
-  pengajuan_lalu: number;
-  pengajuan_saat_ini: number;
-  total_pengajuan: number;
-  sisa_anggaran: number;
+  total_harga: string;
+  pengajuan_lalu: string;
+  pengajuan_saat_ini: string;
+  total_pengajuan: string;
+  sisa_anggaran: string;
 }
 
 const props = defineProps<{
@@ -37,25 +37,25 @@ const props = defineProps<{
 }>();
 
 const evaluasi = computed(() => {
-  return props.data.evaluasi.map((evaluasiItem) => {
-    evaluasiItem.pengajuan_saat_ini = 0;
+  return props.data.evaluasi.map((item) => {
+    item.pengajuan_saat_ini = '0';
 
     if (props.data.approvedPengajuanSaatIni) {
       const matchedItem = props.data.approvedPengajuanSaatIni.find(
-        (approvedItem) => approvedItem.id_detail_rap === evaluasiItem.id_detail_rap
+        (approvedItem) => approvedItem.id_detail_rap === item.id_detail_rap
       );
 
       if (matchedItem) {
-        evaluasiItem.pengajuan_saat_ini += matchedItem.jumlah_pengajuan;
+        item.pengajuan_saat_ini += matchedItem.jumlah_pengajuan;
       }
     }
 
-    const pengajuanLalu = evaluasiItem.pengajuan_lalu ? parseFloat(evaluasiItem.pengajuan_lalu.toString()) : 0;
-    const total_pengajuan = pengajuanLalu + evaluasiItem.pengajuan_saat_ini;
-    const sisa_anggaran = evaluasiItem.total_harga - total_pengajuan;
+    const pengajuan_lalu = item.pengajuan_lalu ? item.pengajuan_lalu : '0';
+    const total_pengajuan = toFloat(pengajuan_lalu) + toFloat(item.pengajuan_saat_ini);
+    const sisa_anggaran = toFloat(item.total_harga) - total_pengajuan;
 
     return {
-      ...evaluasiItem,
+      ...item,
       total_pengajuan: total_pengajuan,
       sisa_anggaran: sisa_anggaran
     };

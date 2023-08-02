@@ -145,7 +145,7 @@ function isAdmin(): boolean {
           <q-item
             clickable
             v-ripple
-            v-in-link="menuItem.link"
+            :href="menuItem.link"
             :active="menuItem.active"
           >
             <q-item-section avatar>

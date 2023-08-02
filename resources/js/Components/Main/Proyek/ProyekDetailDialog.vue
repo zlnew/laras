@@ -5,6 +5,7 @@ import { useDialogPluginComponent } from 'quasar';
 // utils
 import { toRupiah } from '@/utils/money';
 import { fullDate } from '@/utils/date';
+import { toFloat } from '@/utils/number';
 
 // types
 import { Proyek } from '@/types';
@@ -130,7 +131,7 @@ defineProps<{
           <div class="row">
             <div class="col-12">
               <div class="text-secondary text-weight-bold text-caption">Nilai Kontrak</div>
-              <div class="text-subtitle-2">{{ toRupiah(proyek.nilai_kontrak) }}</div>
+              <div class="text-subtitle-2">{{ toRupiah(toFloat(proyek.nilai_kontrak)) }}</div>
             </div>
           </div>
 

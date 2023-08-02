@@ -30,7 +30,6 @@ export interface User {
     email_verified_at: string;
 }
 
-
 export interface Role {
     id: number;
     name: string;
@@ -58,21 +57,21 @@ export interface Proyek {
     tahun_anggaran: string;
     nomor_spmk: string;
     tanggal_spmk: string;
-    nilai_kontrak: number;
+    nilai_kontrak: string;
     tanggal_mulai: string;
     durasi: number;
     tanggal_selesai: string;
     id_user: number;
     id_rekening: string;
-    status_proyek: 100 | 400;
+    status_proyek: '100' | '400';
 };
 
 export interface RAB {
     id_rab: string;
     id_proyek: Proyek['id_proyek'];
-    tax: number;
-    additional_tax: number;
-    status_rab: 100 | 400;
+    tax: string;
+    additional_tax: string;
+    status_rab: '100' | '400';
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Disetujui';
 }
 
@@ -81,15 +80,15 @@ export interface DetailRAB {
     id_rab: RAB['id_rab'];
     id_satuan: Satuan['id_satuan'];
     uraian: string;
-    volume: number;
-    harga_satuan: number;
+    volume: string;
+    harga_satuan: string;
     keterangan: string;
 };
 
 export interface RAP {
     id_rap: string;
     id_proyek: Proyek['id_proyek'];
-    status_rap: 100 | 400;
+    status_rap: '100' | '400';
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak' | 'Disetujui';
 }
 
@@ -98,23 +97,17 @@ export interface DetailRAP {
     id_rap: RAP['id_rap'];
     id_satuan: Satuan['id_satuan'];
     uraian: string;
-    volume: number;
-    harga_satuan: number;
+    volume: string;
+    harga_satuan: string;
     keterangan: string;
-    status_uraian: string;
+    status_uraian: 'Gaji' | 'Sewa' | 'Beli' | 'Subkon/Vendor';
 };
-
-export interface Keuangan {
-    id_keuangan: string;
-    id_proyek: Proyek['id_proyek'];
-    keperluan: string;
-}
 
 export interface PengajuanDana {
     id_pengajuan_dana: string;
     keperluan: string;
     tanggal_pengajuan: string;
-    status_pengajuan: 100 | 400;
+    status_pengajuan: '100' | '400';
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak' | 'Disetujui';
     id_proyek: Proyek['id_proyek'];
 };
@@ -125,37 +118,51 @@ export interface DetailPengajuanDana {
     id_detail_rap: DetailRAP['id_detail_rap'];
     id_rekening: Rekening['id_rekening'];
     uraian: string;
-    jumlah_pengajuan: number;
+    jumlah_pengajuan: string;
     jenis_pembayaran: string;
 };
 
 export interface PencairanDana {
     id_pencairan_dana: string;
-    id_keuangan: Keuangan['id_keuangan'];
-    status_pencairan: 100 | 400;
-    status_aktivitas: 'Dibuat' | 'Dibayar' | 'Diterima';
+    keperluan: string;
+    status_pencairan: '100' | '400';
+    status_aktivitas: 'Dibuat' | 'Dibayar' | 'Ditolak' | 'Diterima Bertahap' | 'Diterima';
+    id_proyek: Proyek['id_proyek'];
 };
 
 export interface DetailPencairanDana {
     id_detail_pencairan_dana: number;
     id_pencairan_dana: PencairanDana['id_pencairan_dana'];
     id_detail_pengajuan_dana: DetailPengajuanDana['id_detail_pengajuan_dana'];
-    jumlah_pencairan: number;
+    jumlah_pencairan: string;
+    status_pembayaran: '100' | '400';
 };
 
 export interface Penagihan {
     id_penagihan: string;
-    id_keuangan: Keuangan['id_keuangan'];
-    status_penagihan: 100 | 400;
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Diterima Bertahap' | 'Diterima';
+    id_proyek: Proyek['id_proyek'];
+    id_rekening: Rekening['id_rekening'];
+    keperluan: string;
     tanggal_pengajuan: string;
+    nomor_sp2d: string;
+    tanggal_sp2d: string;
+    tanggal_terbit: string;
+    tanggal_cair: string;
+    potongan_ppn:string;
+    potongan_pph: string;
+    potongan_lainnya: string;
+    keterangan_potongan_lainnya: string;
+    kas_masuk: 'Utang' | 'Setoran Modal';
+    status_penagihan: '100' | '400';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Diterima Bertahap' | 'Diterima';
 }
 
 export interface DetailPenagihan {
     id_detail_penagihan: number;
     id_penagihan: Penagihan['id_penagihan'];
     id_detail_rab: DetailRAB['id_detail_rab'];
-    volume_penagihan: number;
+    volume_penagihan: string;
+    harga_satuan_penagihan: string;
     status_diterima: '100' | '400';
 };
 
@@ -165,7 +172,7 @@ export interface Timeline {
     model_id: string | number;
     model_type: string;
     catatan: string;
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak' | 'Disetujui' | 'Diterima Bertahap' | 'Diterima';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dibayar' | 'Dievaluasi' | 'Ditolak' | 'Disetujui' | 'Diterima Bertahap' | 'Diterima';
 };
 
 export interface Satuan {

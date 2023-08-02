@@ -21,6 +21,12 @@ class ProyekController extends Controller
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('proyek.deleted_at', NULL);
 
+        $role = $request->user()->roles->first()->name;
+
+        if ($role === 'manajer proyek') {
+            $proyekQuery->where('proyek.id_user', $request->user()->id);
+        }
+
         if ($request->isMethod('get') && $request->all()) {
             $proyekQuery = $this->filter($request, $proyekQuery);
         }
@@ -31,13 +37,14 @@ class ProyekController extends Controller
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
                 'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
                 'proyek.tahun_anggaran', 'proyek.nomor_spmk',
-                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_spmk',
                 'proyek.tanggal_mulai', 'proyek.durasi',
                 'proyek.tanggal_selesai', 'users.id as id_user',
                 'users.name as pic', 'proyek.status_proyek',
                 'rekening.id_rekening', 'rekening.nama_bank',
-                'rekening.nomor_rekening', 'rekening.nama_rekening'
+                'rekening.nomor_rekening', 'rekening.nama_rekening',
             )
+            ->selectRaw('CAST(proyek.nilai_kontrak AS DECIMAL(20,2)) AS nilai_kontrak')
             ->orderBy('proyek.id_proyek', 'desc')
             ->get();
         
@@ -49,7 +56,7 @@ class ProyekController extends Controller
         ]);
     }
 
-    private function formOptions(): stdClass {
+    public function formOptions(): stdClass {
         $penggunaJasaOptions = DB::table('proyek')
             ->where('deleted_at', null)
             ->groupBy('pengguna_jasa')

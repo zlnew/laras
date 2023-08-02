@@ -143,7 +143,7 @@ Route::middleware('auth')->group(function() {
                 Route::post('/', [PengajuanDanaController::class, 'store'])->name('pengajuan_dana.store');
                 Route::patch('/{pengajuanDana}', [PengajuanDanaController::class, 'update'])->name('pengajuan_dana.update');
                 Route::delete('/{pengajuanDana}', [PengajuanDanaController::class, 'destroy'])->name('pengajuan_dana.destroy');
-                Route::post('/submit/{pengajuanDana}', [PengajuanDanaController::class, 'submit'])->name('pengajuan_dana.submit');
+                Route::post('/{pengajuanDana}/submit', [PengajuanDanaController::class, 'submit'])->name('pengajuan_dana.submit');
 
                 Route::post('/detail/{pengajuanDana}', [DetailPengajuanDanaController::class,'store'])->name('detail_pengajuan_dana.store');
                 Route::patch('/detail/{detailPengajuanDana}', [DetailPengajuanDanaController::class, 'update'])->name('detail_pengajuan_dana.update');
@@ -167,17 +167,14 @@ Route::middleware('auth')->group(function() {
             });
     
             Route::group(['middleware' => ['permission:create & modify pencairan dana']], function () {
-                Route::post('/', [PencairanDanaController::class, 'store'])->name('pencairan_dana.store');
-                Route::patch('/{pencairanDana}', [PencairanDanaController::class, 'update'])->name('pencairan_dana.update');
-                Route::delete('/{pencairanDana}', [PencairanDanaController::class, 'destroy'])->name('pencairan_dana.destroy');
+                Route::post('/submit/{pencairanDana}', [PencairanDanaController::class, 'submit'])->name('pencairan_dana.submit');
 
                 Route::post('/detail/{pencairanDana}', [DetailPencairanDanaController::class,'store'])->name('detail_pencairan_dana.store');
-                Route::post('/detail/{pencairanDana}/submit', [DetailPencairanDanaController::class, 'submit'])->name('detail_pencairan_dana.submit');
             });
 
             Route::middleware(['permission:receipt pencairan dana'])->group(function() {
-                Route::post('/detail/confirm/{pencairanDana}', [DetailPencairanDanaController::class, 'confirm'])->name('detail_pencairan_dana.confirm');
-                Route::post('/detail/reject/{pencairanDana}', [DetailPencairanDanaController::class, 'reject'])->name('detail_pencairan_dana.reject');
+                Route::post('/confirm/{pencairanDana}', [PencairanDanaController::class, 'confirm'])->name('pencairan_dana.confirm');
+                Route::post('/reject/{pencairanDana}', [PencairanDanaController::class, 'reject'])->name('pencairan_dana.reject');
             });
         });
 

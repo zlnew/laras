@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama_proyek');
             $table->string('nomor_kontrak', 25);
             $table->date('tanggal_kontrak');
-            $table->decimal('nilai_kontrak', 12, 2, true);
+            $table->decimal('nilai_kontrak', 20, 2, true);
 
             $table->string('pengguna_jasa', 128);
             $table->string('penyedia_jasa', 128);

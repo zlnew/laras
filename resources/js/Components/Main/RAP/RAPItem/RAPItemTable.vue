@@ -6,6 +6,7 @@ import { QTableColumn, useQuasar } from 'quasar';
 // utils
 import { toRupiah } from '@/utils/money';
 import { can, isAdmin, isEditable } from '@/utils/permissions';
+import { toFloat } from '@/utils/number';
 
 // types
 import { DetailRAB, DetailRAP, RAB, RAP } from '@/types';
@@ -33,14 +34,14 @@ const props = defineProps<{
 
 const totalAmount = computed(() => {
   const rap = props.rows.reduce((total, item) => {
-    return total + (item.harga_satuan * item.volume);
+    return total + (toFloat(item.harga_satuan) * toFloat(item.volume));
   }, 0);
 
   const rab = props.data.detailRab.reduce((total, item) => {
-    return total + (item.harga_satuan * item.volume);
+    return total + (toFloat(item.harga_satuan) * toFloat(item.volume));
   }, 0);
 
-  const pph = (props.data.rab.additional_tax / 100) * rab;
+  const pph = (toFloat(props.data.rab.additional_tax) / 100) * rab;
   const netto = rab - pph;
   const laba = netto - rap;
   const labaPercentage = (laba / netto) * 100;

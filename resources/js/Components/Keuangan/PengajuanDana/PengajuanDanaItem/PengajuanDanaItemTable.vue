@@ -6,6 +6,7 @@ import { QTableColumn, useQuasar } from 'quasar';
 // utils
 import { toRupiah } from '@/utils/money';
 import { can, isAdmin, isEditable, isEvaluated, isSubmitted } from '@/utils/permissions';
+import { toFloat } from '@/utils/number';
 
 // types
 import { DetailPengajuanDana, PengajuanDana } from '@/types';
@@ -17,7 +18,6 @@ import {
   PengajuanDanaItemEditDialog,
   PengajuanDanaItemDeleteDialog
 } from '@/Components/Keuangan/detail-pengajuan-dana-page';
-import { isApprovable } from '@/utils/permissions';
 
 interface Data {
   pengajuanDana: PengajuanDana;
@@ -31,12 +31,12 @@ const props = defineProps<{
 
 const totalAmount = computed(() => {
   const pengajuan = props.rows.reduce((total, item) => {
-    return total + parseFloat(item.jumlah_pengajuan.toString());
+    return total + toFloat(item.jumlah_pengajuan);
   }, 0);
 
   const disetujui = props.rows.reduce((total, item) => {
     if (selectedIds.value.includes(item.id_detail_pengajuan_dana)) {
-      return total + parseFloat(item.jumlah_pengajuan.toString());
+      return total + toFloat(item.jumlah_pengajuan);
     }
 
     return total;
@@ -176,14 +176,16 @@ const approvedPengajuanSaatIni = computed(() => {
   }
 
   const groupedData = selected.value.reduce<Array<ApprovedPengajuanSaatIni>>((result, item) => {
-    const existingItem = result.find((group) => group.id_detail_rap === item.id_detail_rap);
+    const matchedItem = result.find((group) => group.id_detail_rap === item.id_detail_rap);
 
-    if (existingItem) {
-      existingItem.jumlah_pengajuan += parseFloat(item.jumlah_pengajuan.toString());
-    } else {
+    if (matchedItem) {
+      matchedItem.jumlah_pengajuan += item.jumlah_pengajuan;
+    }
+    
+    else {
       result.push({
         id_detail_rap: item.id_detail_rap,
-        jumlah_pengajuan: parseFloat(item.jumlah_pengajuan.toString()),
+        jumlah_pengajuan: item.jumlah_pengajuan,
       });
     }
 

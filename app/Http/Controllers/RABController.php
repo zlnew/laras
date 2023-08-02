@@ -60,7 +60,7 @@ class RABController extends Controller
         ]);
     }
 
-    private function formOptions(): stdClass {
+    public function formOptions(): stdClass {
         $proyek = DB::table('proyek')
             ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->where('proyek.deleted_at', null)

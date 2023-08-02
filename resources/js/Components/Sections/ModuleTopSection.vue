@@ -20,7 +20,7 @@ const props = defineProps<{
   data: {
     proyek: Proyek & JoinedWithProyek;
     timeline: Array<Timeline>;
-    status: 100 | 400;
+    status: '100' | '400';
   },
   title: string;
   timelineTitle: string;
@@ -98,8 +98,8 @@ function timeline() {
           <q-btn
             rounded
             icon-right="expand_more"
-            :label="data.status == 400 ? 'Closed' : 'Open'"
-            :color="data.status == 400 ? 'red' : 'primary'"
+            :label="data.status === '400' ? 'Closed' : 'Open'"
+            :color="data.status === '400' ? 'red' : 'primary'"
             @click="timeline"
           >
             <q-tooltip>Lihat Timeline {{ title }}</q-tooltip>

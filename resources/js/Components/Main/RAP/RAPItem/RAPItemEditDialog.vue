@@ -7,6 +7,7 @@ import { ref } from 'vue';
 // utils
 import { filterOptions, multiFilterOptions } from '@/utils/options';
 import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number';
 
 // types
 import { FormOptions } from '@/Pages/Main/DetailRAPPage.vue';
@@ -154,8 +155,8 @@ function submit() {
                   mask="#.##"
                   fill-mask="0"
                   v-model="form.harga_satuan"
-                  :hint="toRupiah(form.harga_satuan)"
-                  :hide-hint="form.harga_satuan < 1"
+                  :hint="toRupiah(toFloat(form.harga_satuan))"
+                  :hide-hint="toFloat(form.harga_satuan) < 1"
                   :error="form.errors.harga_satuan ? true : false"
                   :error-message="form.errors.harga_satuan"
                   input-class="text-right"
@@ -193,7 +194,7 @@ function submit() {
 
               <div class="col-12 col-md-6 q-pl-sm text-right">
                 <div class="text-secondary text-caption">Total Harga</div>
-                <div class="text-weight-bold text-subtitle1">{{ toRupiah(form.harga_satuan * form.volume) }}</div>
+                <div class="text-weight-bold text-subtitle1">{{ toRupiah(toFloat(form.harga_satuan) * toFloat(form.volume)) }}</div>
               </div>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { ref } from 'vue';
 // utils
 import { filterOptions, multiFilterOptions } from '@/utils/options';
 import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number';
 
 // types
 import { FormOptions } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue';
@@ -137,8 +138,8 @@ function submit() {
                   mask="#.##"
                   fill-mask="0"
                   v-model="form.jumlah_pengajuan"
-                  :hint="toRupiah(form.jumlah_pengajuan)"
-                  :hide-hint="form.jumlah_pengajuan < 1"
+                  :hint="toRupiah(toFloat(form.jumlah_pengajuan))"
+                  :hide-hint="toFloat(form.jumlah_pengajuan) < 1"
                   :error="form.errors.jumlah_pengajuan ? true : false"
                   :error-message="form.errors.jumlah_pengajuan"
                   input-class="text-right"

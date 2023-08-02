@@ -61,7 +61,7 @@ class PengajuanDanaController extends Controller
         ]);
     }
 
-    private function formOptions(): stdClass
+    public function formOptions(): stdClass
     {
         $proyek = DB::table('proyek')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
@@ -89,7 +89,6 @@ class PengajuanDanaController extends Controller
                 'proyek.tahun_anggaran'
             )
             ->get();
-
             
         $options = (object) [
             'proyek' => $proyek,
@@ -108,7 +107,7 @@ class PengajuanDanaController extends Controller
             $query->where('pengajuan_dana.status_pengajuan', $input);
         });
 
-        $pengajuanDanaQuery->when($searchRequest->get('ditolak') === true, function($query) {
+        $pengajuanDanaQuery->when($searchRequest->get('ditolak') === 'true', function($query) {
             $query->where('pengajuan_dana.status_aktivitas', 'Ditolak');
         });
 
@@ -257,6 +256,16 @@ class PengajuanDanaController extends Controller
             $pencairanDana->id_proyek = $pengajuanDana->id_proyek;
             $pencairanDana->keperluan = $pengajuanDana->keperluan;
             $pencairanDana->save();
+
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $pencairanDana->id_pencairan_dana,
+                'model_type' => get_class($pencairanDana),
+                'status_aktivitas' => 'Dibuat'
+            ]);
+            $timeline->save();
         });
 
         return redirect()->back()->with('success', 'Pengajuan Dana berhasil disetujui!');

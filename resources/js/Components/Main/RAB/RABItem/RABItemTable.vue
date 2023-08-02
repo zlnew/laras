@@ -7,6 +7,7 @@ import { useForm } from '@inertiajs/vue3';
 // utils
 import { toRupiah } from '@/utils/money';
 import { can, isAdmin, isEditable } from '@/utils/permissions';
+import { toFloat } from '@/utils/number';
 
 // types
 import { DetailRAB, RAB } from '@/types';
@@ -32,11 +33,11 @@ const props = defineProps<{
 
 const totalAmount = computed(() => {
   const dpp = props.rows.reduce((total, item) => {
-    return total + (item.harga_satuan * item.volume);
+    return total + (toFloat(item.harga_satuan) * toFloat(item.volume));
   }, 0);
 
-  const ppn = (form.tax / 100) * dpp;
-  const pph = (form.additional_tax / 100) * dpp;
+  const ppn = (toFloat(form.tax) / 100) * dpp;
+  const pph = (toFloat(form.additional_tax) / 100) * dpp;
 
   return {
     dpp: dpp,

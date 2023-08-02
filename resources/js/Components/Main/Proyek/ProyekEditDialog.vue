@@ -8,6 +8,7 @@ import { ref } from 'vue';
 import { toRupiah } from '@/utils/money';
 import { filterOptions, multiFilterOptions } from '@/utils/options';
 import { daysDiff, endOfDate } from '@/utils/date';
+import { toFloat } from '@/utils/number';
 
 // types
 import { FormOptions } from '@/Pages/Main/ProyekPage.vue';
@@ -378,8 +379,8 @@ function submit() {
                   mask="#.##"
                   fill-mask="0"
                   v-model="form.nilai_kontrak"
-                  :hint="toRupiah(form.nilai_kontrak)"
-                  :hide-hint="form.nilai_kontrak < 1"
+                  :hint="toRupiah(toFloat(form.nilai_kontrak))"
+                  :hide-hint="toFloat(form.nilai_kontrak) < 1"
                   :error="form.errors.nilai_kontrak ? true : false"
                   :error-message="form.errors.nilai_kontrak"
                   input-class="text-right"

@@ -63,7 +63,7 @@ const table = ref<{
 </script>
 
 <template>
-  <Head title="RAPP" />
+  <Head title="Pengajuan Dana" />
   <layout>
     
     <template #breadcrumbs>
