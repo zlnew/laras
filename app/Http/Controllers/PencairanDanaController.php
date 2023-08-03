@@ -103,14 +103,6 @@ class PencairanDanaController extends Controller
             ]);
             $timeline->save();
 
-            // Update The Item of Pencairan Dana Status
-            DetailPencairanDana::query()
-                ->where([
-                    'id_pencairan_dana' => $pencairanDana->id_pencairan_dana,
-                    'status_pembayaran' => '100'
-                ])
-                ->update(['status_pembayaran' => '400']);
-
             // Update The Pencairan Dana Status
             $pencairanDana->status_aktivitas = 'Dibayar';
             $pencairanDana->save();
@@ -131,7 +123,7 @@ class PencairanDanaController extends Controller
                 $status_pencairan = '100';
                 $status_aktivitas = 'Diterima Bertahap';
             }
-
+            
             // Create A Timeline
             $Timeline = new Timeline;
             $Timeline->fill([
@@ -142,6 +134,14 @@ class PencairanDanaController extends Controller
                 'status_aktivitas' => $status_aktivitas,
             ]);
             $Timeline->save();
+
+            // Update The Item of Pencairan Dana Status
+            DetailPencairanDana::query()
+                ->where([
+                    'id_pencairan_dana' => $pencairanDana->id_pencairan_dana,
+                    'status_pembayaran' => '100'
+                ])
+                ->update(['status_pembayaran' => '400']);
 
             // Update The Pencairan Dana Status
             $pencairanDana->status_pencairan = $status_pencairan;

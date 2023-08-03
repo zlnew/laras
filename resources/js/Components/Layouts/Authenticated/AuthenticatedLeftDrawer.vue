@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { usePage } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props =defineProps<{
@@ -141,33 +141,34 @@ function isAdmin(): boolean {
               {{ menuItem.sectionTitle }}
             </q-item-section>
           </q-item>
-          
-          <q-item
-            clickable
-            v-ripple
-            :href="menuItem.link"
-            :active="menuItem.active"
-          >
-            <q-item-section avatar>
-              <q-avatar
-                rounded
-                :color="menuItem.active ? 'primary' : 'blue-grey-1'"
-                :text-color="menuItem.active ? 'white' : 'blue-grey'"
-                :icon="menuItem.icon"
-              />
-            </q-item-section>
-  
-            <q-item-section
-              :class="{
-                'text-weight-bold': menuItem.active,
-                'text-blue-grey-8': !menuItem.active
-              }"
+
+          <Link :href="menuItem.link" style="text-decoration: none;">
+            <q-item
+              clickable
+              v-ripple
+              :active="menuItem.active"
             >
-              {{ menuItem.label }}
-            </q-item-section>
-          </q-item>
+              <q-item-section avatar>
+                <q-avatar
+                  rounded
+                  :color="menuItem.active ? 'primary' : 'blue-grey-1'"
+                  :text-color="menuItem.active ? 'white' : 'blue-grey'"
+                  :icon="menuItem.icon"
+                />
+              </q-item-section>
+    
+              <q-item-section
+                :class="{
+                  'text-weight-bold': menuItem.active,
+                  'text-blue-grey-8': !menuItem.active
+                }"
+              >
+                {{ menuItem.label }}
+              </q-item-section>
+            </q-item>
+          </Link>
   
-          <q-separator :key="'sep' + index"  v-if="menuItem.separator" />
+          <q-separator class="q-mt-sm" :key="'sep' + index" v-if="menuItem.separator" />
         </div>
       </template>
 

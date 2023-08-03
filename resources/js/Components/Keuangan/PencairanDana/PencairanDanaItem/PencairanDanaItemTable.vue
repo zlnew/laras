@@ -120,7 +120,6 @@ const columns: Array<QTableColumn> = [
   { name: 'pembayaran_lalu', label: 'Pembayaran Lalu', field: '', align: 'right', sortable: true },
   { name: 'pembayaran_saat_ini', label: 'Pembayaran Saat Ini', field: '', align: 'right', sortable: true },
   { name: 'belum_dibayarkan', label: 'Belum Dibayarkan', field: '', align: 'right', sortable: true },
-  // { name: 'pembayaran', label: 'Pembayaran', field: '', align: 'left' }
 ];
 
 const tableFullscreen = ref(false);
