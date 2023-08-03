@@ -134,6 +134,8 @@ function toggleFullscreen() {
           color="primary"
           @click="createRAP"
         />
+
+        <div v-else class="text-h6">List RAP</div> 
       </template>
 
       <template v-slot:top-right>

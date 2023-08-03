@@ -133,6 +133,8 @@ function toggleFullscreen() {
           color="primary"
           @click="createPengajuanDana"
         />
+
+        <div v-else class="text-h6">List Pengajuan Dana</div>
       </template>
 
       <template v-slot:top-right>

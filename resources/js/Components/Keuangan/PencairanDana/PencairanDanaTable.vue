@@ -104,7 +104,7 @@ onMounted(() => {
       flat
       bordered
       row-key="id_rap"
-      title="Pencairan Dana"
+      title="List Pencairan Dana"
       :rows="rows"
       :columns="columns"
       :rows-per-page-options="[ 10, 15, 20, 25, 50, 0 ]"

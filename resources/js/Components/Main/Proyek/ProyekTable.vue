@@ -141,6 +141,8 @@ function toggleFullscreen() {
           color="primary"
           @click="createProyek"
         />
+
+        <div v-else class="text-h6">List Proyek</div>
       </template>
 
       <template v-slot:top-right>

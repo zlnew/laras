@@ -134,6 +134,8 @@ function toggleFullscreen() {
           color="primary"
           @click="createRAB"
         />
+        
+        <div v-else class="text-h6">List RAB</div>
       </template>
 
       <template v-slot:top-right>
