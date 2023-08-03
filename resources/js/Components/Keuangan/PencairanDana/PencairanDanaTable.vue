@@ -58,7 +58,7 @@ function searchPencairanDana() {
 }
 
 const columns: Array<QTableColumn> = [
-  { name: 'index', label: '#', field: 'index', align: 'left' },
+  { name: 'index', label: '#', field: 'index' },
   {
     name: 'nama_proyek',
     label: 'Nama Proyek',

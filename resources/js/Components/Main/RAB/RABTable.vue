@@ -92,6 +92,7 @@ function deleteRAB(id: RAB['id_rab']) {
 }
 
 const columns: Array<QTableColumn> = [
+  { name: 'index', label: '#', field: 'index' },
   {
     name: 'nama_proyek',
     label: 'Nama Proyek',
@@ -176,6 +177,10 @@ function toggleFullscreen() {
 
       <template v-slot:body="props">
         <q-tr :props="props">
+          <q-td key="index" :props="props">
+            {{ ++props.rowIndex }}
+          </q-td>
+
           <q-td key="nama_proyek" :props="props">
             <q-btn
               flat
