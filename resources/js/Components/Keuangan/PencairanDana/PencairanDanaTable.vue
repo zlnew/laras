@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { QTable, QTableColumn, useQuasar } from 'quasar';
 
@@ -223,11 +223,12 @@ onMounted(() => {
               <q-tooltip>Ditolak</q-tooltip>
             </q-btn>
 
-            <q-badge
-              :color="props.row.status_pencairan == 400 ? 'red' : 'primary'"
-              :label="props.row.status_pencairan == 400 ? 'Closed' : 'Open'"
-              v-in-link="route('detail_pencairan_dana', props.row.id_pencairan_dana)"
-            />
+            <Link :href="route('detail_pencairan_dana', props.row.id_pencairan_dana)">
+              <q-badge
+                :color="props.row.status_pencairan == 400 ? 'red' : 'primary'"
+                :label="props.row.status_pencairan == 400 ? 'Closed' : 'Open'"
+              />
+            </Link>
           </q-td>
         </q-tr>
       </template>

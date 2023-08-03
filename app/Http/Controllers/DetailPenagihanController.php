@@ -6,9 +6,7 @@ use App\Http\Requests\DetailPenagihan\StoreRequest;
 use App\Http\Requests\DetailPenagihan\UpdateRequest;
 use App\Models\DetailPenagihan;
 use App\Models\Penagihan;
-use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -17,19 +15,45 @@ use stdClass;
 class DetailPenagihanController extends Controller
 {
     public function index(Penagihan $penagihan): Response
-    {            
-        $detailPenagihan = DB::table('detail_penagihan as d_png')
-            ->leftJoin('detail_rab as d_rab', 'd_rab.id_detail_rab', '=', 'd_png.id_detail_rab')
-            ->leftJoin('satuan', 'satuan.id_satuan', '=', 'd_rab.id_satuan')
-            ->where('d_png.deleted_at', null)
-            ->where('d_png.id_penagihan', $penagihan->id_penagihan)
+    {
+        $penagihan = DB::table('penagihan')
+            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'penagihan.id_proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
+            ->where('penagihan.deleted_at', null)
+            ->where('penagihan.id_penagihan', $penagihan->id_penagihan)
             ->select(
-                'd_png.id_detail_penagihan', 'd_png.id_penagihan',
-                'd_rab.uraian', 'satuan.nama_satuan',
-                'd_rab.harga_satuan', 'd_png.volume_penagihan',
-                'd_rab.id_detail_rab', 'd_png.status_diterima'
+                'penagihan.id_penagihan',
+                'penagihan.keperluan', 'penagihan.tanggal_pengajuan',
+                'penagihan.status_penagihan', 'penagihan.status_aktivitas',
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening'
             )
-            ->orderBy('d_png.id_detail_penagihan', 'asc')
+            ->first();
+
+        $detailPenagihan = DB::table('detail_penagihan as dpg')
+            ->leftJoin('detail_rab as drab', 'drab.id_detail_rab', '=', 'dpg.id_detail_rab')
+            ->leftJoin('satuan', 'satuan.id_satuan', '=', 'drab.id_satuan')
+            ->where([
+                'dpg.deleted_at' => null,
+                'drab.deleted_at' => null
+            ])
+            ->where('dpg.id_penagihan', $penagihan->id_penagihan)
+            ->select(
+                'dpg.id_detail_penagihan', 'dpg.id_penagihan',
+                'drab.uraian', 'satuan.nama_satuan',
+                'dpg.harga_satuan_penagihan', 'dpg.volume_penagihan',
+                'drab.id_detail_rab', 'dpg.status_diterima'
+            )
+            ->orderBy('dpg.id_detail_penagihan', 'asc')
             ->get();
 
         $timeline = DB::table('timeline')
@@ -45,7 +69,7 @@ class DetailPenagihanController extends Controller
             )
             ->get();
 
-        return Inertia::render('Penagihan/Detail', [
+        return Inertia::render('Keuangan/DetailPenagihanPage', [
             'penagihan' => $penagihan,
             'detailPenagihan' => $detailPenagihan,
             'timeline' => $timeline,
@@ -57,6 +81,7 @@ class DetailPenagihanController extends Controller
         $detailRab = DB::table('detail_rab')
             ->leftJoin('rab', 'rab.id_rab', '=', 'detail_rab.id_rab')
             ->where('detail_rab.deleted_at', null)
+            ->where('rab.status_rab', '400')
             ->where('rab.id_proyek', $id_proyek)
             ->groupBy('detail_rab.id_detail_rab')
             ->select(
@@ -110,98 +135,5 @@ class DetailPenagihanController extends Controller
         $detailPenagihan->delete();
 
         return redirect()->back()->with('success', 'Uraian Penagihan Dana berhasil dihapus!');
-    }
-
-    public function submit(Request $request, Penagihan $penagihan): RedirectResponse
-    {
-        DB::transaction(function () use ($request, $penagihan) {    
-            // Create A Timeline
-            $timeline = new Timeline;
-            $timeline->fill([
-                'user_id' => $request->user()->id,
-                'model_id' => $penagihan->id_penagihan,
-                'model_type' => get_class($penagihan),
-                'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Diajukan',
-            ]);
-            $timeline->save();
-
-            // Update The Penagihan Status
-            $penagihan->status_aktivitas = 'Diajukan';
-            $penagihan->tanggal_pengajuan = now();
-            $penagihan->save();
-        });
-
-        return redirect()->back()->with('success', 'Pengajuan Dana berhasil diajukan!');
-    }
-
-    public function accept(Request $request, Penagihan $penagihan): RedirectResponse
-    {
-        DB::transaction(function () use ($request, $penagihan) {
-            // Update The Detail Penagihan Status
-            $updateDetailPenagihan = DetailPenagihan::where('id_penagihan', $penagihan->id_penagihan)
-                ->whereIn('id_detail_penagihan', $request->post('group_of_id_detail_penagihan'))
-                ->get();
-
-            foreach ($updateDetailPenagihan as $detail) {
-                $detail->status_diterima = '400';
-                $detail->save();
-            }
-
-            // Checking if all Penagihan is completed
-            $detailPenagihanQuery = DetailPenagihan::query()
-                ->where('id_penagihan', $penagihan->id_penagihan);
-
-            $totalDetailPenagihan = $detailPenagihanQuery->get()->count();
-            $totalDetailPenagihanDiterima = $detailPenagihanQuery->where('status_diterima', '400')->get()->count();
-
-            $status_pencairan = '100';
-            $status_aktivitas = 'Dibuat';
-
-            if ($totalDetailPenagihan === $totalDetailPenagihanDiterima) {
-                $status_pencairan = '400';
-                $status_aktivitas = 'Diterima';
-            }
-
-            // Create A Timeline
-            $timeline = new Timeline;
-            $timeline->fill([
-                'user_id' => $request->user()->id,
-                'model_id' => $penagihan->id_penagihan,
-                'model_type' => get_class($penagihan),
-                'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Diterima',
-            ]);
-            $timeline->save();
-
-            // Update The Penagihan Status
-            $penagihan->status_penagihan = $status_pencairan;
-            $penagihan->status_aktivitas = $status_aktivitas;
-            $penagihan->save();
-        });
-
-        return redirect()->back()->with('success', 'Verifikasi berhasil dilakukan!');
-    }
-
-    public function decline(Request $request, Penagihan $penagihan): RedirectResponse
-    {
-        DB::transaction(function () use ($request, $penagihan) {
-            // Create A Timeline
-            $timeline = new Timeline;
-            $timeline->fill([
-                'user_id' => $request->user()->id,
-                'model_id' => $penagihan->id_penagihan,
-                'model_type' => get_class($penagihan),
-                'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Ditolak'
-            ]);
-            $timeline->save();
-    
-            // Update A Penagihan Status
-            $penagihan->status_aktivitas = 'Dibuat';
-            $penagihan->save();
-        });
-
-        return redirect()->back()->with('success', 'Verifikasi berhasil dilakukan!');
     }
 }

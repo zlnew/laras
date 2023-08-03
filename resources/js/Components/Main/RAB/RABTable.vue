@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 // utils
@@ -224,11 +224,12 @@ function toggleFullscreen() {
               <q-tooltip>Ditolak</q-tooltip>
             </q-btn>
             
-            <q-badge
-              :color="props.row.status_rab == 400 ? 'red' : 'primary'"
-              :label="props.row.status_rab == 400 ? 'Closed' : 'Open'"
-              v-in-link="route('detail_rab', props.row.id_rab)"
-            />
+            <Link :href="route('detail_rab', props.row.id_rab)">
+              <q-badge
+                :color="props.row.status_rab == 400 ? 'red' : 'primary'"
+                :label="props.row.status_rab == 400 ? 'Closed' : 'Open'"
+              />
+            </Link>
           </q-td>
 
           <q-td key="actions" :props="props">

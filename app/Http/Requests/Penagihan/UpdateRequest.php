@@ -14,7 +14,9 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id_proyek' => ['required', 'exists:proyek,id_proyek'],
             'keperluan' => ['required', 'string', 'max:255'],
+            'kas_masuk' => ['required', 'string', 'max:255']
         ];
     }
 }

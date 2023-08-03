@@ -1,11 +1,11 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { QTableColumn, useQuasar } from 'quasar';
 
 // utils
-import { can, isAdmin, isEditable, isModuleEditable, isRejected } from '@/utils/permissions';
+import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions';
 
 // types
 import { PengajuanDana, Proyek } from '@/types';
@@ -219,11 +219,12 @@ function toggleFullscreen() {
               <q-tooltip>Ditolak</q-tooltip>
             </q-btn>
 
-            <q-badge
-              :color="props.row.status_pengajuan == 400 ? 'red' : 'primary'"
-              :label="props.row.status_pengajuan == 400 ? 'Closed' : 'Open'"
-              v-in-link="route('detail_pengajuan_dana', props.row.id_pengajuan_dana)"
-            />
+            <Link :href="route('detail_pengajuan_dana', props.row.id_pengajuan_dana)">
+              <q-badge
+                :color="props.row.status_pengajuan == 400 ? 'red' : 'primary'"
+                :label="props.row.status_pengajuan == 400 ? 'Closed' : 'Open'"
+              />
+            </Link>
           </q-td>
 
           <q-td key="actions" :props="props">
