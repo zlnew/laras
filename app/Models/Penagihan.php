@@ -27,6 +27,7 @@ class Penagihan extends Model
         'tanggal_pengajuan',
         'status_penagihan',
         'status_aktivitas',
+        'jumlah_diterima',
         'id_proyek',
         'id_rekening'
     ];

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Penagihan\ConfirmRequest;
+use App\Http\Requests\Penagihan\FillRequest;
 use App\Http\Requests\Penagihan\StoreRequest;
+use App\Http\Requests\Penagihan\TaxRequest;
 use App\Http\Requests\Penagihan\UpdateRequest;
-use App\Models\DetailPenagihan;
 use App\Models\Penagihan;
 use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
@@ -141,6 +143,39 @@ class PenagihanController extends Controller
         return redirect()->back()->with('success', 'Penagihan/Invoice berhasil diperbarui!');
     }
 
+    public function fill(FillRequest $request, Penagihan $penagihan): RedirectResponse
+    {
+        $validated = $request->safe();
+
+        $penagihan->fill([
+            'id_rekening' => $validated->id_rekening,
+            'nomor_sp2d' => $validated->nomor_sp2d,
+            'tanggal_sp2d' => $validated->tanggal_sp2d,
+            'tanggal_terbit' => $validated->tanggal_terbit,
+            'tanggal_cair' => $validated->tanggal_cair
+        ]);
+
+        $penagihan->save();
+
+        return redirect()->back()->with('success', 'Penagihan/Invoice berhasil diperbarui!');
+    }
+
+    public function tax(TaxRequest $request, Penagihan $penagihan): RedirectResponse
+    {
+        $validated = $request->safe();
+
+        $penagihan->fill([
+            'potongan_pph' => $validated->potongan_pph,
+            'potongan_ppn' => $validated->potongan_ppn,
+            'potongan_lainnya' => $validated->potongan_lainnya,
+            'keterangan_potongan_lainnya' => $validated->keterangan_potongan_lainnya
+        ]);
+
+        $penagihan->save();
+
+        return redirect()->back()->with('success', 'Potongan Penagihan/Invoice berhasil diperbarui!');
+    }
+
     public function destroy(Penagihan $penagihan): RedirectResponse
     {
         $penagihan->delete();
@@ -171,27 +206,23 @@ class PenagihanController extends Controller
         return redirect()->back()->with('success', 'Penagihan/Invoice berhasil diajukan!');
     }
 
-    public function confirm(Request $request, Penagihan $penagihan): RedirectResponse
+    public function confirm(ConfirmRequest $request, Penagihan $penagihan): RedirectResponse
     {
         DB::transaction(function () use ($request, $penagihan) {
-            // Update The Detail Penagihan Status
-            DetailPenagihan::where('id_penagihan', $penagihan->id_penagihan)
-                ->whereIn('id_detail_penagihan', $request->post('group_of_id_detail_penagihan'))
-                ->update(['status_diterima' => '400']);
+            $validated = $request->safe();
 
-            // Checking if all Penagihan is completed
-            $detailPenagihanQuery = DetailPenagihan::query()
-                ->where('id_penagihan', $penagihan->id_penagihan);
+            $bertahap = $request->post('bertahap');
 
-            $totalDetailPenagihan = $detailPenagihanQuery->get()->count();
-            $totalDetailPenagihanDiterima = $detailPenagihanQuery->where('status_diterima', '400')->get()->count();
+            $totalPenagihan = DB::table('detail_penagihan')
+                ->where('deleted_at', null)
+                ->sum(DB::raw('volume_penagihan * harga_satuan_penagihan'));
+            $status_penagihan = '400';
+            $status_aktivitas = 'Diterima';
 
-            $status_pencairan = '100';
-            $status_aktivitas = 'Dibuat';
-
-            if ($totalDetailPenagihan === $totalDetailPenagihanDiterima) {
-                $status_pencairan = '400';
-                $status_aktivitas = 'Diterima';
+            if ($bertahap === true) {
+                $status_penagihan = '100';
+                $status_aktivitas = 'Diterima Bertahap';
+                $totalPenagihan = $validated->jumlah_diterima;
             }
 
             // Create A Timeline
@@ -201,17 +232,20 @@ class PenagihanController extends Controller
                 'model_id' => $penagihan->id_penagihan,
                 'model_type' => get_class($penagihan),
                 'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Diterima',
+                'status_aktivitas' => $status_aktivitas,
             ]);
             $timeline->save();
 
             // Update The Penagihan Status
-            $penagihan->status_penagihan = $status_pencairan;
-            $penagihan->status_aktivitas = $status_aktivitas;
+            $penagihan->fill([
+                'status_penagihan' => $status_penagihan,
+                'status_aktivitas' => $status_aktivitas,
+                'jumlah_diterima' => $totalPenagihan
+            ]);
             $penagihan->save();
         });
 
-        return redirect()->back()->with('success', 'Verifikasi Penerimaan berhasil diterima!');
+        return redirect()->back()->with('success', 'Verifikasi Penerimaan berhasil dilakukan!');
     }
 
     public function reject(Request $request, Penagihan $penagihan): RedirectResponse

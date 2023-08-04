@@ -20,12 +20,20 @@ class DetailPenagihanController extends Controller
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'penagihan.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
+            ->leftJoin('rekening as rpg', 'rpg.id_rekening', '=', 'penagihan.id_rekening')
             ->where('penagihan.deleted_at', null)
             ->where('penagihan.id_penagihan', $penagihan->id_penagihan)
             ->select(
-                'penagihan.id_penagihan',
+                'penagihan.id_penagihan', 'penagihan.kas_masuk',
                 'penagihan.keperluan', 'penagihan.tanggal_pengajuan',
                 'penagihan.status_penagihan', 'penagihan.status_aktivitas',
+                'penagihan.id_rekening as id_rekening_pg', 'penagihan.nomor_sp2d',
+                'penagihan.tanggal_sp2d', 'penagihan.tanggal_terbit',
+                'penagihan.tanggal_cair', 'rpg.nama_bank as nama_bank_pg',
+                'rpg.nomor_rekening as nomor_rekening_pg', 'rpg.nama_rekening as nama_rekening_pg',
+                'penagihan.potongan_ppn', 'penagihan.potongan_pph',
+                'penagihan.potongan_lainnya', 'penagihan.keterangan_potongan_lainnya',
+                'penagihan.jumlah_diterima',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
                 'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
@@ -56,6 +64,16 @@ class DetailPenagihanController extends Controller
             ->orderBy('dpg.id_detail_penagihan', 'asc')
             ->get();
 
+        $dokumenPenunjang = DB::table('files')
+            ->leftJoin('penagihan as pg', 'pg.id_penagihan', '=', 'files.model_id')
+            ->where([
+                'files.deleted_at' => null,
+                'pg.deleted_at' => null
+            ])
+            ->where('files.model_id', $penagihan->id_penagihan)
+            ->select('files.id_file', 'files.file_name', 'files.file_path')
+            ->get();
+
         $timeline = DB::table('timeline')
             ->leftJoin('users', 'users.id', '=', 'timeline.user_id')
             ->leftJoin('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
@@ -69,10 +87,14 @@ class DetailPenagihanController extends Controller
             )
             ->get();
 
+        $formOptions = $this->formOptions($penagihan->id_proyek);
+
         return Inertia::render('Keuangan/DetailPenagihanPage', [
             'penagihan' => $penagihan,
             'detailPenagihan' => $detailPenagihan,
+            'dokumenPenunjang' => $dokumenPenunjang,
             'timeline' => $timeline,
+            'formOptions' => $formOptions
         ]);
     }
 
@@ -89,9 +111,18 @@ class DetailPenagihanController extends Controller
                 'detail_rab.harga_satuan'
             )
             ->get();
+        
+        $rekening = DB::table('rekening')
+            ->where('deleted_at', null)
+            ->where('tujuan_rekening', 'Penerimaan Invoice')
+            ->select(
+                'id_rekening', 'nama_bank',
+                'nomor_rekening', 'nama_rekening'
+            )->get();
 
         $options = (object) [
             'detailRab' => $detailRab,
+            'rekening' => $rekening
         ];
 
         return $options;

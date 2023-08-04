@@ -155,6 +155,7 @@ export interface Penagihan {
     kas_masuk: 'Utang' | 'Setoran Modal';
     status_penagihan: '100' | '400';
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Diterima Bertahap' | 'Diterima';
+    jumlah_diterima: string;
 }
 
 export interface DetailPenagihan {

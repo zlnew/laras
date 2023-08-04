@@ -181,23 +181,25 @@ Route::middleware('auth')->group(function() {
         Route::prefix('penagihan')->group(function() {
             Route::group(['middleware' => ['permission:view penagihan']], function () {
                 Route::get('/', [PenagihanController::class, 'index'])->name('penagihan');
-                Route::get('/detail/{penagihan}', [PenagihanController::class, 'index'])->name('detail_penagihan');
+                Route::get('/detail/{penagihan}', [DetailPenagihanController::class, 'index'])->name('detail_penagihan');
             });
     
             Route::group(['middleware' => ['permission:create & modify penagihan']], function () {
                 Route::post('/', [PenagihanController::class, 'store'])->name('penagihan.store');
                 Route::patch('/{penagihan}', [PenagihanController::class, 'update'])->name('penagihan.update');
+                Route::put('/{penagihan}', [PenagihanController::class, 'fill'])->name('penagihan.fill');
+                Route::put('/tax/{penagihan}', [PenagihanController::class, 'tax'])->name('penagihan.tax');
                 Route::delete('/{penagihan}', [PenagihanController::class, 'destroy'])->name('penagihan.destroy');
+                Route::post('/submit/{penagihan}', [PenagihanController::class, 'submit'])->name('penagihan.submit');
 
                 Route::post('/detail/{penagihan}', [DetailPenagihanController::class,'store'])->name('detail_penagihan.store');
                 Route::patch('/detail/{detailPenagihan}', [DetailPenagihanController::class, 'update'])->name('detail_penagihan.update');
                 Route::delete('/detail/{detailPenagihan}', [DetailPenagihanController::class, 'destroy'])->name('detail_penagihan.destroy');
-                Route::post('/detail/{penagihan}/submit', [DetailPenagihanController::class, 'submit'])->name('detail_penagihan.submit');
             });
 
             Route::middleware(['permission:receipt penagihan'])->group(function() {
-                Route::post('/detail/confirm/{penagihan}', [DetailPenagihanController::class, 'confirm'])->name('detail_penagihan.confirm');
-                Route::post('/detail/reject/{penagihan}', [DetailPenagihanController::class, 'reject'])->name('detail_penagihan.reject');
+                Route::post('/confirm/{penagihan}', [PenagihanController::class, 'confirm'])->name('penagihan.confirm');
+                Route::post('/reject/{penagihan}', [PenagihanController::class, 'reject'])->name('penagihan.reject');
             });
         });
     });
