@@ -7,18 +7,18 @@ import { ref } from 'vue';
 import { isRejected } from '@/utils/permissions';
 
 // types
-import { PengajuanDana, Proyek } from '@/types';
+import { PencairanDana, Proyek } from '@/types';
 import { QTableColumn, useQuasar } from 'quasar';
-import { FormOptions } from '@/Pages/Laporan/LaporanPengajuanDanaPage.vue';
+import { FormOptions } from '@/Pages/Laporan/LaporanPencairanDanaPage.vue';
 
 // comps
-import { LaporanPengajuanDanaSearchDialog } from '@/Components/Laporan/laporan-page';
+import { LaporanPencairanDanaSearchDialog } from '@/Components/Laporan/laporan-page';
 import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
 import { toRupiah } from '@/utils/money';
 import { toFloat } from '@/utils/number';
 
 const props = defineProps<{
-  rows: Array<PengajuanDana>;
+  rows: Array<PencairanDana>;
   formOptions: FormOptions; 
 }>();
 
@@ -35,7 +35,7 @@ function detailProyek(data: Proyek) {
 
 function search() {
   $q.dialog({
-    component: LaporanPengajuanDanaSearchDialog,
+    component: LaporanPencairanDanaSearchDialog,
     componentProps: {
       options: props.formOptions
     }
@@ -48,8 +48,9 @@ const columns: Array<QTableColumn> = [
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
   { name: 'nilai_pengajuan', label: 'Nilai Pengajuan Dana', field: 'nilai_pengajuan', align: 'right', sortable: true },
-  { name: 'jumlah_disetujui', label: 'Disetujui', field: 'jumlah_disetujui', align: 'right', sortable: true },
-  { name: 'status', label: 'Status', field: 'status_pengajuan', align: 'left', sortable: true },
+  { name: 'jumlah_sudah_dibayar', label: 'Sudah Dibayarkan', field: 'jumlah_sudah_dibayar', align: 'right', sortable: true },
+  { name: 'jumlah_belum_dibayar', label: 'Belum Dibayarkan', field: 'jumlah_belum_dibayar', align: 'right', sortable: true },
+  { name: 'status', label: 'Status', field: 'status_pencairan', align: 'left', sortable: true },
 ];
 
 const tableFullscreen = ref(false);
@@ -65,7 +66,7 @@ function toggleFullscreen() {
       flat
       bordered
       row-key="id_rab"
-      title="Laporan Pengajuan Dana"
+      title="Laporan Pencairan Dana"
       :rows="rows"
       :columns="columns"
       :rows-per-page-options="[ 10, 15, 20, 25, 50, 0 ]"
@@ -79,7 +80,7 @@ function toggleFullscreen() {
           label="Clear Filter"
           icon="clear"
           color="secondary"
-          @click="router.visit(route('laporan.pengajuan_dana'))"
+          @click="router.visit(route('laporan.pencairan_dana'))"
         />
         <q-btn
           flat
@@ -144,8 +145,12 @@ function toggleFullscreen() {
             {{ toRupiah(toFloat(props.row.nilai_pengajuan)) }}
           </q-td>
 
-          <q-td key="jumlah_disetujui" :props="props">
-            {{ toRupiah(toFloat(props.row.jumlah_disetujui)) }}
+          <q-td key="jumlah_sudah_dibayar" :props="props">
+            {{ toRupiah(toFloat(props.row.jumlah_sudah_dibayar)) }}
+          </q-td>
+
+          <q-td key="jumlah_belum_dibayar" :props="props">
+            {{ toRupiah(toFloat(props.row.jumlah_belum_dibayar || '0')) }}
           </q-td>
           
           <q-td key="status" :props="props">
@@ -161,10 +166,10 @@ function toggleFullscreen() {
               <q-tooltip>Ditolak</q-tooltip>
             </q-btn>
             
-            <Link :href="route('detail_pengajuan_dana', props.row.id_pengajuan_dana)">
+            <Link :href="route('detail_pencairan_dana', props.row.id_pencairan_dana)">
               <q-badge
-                :color="props.row.status_pengajuan == 400 ? 'red' : 'primary'"
-                :label="props.row.status_pengajuan == 400 ? 'Closed' : 'Open'"
+                :color="props.row.status_pencairan == 400 ? 'red' : 'primary'"
+                :label="props.row.status_pencairan == 400 ? 'Closed' : 'Open'"
               />
             </Link>
           </q-td>

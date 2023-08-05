@@ -6,14 +6,14 @@ import { Head } from '@inertiajs/vue3';
 import Layout from '@/Layouts/AuthenticatedLayout.vue';
 
 // comps
-import { LaporanPengajuanDanaTable } from '@/Components/Laporan/laporan-page';
+import { LaporanPenagihanTable } from '@/Components/Laporan/laporan-page';
 
 // types
-import { PengajuanDana, Proyek } from '@/types';
+import { Penagihan, Proyek } from '@/types';
 
 const breadcrumbs = [
   { label: 'Reports', url: '#' },
-  { label: 'Pengajuan Dana', url: '#' }
+  { label: 'Penagihan/Invoice', url: '#' }
 ];
 
 export interface FormOptions {
@@ -21,13 +21,13 @@ export interface FormOptions {
 }
 
 defineProps<{
-  pengajuanDana: Array<PengajuanDana>;
+  penagihan: Array<Penagihan>;
   formOptions: FormOptions;
 }>();
 </script>
 
 <template>
-  <Head title="Laporan Pengajuan Dana" />
+  <Head title="Laporan Penagihan/Invoice" />
   <layout>
     
     <template #breadcrumbs>
@@ -40,8 +40,8 @@ defineProps<{
       </q-breadcrumbs>
     </template>
 
-    <laporan-pengajuan-dana-table
-      :rows="pengajuanDana"
+    <laporan-penagihan-table
+      :rows="penagihan"
       :form-options="formOptions"
     />
 

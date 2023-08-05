@@ -97,6 +97,13 @@ const menuList = [
   },
   {
     icon: 'summarize',
+    label: 'Pencairan Dana',
+    link: route('laporan.pencairan_dana'),
+    active: route().current('laporan.pencairan_dana'),
+    separator: false,
+  },
+  {
+    icon: 'summarize',
     label: 'Penagihan/Invoice',
     link: route('laporan.penagihan'),
     active: route().current('laporan.penagihan'),
@@ -142,7 +149,11 @@ function isAdmin(): boolean {
             </q-item-section>
           </q-item>
 
-          <Link :href="menuItem.link" style="text-decoration: none;">
+          <Link
+            :preserve-scroll="true"
+            :href="menuItem.link"
+            style="text-decoration: none;"
+          >
             <q-item
               clickable
               v-ripple

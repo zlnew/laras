@@ -12,140 +12,258 @@ class LaporanController extends Controller
     public function pengajuan_dana(Request $request): Response
     {
         $pengajuanDanaQuery = DB::table('pengajuan_dana as pd')
-            ->leftJoin('keuangan as ka', 'ka.id_keuangan', '=', 'pd.id_keuangan')
-            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'ka.id_proyek')
-            ->leftJoin('detail_pengajuan_dana as d_pd', 'd_pd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
-            ->where('pd.tanggal_pengajuan', '!=', NULL);
+            ->leftJoin('detail_pengajuan_dana as dpd', 'dpd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
+            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'pd.id_proyek')
+            ->leftJoin('users as us', 'us.id', '=', 'pr.id_user')
+            ->leftJoin('rekening as rk', 'rk.id_rekening', '=', 'pr.id_rekening')
+            ->where([
+                'pd.deleted_at' => null,
+                'pr.deleted_at' => null,
+            ])
+            ->where('pd.tanggal_pengajuan', '!=', null);
 
         if ($request->isMethod('get') && $request->all()) {
-            $pengajuanDanaQuery->when($request->get('nama_proyek'), function($query, $input) {
-                $query->where('pr.nama_proyek', 'like', $input . '%');
+            $pengajuanDanaQuery->when($request->get('id_proyek'), function($query, $input) {
+                $query->whereIn('pd.id_proyek', $input);
+            });
+
+            $pengajuanDanaQuery->when($request->get('status_pengajuan'), function($query, $input) {
+                $query->where('pd.status_pengajuan', $input);
+            });
+
+            $pengajuanDanaQuery->when($request->get('ditolak') === 'true', function($query) {
+                $query->where('pd.status_aktivitas', 'Ditolak');
             });
         }
 
-        $pengajuanDana = $pengajuanDanaQuery->groupBy('pd.id_pengajuan_dana')
+        $pengajuanDana = $pengajuanDanaQuery
+            ->groupBy('pd.id_pengajuan_dana')
             ->select(
-                'pr.id_proyek', 'pd.id_pengajuan_dana',
-                'pr.nama_proyek', 'ka.keperluan',
-                'pd.tanggal_pengajuan',
-                DB::raw('SUM(d_pd.jumlah_pengajuan) as jumlah_pengajuan_dana'),
+                'pd.id_pengajuan_dana', 'pr.nilai_kontrak',
+                'pr.id_proyek', 'pr.nama_proyek',
+                'pr.nomor_kontrak', 'pr.tanggal_kontrak',
+                'pr.pengguna_jasa', 'pr.penyedia_jasa',
+                'pr.tahun_anggaran', 'pr.nomor_spmk',
+                'pr.tanggal_spmk', 'pr.tanggal_mulai',
+                'pr.durasi', 'pr.tanggal_selesai',
+                'us.id as id_user', 'us.name as pic',
+                'pr.status_proyek', 'rk.id_rekening',
+                'rk.nama_bank', 'rk.nomor_rekening',
+                'rk.nama_rekening',
+                'pd.keperluan', 'pd.tanggal_pengajuan',
+                'pd.status_pengajuan', 'pd.status_aktivitas',
+                DB::raw("SUM(dpd.jumlah_pengajuan) AS nilai_pengajuan"),
                 DB::raw("SUM(
                     CASE
-                        WHEN d_pd.status_persetujuan = '400'
-                        THEN d_pd.jumlah_pengajuan
-                    END) as jumlah_disetujui"
+                        WHEN dpd.status_persetujuan = '400'
+                        AND dpd.deleted_at IS NULL
+                        THEN dpd.jumlah_pengajuan
+                    END) AS jumlah_disetujui"
                 ),
-                'pd.status_pengajuan',
             )
             ->orderBy('pd.id_pengajuan_dana', 'asc')
-            ->paginate(10);
+            ->get();
+
+        $proyek = DB::table('proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('rap.deleted_at', null)
+            ->where('pengajuan_dana.deleted_at', null)
+            ->where('rap.status_rap', '400')
+            ->where('pengajuan_dana.id_proyek', '!=', null)
+            ->groupBy('proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+            ->get();
+
+        $formOptions = (object) [
+            'proyek' => $proyek
+        ];
         
-        return Inertia::render('Laporan/PengajuanDana', [
-            'pengajuan_dana' => $pengajuanDana
+        return Inertia::render('Laporan/LaporanPengajuanDanaPage', [
+            'pengajuanDana' => $pengajuanDana,
+            'formOptions' => $formOptions
         ]);
     }
 
     public function pencairan_dana(Request $request): Response
     {
-        $pencairanDanaQuery = DB::table('pengajuan_dana as pd')
-            ->leftJoin('keuangan as ka', 'ka.id_keuangan', '=', 'pd.id_keuangan')
-            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'ka.id_proyek')
-            ->leftJoin('pencairan_dana as pc', 'pc.id_keuangan', '=', 'ka.id_keuangan')
-            ->leftJoin('detail_pengajuan_dana as d_pd', 'd_pd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
-            ->rightJoin('detail_pencairan_dana as d_pc', 'd_pc.id_detail_pengajuan_dana', '=', 'd_pd.id_detail_pengajuan_dana')
-            ->where('pd.deleted_at', null);
+        $pencairanDanaQuery = DB::table('pencairan_dana as pc')
+            ->leftJoin('pengajuan_dana as pd', 'pd.id_pengajuan_dana', '=', 'pc.id_pengajuan_dana')
+            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'pd.id_proyek')
+            ->leftJoin('users as us', 'us.id', '=', 'pr.id_user')
+            ->leftJoin('rekening as rk', 'rk.id_rekening', '=', 'pr.id_rekening')
+            ->where([
+                'pc.deleted_at' => null,
+                'pd.deleted_at' => null,
+                'pr.deleted_at' => null,
+            ])
+            ->where('pd.tanggal_pengajuan', '!=', null);
 
         if ($request->isMethod('get') && $request->all()) {
-            $pencairanDanaQuery->when($request->get('nama_proyek'), function($query, $input) {
-                $query->where('pr.nama_proyek', 'like', $input . '%');
+            $pencairanDanaQuery->when($request->get('id_proyek'), function($query, $input) {
+                $query->whereIn('pd.id_proyek', $input);
+            });
+
+            $pencairanDanaQuery->when($request->get('status_pencairan'), function($query, $input) {
+                $query->where('pc.status_pencairan', $input);
+            });
+
+            $pencairanDanaQuery->when($request->get('ditolak') === 'true', function($query) {
+                $query->where('pc.status_aktivitas', 'Ditolak');
             });
         }
 
         $pencairanDana = $pencairanDanaQuery
-            ->groupBy(
-                'pr.id_proyek',
-                'pd.id_pengajuan_dana',
-                'pc.id_pencairan_dana',
-                'pr.nama_proyek',
-                'ka.keperluan',
-                'pd.tanggal_pengajuan',
-                'pc.status_pencairan'
-            )
+            ->groupBy('pc.id_pencairan_dana')
             ->select(
-                'pr.id_proyek',
-                'pd.id_pengajuan_dana',
-                'pc.id_pencairan_dana',
-                'pr.nama_proyek',
-                'ka.keperluan',
-                'pd.tanggal_pengajuan',
-
-                DB::raw("(SELECT SUM(d_pd.jumlah_pengajuan)
-                    FROM detail_pengajuan_dana as d_pd
-                    WHERE d_pd.status_persetujuan = '400'
-                    AND d_pd.id_pengajuan_dana = pd.id_pengajuan_dana) as jumlah_pengajuan_dana"),
-
-                DB::raw("(SELECT SUM(d_pc.jumlah_pencairan)
-                    FROM detail_pencairan_dana as d_pc
-                    WHERE d_pc.id_pencairan_dana = pc.id_pencairan_dana) as jumlah_sudah_dibayarkan"),
-
-                DB::raw("(SELECT SUM(d_pd.jumlah_pengajuan)
-                    FROM detail_pengajuan_dana as d_pd
-                    WHERE d_pd.status_persetujuan = '400'
-                    AND d_pd.id_pengajuan_dana = pd.id_pengajuan_dana) - (SELECT SUM(d_pc.jumlah_pencairan)
-                        FROM detail_pencairan_dana as d_pc
-                        WHERE d_pc.id_pencairan_dana = pc.id_pencairan_dana) as jumlah_belum_dibayarkan"),
-
-                'pc.status_pencairan',
+                'pc.id_pencairan_dana', 'pr.nilai_kontrak',
+                'pr.id_proyek', 'pr.nama_proyek',
+                'pr.nomor_kontrak', 'pr.tanggal_kontrak',
+                'pr.pengguna_jasa', 'pr.penyedia_jasa',
+                'pr.tahun_anggaran', 'pr.nomor_spmk',
+                'pr.tanggal_spmk', 'pr.tanggal_mulai',
+                'pr.durasi', 'pr.tanggal_selesai',
+                'us.id as id_user', 'us.name as pic',
+                'pr.status_proyek', 'rk.id_rekening',
+                'rk.nama_bank', 'rk.nomor_rekening',
+                'rk.nama_rekening',
+                'pd.keperluan', 'pd.tanggal_pengajuan',
+                'pc.status_pencairan', 'pc.status_aktivitas',
+                DB::raw("
+                    (SELECT SUM(dpd.jumlah_pengajuan)
+                    FROM detail_pengajuan_dana AS dpd
+                    WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
+                    AND(
+                        dpd.status_persetujuan = '400'
+                        AND dpd.deleted_at IS NULL
+                    )) AS nilai_pengajuan
+                "),
+                DB::raw("
+                    (SELECT SUM(dpd.jumlah_pencairan)
+                    FROM detail_pencairan_dana AS dpd
+                    WHERE dpd.id_pencairan_dana = pc.id_pencairan_dana
+                    AND(
+                        dpd.status_pembayaran = '400'
+                        AND dpd.deleted_at IS NULL
+                    )) AS jumlah_sudah_dibayar
+                "),
+                DB::raw("
+                    (SELECT SUM(dpd.jumlah_pencairan)
+                    FROM detail_pencairan_dana AS dpd
+                    WHERE dpd.id_pencairan_dana = pc.id_pencairan_dana
+                    AND(
+                        dpd.status_pembayaran = '100'
+                        AND dpd.deleted_at IS NULL
+                    )) AS jumlah_belum_dibayar
+                ")
             )
-            ->orderBy('pd.id_pengajuan_dana', 'asc')
-            ->paginate(10);
+            ->orderBy('pc.id_pencairan_dana', 'asc')
+            ->get();
+
+        $proyek = DB::table('proyek')
+            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('pengajuan_dana.deleted_at', null)
+            ->groupBy('proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+            ->get();
+
+        $formOptions = (object) [
+            'proyek' => $proyek
+        ];
         
-        return Inertia::render('Laporan/PencairanDana', [
-            'pencairan_dana' => $pencairanDana
+        return Inertia::render('Laporan/LaporanPencairanDanaPage', [
+            'pencairanDana' => $pencairanDana,
+            'formOptions' => $formOptions
         ]);
     }
 
     public function penagihan(Request $request): Response
     {
-        $penagihanQuery = DB::table('penagihan as png')
-            ->leftJoin('keuangan as ka', 'ka.id_keuangan', '=', 'png.id_keuangan')
-            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'ka.id_proyek')
-            ->leftJoin('detail_penagihan as d_png', 'd_png.id_penagihan', '=', 'png.id_penagihan')
-            ->leftJoin('detail_rab as d_rab', 'd_rab.id_detail_rab', '=', 'd_png.id_detail_rab')
-            ->where('png.deleted_at', null)
-            ->where('png.tanggal_pengajuan', '!=', null);
+        $penagihanQuery = DB::table('penagihan as pg')
+            ->leftJoin('detail_penagihan as dpg', 'dpg.id_penagihan', '=', 'pg.id_penagihan')
+            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'pg.id_proyek')
+            ->leftJoin('users as us', 'us.id', '=', 'pr.id_user')
+            ->leftJoin('rekening as rk', 'rk.id_rekening', '=', 'pr.id_rekening')
+            ->where([
+                'pg.deleted_at' => null,
+                'dpg.deleted_at' => null,
+                'pr.deleted_at' => null,
+            ])
+            ->where('pg.tanggal_pengajuan', '!=', null);
 
         if ($request->isMethod('get') && $request->all()) {
-            $penagihanQuery->when($request->get('nama_proyek'), function($query, $input) {
-                $query->where('pr.nama_proyek', 'like', $input . '%');
+            $penagihanQuery->when($request->get('id_proyek'), function($query, $input) {
+                $query->whereIn('pg.id_proyek', $input);
+            });
+
+            $penagihanQuery->when($request->get('kas_masuk'), function($query, $input) {
+                $query->where('pg.kas_masuk', $input);
+            });
+
+            $penagihanQuery->when($request->get('status_penagihan'), function($query, $input) {
+                $query->where('pg.status_penagihan', $input);
+            });
+
+            $penagihanQuery->when($request->get('ditolak') === 'true', function($query) {
+                $query->where('pg.status_aktivitas', 'Ditolak');
             });
         }
 
-        $penagihan = $penagihanQuery->groupBy('png.id_penagihan')
+        $penagihan = $penagihanQuery
+            ->groupBy('pg.id_penagihan')
             ->select(
-                'pr.id_proyek', 'png.id_penagihan',
-                'pr.nama_proyek', 'ka.keperluan',
-                'png.tanggal_pengajuan',
-                DB::raw('SUM(d_png.volume_penagihan * d_rab.harga_satuan) as jumlah_pengajuan'),
-                DB::raw("SUM(
-                    CASE
-                        WHEN d_png.status_diterima = '400'
-                        THEN d_png.volume_penagihan * d_rab.harga_satuan
-                    END) as jumlah_diterima"
-                ),
-                DB::raw("SUM(
-                    CASE
-                        WHEN d_png.status_diterima = '100'
-                        THEN d_png.volume_penagihan * d_rab.harga_satuan
-                    END) as jumlah_belum_ditagihkan"
-                ),
-                'png.status_penagihan',
+                'pg.id_penagihan', 'pr.nilai_kontrak',
+                'pr.id_proyek', 'pr.nama_proyek',
+                'pr.nomor_kontrak', 'pr.tanggal_kontrak',
+                'pr.pengguna_jasa', 'pr.penyedia_jasa',
+                'pr.tahun_anggaran', 'pr.nomor_spmk',
+                'pr.tanggal_spmk', 'pr.tanggal_mulai',
+                'pr.durasi', 'pr.tanggal_selesai',
+                'us.id as id_user', 'us.name as pic',
+                'pr.status_proyek', 'rk.id_rekening',
+                'rk.nama_bank', 'rk.nomor_rekening',
+                'rk.nama_rekening', 'pg.kas_masuk',
+                'pg.keperluan', 'pg.tanggal_pengajuan',
+                'pg.status_penagihan', 'pg.status_aktivitas',
+                'pg.jumlah_diterima',
+                DB::raw("SUM(dpg.volume_penagihan * dpg.harga_satuan_penagihan)
+                    AS jumlah_penagihan"),
+                DB::raw("(SUM(dpg.volume_penagihan * dpg.harga_satuan_penagihan) - pg.jumlah_diterima)
+                    AS sisa_penagihan"),
             )
-            ->orderBy('png.id_penagihan', 'asc')
-            ->paginate(10);
+            ->orderBy('pg.id_penagihan', 'asc')
+            ->get();
+
+        $proyek = DB::table('proyek')
+            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
+            ->leftJoin('penagihan', 'penagihan.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('rab.deleted_at', null)
+            ->where('penagihan.deleted_at', null)
+            ->where('rab.status_rab', '400')
+            ->where('penagihan.id_proyek', '!=', null)
+            ->groupBy('proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+            ->get();
+
+        $formOptions = (object) [
+            'proyek' => $proyek
+        ];
         
-        return Inertia::render('Laporan/Penagihan', [
-            'penagihan' => $penagihan
+        return Inertia::render('Laporan/LaporanPenagihanPage', [
+            'penagihan' => $penagihan,
+            'formOptions' => $formOptions
         ]);
     }
 }

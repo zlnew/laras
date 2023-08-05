@@ -253,8 +253,7 @@ class PengajuanDanaController extends Controller
 
             // Create A Pencairan Dana
             $pencairanDana = new PencairanDana;
-            $pencairanDana->id_proyek = $pengajuanDana->id_proyek;
-            $pencairanDana->keperluan = $pengajuanDana->keperluan;
+            $pencairanDana->id_pengajuan_dana = $pengajuanDana->id_pengajuan_dana;
             $pencairanDana->save();
 
             // Create A Timeline

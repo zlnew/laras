@@ -34,9 +34,9 @@ function toggleLeftDrawer() {
 
     <authenticated-page-container>
       <slot></slot>
-    </authenticated-page-container>
 
-    <authenticated-footer />
+      <authenticated-footer />
+    </authenticated-page-container>
     
   </q-layout>
 </template>
