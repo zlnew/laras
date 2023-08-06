@@ -146,7 +146,7 @@ function toggleFullscreen() {
           </q-td>
 
           <q-td key="jumlah_sudah_dibayar" :props="props">
-            {{ toRupiah(toFloat(props.row.jumlah_sudah_dibayar)) }}
+            {{ toRupiah(toFloat(props.row.jumlah_sudah_dibayar || '0')) }}
           </q-td>
 
           <q-td key="jumlah_belum_dibayar" :props="props">
