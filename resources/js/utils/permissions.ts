@@ -1,4 +1,4 @@
-import { Timeline, UserPermissions } from "@/types";
+import { Timeline, UserPermissions, UserRole } from "@/types";
 import { usePage } from "@inertiajs/vue3";
 
 interface DataActivityStatus {
@@ -12,7 +12,7 @@ const userPermissions = () => {
   return page.props.permissions;
 }
 
-const userRole = () => {
+const userRole = (): UserRole => {
   const page = usePage();
   return page.props.role;
 }
@@ -84,6 +84,8 @@ export {
   isSubmitted,
   isRejected,
   isApproved,
-  isAdmin
+  isAdmin,
+  userRole,
+  userPermissions
 };
 

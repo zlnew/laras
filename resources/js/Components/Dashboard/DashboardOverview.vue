@@ -1,53 +1,45 @@
+<script setup lang="ts">
+import { router } from '@inertiajs/vue3';
+
+export interface OverviewProps {
+  title: string;
+  data: string | number | null;
+  color?: string;
+  href?: string;
+}
+
+defineProps<{
+  overview: OverviewProps[];
+}>();
+
+function visitUrl(url: string | undefined) {
+  if (url) {
+    router.visit(url);
+  }
+}
+</script>
+
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
-    <q-card class="my-card">
-      <q-card-section class="bg-primary text-white">
-        <div class="text-h6">Our Changing Planet</div>
-        <div class="text-subtitle2">by John Doe</div>
+    <q-card
+      flat
+      bordered
+      v-for="item in overview"
+      :key="item.title"
+      :v-ripple="item.href?.length"
+      :style="{
+        cursor: item.href?.length ? 'pointer' : 'default'
+      }"
+      @click="visitUrl(item.href)"
+    >
+      <q-card-section class="bg-white">
+        <div class="text-h6">{{ item.data }}</div>
+        <div class="text-subtitle2">{{ item.title }}</div>
       </q-card-section>
 
-      <q-separator />
-
-      <q-card-actions align="right">
-        <q-btn flat>Action 1</q-btn>
-        <q-btn flat>Action 2</q-btn>
-      </q-card-actions>
-    </q-card>
-
-    <q-card class="my-card">
-      <q-card-section class="bg-purple text-white">
-        <div class="text-h6">Our Changing Planet</div>
-        <div class="text-subtitle2">by John Doe</div>
-      </q-card-section>
-
-      <q-card-actions align="right">
-        <q-btn flat>Action 1</q-btn>
-        <q-btn flat>Action 2</q-btn>
-      </q-card-actions>
-    </q-card>
-
-    <q-card class="my-card">
-      <q-card-section class="bg-teal text-white">
-        <div class="text-h6">Our Changing Planet</div>
-        <div class="text-subtitle2">by John Doe</div>
-      </q-card-section>
-
-      <q-card-actions align="right">
-        <q-btn flat>Action 1</q-btn>
-        <q-btn flat>Action 2</q-btn>
-      </q-card-actions>
-    </q-card>
-
-    <q-card class="my-card">
-      <q-card-section class="bg-grey-8 text-white">
-        <div class="text-h6">Our Changing Planet</div>
-        <div class="text-subtitle2">by John Doe</div>
-      </q-card-section>
-
-      <q-card-actions align="right">
-        <q-btn flat>Action 1</q-btn>
-        <q-btn flat>Action 2</q-btn>
-      </q-card-actions>
+      <q-separator
+        :color="item.color || 'white'"
+      />
     </q-card>
   </div>
 </template>

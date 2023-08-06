@@ -38,7 +38,11 @@ Route::get('/', function() {
 })->middleware('guest');
 
 Route::middleware('auth')->group(function() {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
+    Route::get('/dashboard/manajer-proyek', [DashboardController::class, 'manajer_proyek'])->name('dashboard.manajer_proyek');
+    Route::get('/dashboard/kepala-divisi', [DashboardController::class, 'kepala_divisi'])->name('dashboard.kepala_divisi');
+    Route::get('/dashboard/keuangan', [DashboardController::class, 'keuangan'])->name('dashboard.keuangan');
+    Route::get('/dashboard/direktur-utama', [DashboardController::class, 'direktur_utama'])->name('dashboard.direktur_utama');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

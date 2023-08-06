@@ -2,6 +2,9 @@
 import { usePage, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
+// utils
+import { userRole } from '@/utils/permissions';
+
 const props =defineProps<{
   leftDrawerOpen: boolean;
 }>();
@@ -10,12 +13,23 @@ const leftDrawerOpen = computed(() => {
   return props.leftDrawerOpen;
 });
 
+const dashboardPage = computed(() => {
+  switch (userRole()) {
+    case 'admin': return 'dashboard.admin';
+    case 'manajer proyek': return 'dashboard.manajer_proyek';
+    case 'kepala divisi': return 'dashboard.kepala_divisi';
+    case 'keuangan': return 'dashboard.keuangan';
+    case 'direktur utama': return 'dashboard.direktur_utama';
+    default: return 'dashboard.admin';
+  };
+});
+
 const menuList = [
   {
     icon: 'dashboard',
     label: 'Dashboard',
-    link: route('dashboard'),
-    active: route().current('dashboard'),
+    link: route(dashboardPage.value),
+    active: route().current(dashboardPage.value),
     separator: true,
   },
   {

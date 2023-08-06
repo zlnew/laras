@@ -3,6 +3,10 @@ function toInt(string: string): number {
 }
 
 function toFloat(string: string): number {
+  if (string === null) {
+    return 0;
+  }
+
   return parseFloat(string);
 }
 
