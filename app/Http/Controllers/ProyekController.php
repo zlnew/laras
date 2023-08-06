@@ -230,11 +230,11 @@ class ProyekController extends Controller
         return redirect()->route('proyek')->with('success', 'Proyek berhasil dihapus!');
     }
 
-    public function close(Proyek $proyek): RedirectResponse
+    public function status(Request $request, Proyek $proyek): RedirectResponse
     {
-        $proyek->status_proyek = '400';
+        $proyek->status_proyek = $request->status_proyek;
         $proyek->save();
 
-        return redirect()->route('proyek')->with('success', 'Status Proyek berhasil ditutup!');
+        return redirect()->route('proyek')->with('success', 'Status Proyek berhasil diubah!');
     }
 }

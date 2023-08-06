@@ -119,6 +119,20 @@ const tableFullscreen = ref(false);
 function toggleFullscreen() {
   tableFullscreen.value = !tableFullscreen.value;
 }
+
+function toggleStatus(id: string, status: string) {
+  router.patch(route('proyek.status', id), {
+    status_proyek: status,
+  }, {
+    onSuccess: (page) => {
+      $q.notify({
+        type: 'positive',
+        message: page.props.flash.success,
+        position: 'top'
+      });
+    }
+  })
+}
 </script>
 
 <template>
@@ -235,7 +249,52 @@ function toggleFullscreen() {
           </q-td>
           
           <q-td key="status_proyek" :props="props">
+            <div v-if="can('create & modify proyek')">
+              <q-btn-dropdown
+                dense
+                no-caps
+                size="sm"
+                :color="props.row.status_proyek == 400 ? 'red' : 'primary'"
+                :label="props.row.status_proyek == 400 ? 'Closed' : 'On Progress'"
+              >
+                <q-list>
+                  <q-item
+                    v-if="props.row.status_proyek === '100'"
+                    dense
+                    clickable
+                    v-close-popup
+                    @click="toggleStatus(props.row.id_proyek, '400')"
+                  >
+                    <q-item-section>
+                      <q-item-label>
+                        <div class="text-caption text-red">
+                          Close Proyek
+                        </div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item
+                    v-else
+                    dense
+                    clickable
+                    v-close-popup
+                    @click="toggleStatus(props.row.id_proyek, '100')"
+                  >
+                    <q-item-section>
+                      <q-item-label>
+                        <div class="text-caption text-primary">
+                          Open Proyek
+                        </div>
+                      </q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </div>
+
             <q-badge
+              v-else
               :color="props.row.status_proyek == 400 ? 'red' : 'primary'"
               :label="props.row.status_proyek == 400 ? 'Closed' : 'On Progress'"
             />

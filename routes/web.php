@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function() {
             Route::post('/', [ProyekController::class,'store'])->name('proyek.store');
             Route::patch('/{proyek}', [ProyekController::class, 'update'])->name('proyek.update');
             Route::delete('/{proyek}', [ProyekController::class, 'destroy'])->name('proyek.destroy');
+            Route::patch('/status/{proyek}', [ProyekController::class, 'status'])->name('proyek.status');
         });
     });
 
