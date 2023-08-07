@@ -45,18 +45,16 @@ function reject() {
 function approveRAB() {
   $q.dialog({
     title: 'Approval Confirmation',
-    message: 'Are you sure want to approve this data?',
+    message: 'Are you sure want to perform this action?',
     prompt: {
-      model: form.catatan,
+      outlined: true,
+      autogrow: true,
+      model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
-    cancel: {
-      flat: true,
-      color: 'secondary'
-    },
-    ok: 'Confirm',
+    color: 'positive',
+    cancel: true,
     persistent: true
   }).onOk((payload) => {
     form.catatan = payload;
@@ -67,18 +65,16 @@ function approveRAB() {
 function rejectRAB() {
   $q.dialog({
     title: 'Rejection Confirmation',
-    message: 'Are you sure want to reject this data?',
+    message: 'Are you sure want to perform this action?',
     prompt: {
-      model: form.catatan,
+      outlined: true,
+      autogrow: true,
+      model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
-    cancel: {
-      flat: true,
-      color: 'secondary'
-    },
-    ok: 'Confirm',
+    color: 'negative',
+    cancel: true,
     persistent: true
   }).onOk((payload) => {
     form.catatan = payload;

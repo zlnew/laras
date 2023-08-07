@@ -50,13 +50,14 @@ function acceptPenagihan() {
   $q.dialog({
     title: 'Action Confirmation',
     message: 'Are you sure want to perform this action?',
-    color: 'positive',
     prompt: {
+      outlined: true,
+      autogrow: true,
       model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
+    color: 'positive',
     cancel: true,
     persistent: true
   }).onOk((payload) => {
@@ -85,13 +86,14 @@ function rejectPenagihan() {
   $q.dialog({
     title: 'Action Confirmation',
     message: 'Are you sure want to perform this action?',
-    color: 'negative',
     prompt: {
+      outlined: true,
+      autogrow: true,
       model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
+    color: 'negative',
     cancel: true,
     persistent: true
   }).onOk((payload) => {

@@ -35,16 +35,14 @@ function submitPenagihan() {
     title: 'Submission Confirmation',
     message: 'Are you sure want to submit this data?',
     prompt: {
-      model: form.catatan,
+      outlined: true,
+      autogrow: true,
+      model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
-    cancel: {
-      flat: true,
-      color: 'secondary'
-    },
-    ok: 'Confirm',
+    color: 'primary',
+    cancel: true,
     persistent: true
   }).onOk((payload) => {
     form.catatan = payload;

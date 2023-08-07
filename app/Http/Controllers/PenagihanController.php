@@ -116,17 +116,29 @@ class PenagihanController extends Controller
 
     public function store(StoreRequest $request): RedirectResponse
     {
-        $validated = $request->safe();
+        DB::transaction(function() use ($request) {
+            $validated = $request->safe();
+    
+            $penagihan = new Penagihan;
+    
+            $penagihan->fill([
+                'id_proyek' => $validated->id_proyek,
+                'keperluan' => $validated->keperluan,
+                'kas_masuk' => $validated->kas_masuk
+            ]);
+    
+            $penagihan->save();
 
-        $penagihan = new Penagihan;
-
-        $penagihan->fill([
-            'id_proyek' => $validated->id_proyek,
-            'keperluan' => $validated->keperluan,
-            'kas_masuk' => $validated->kas_masuk
-        ]);
-
-        $penagihan->save();
+            // Create A Timeline
+            $timeline = new Timeline;
+            $timeline->fill([
+                'user_id' => $request->user()->id,
+                'model_id' => $penagihan->id_penagihan,
+                'model_type' => get_class($penagihan),
+                'status_aktivitas' => 'Dibuat'
+            ]);
+            $timeline->save();
+        });
 
         return redirect()->back()->with('success', 'Penagihan/Invoice berhasil dibuat!');
     }

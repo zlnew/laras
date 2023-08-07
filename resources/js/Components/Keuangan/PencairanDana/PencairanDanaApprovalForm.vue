@@ -62,18 +62,16 @@ function reject() {
 function acceptPengajuanDana() {
   $q.dialog({
     title: 'Receipt Confirmation',
-    message: 'Are you sure want to confirm receipt of this data?',
+    message: 'Are you sure want to perform this action?',
     prompt: {
-      model: form.catatan,
+      outlined: true,
+      autogrow: true,
+      model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
-    cancel: {
-      flat: true,
-      color: 'secondary'
-    },
-    ok: 'Confirm',
+    color: 'positive',
+    cancel: true,
     persistent: true
   }).onOk((payload) => {
     form.catatan = payload;
@@ -84,18 +82,16 @@ function acceptPengajuanDana() {
 function shallowAcceptPengajuanDana() {
   $q.dialog({
     title: 'Receipt Confirmation',
-    message: 'Are you sure want to confirm receipt of this data?',
+    message: 'Are you sure want to perform this action?',
     prompt: {
-      model: form.catatan,
+      outlined: true,
+      autogrow: true,
+      model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
-    cancel: {
-      flat: true,
-      color: 'secondary'
-    },
-    ok: 'Confirm',
+    color: 'secondary',
+    cancel: true,
     persistent: true
   }).onOk((payload) => {
     form.catatan = payload;
@@ -106,18 +102,16 @@ function shallowAcceptPengajuanDana() {
 function rejectPengajuanDana() {
   $q.dialog({
     title: 'Rejection Confirmation',
-    message: 'Are you sure want to reject this data?',
+    message: 'Are you sure want to perform this action?',
     prompt: {
-      model: form.catatan,
+      outlined: true,
+      autogrow: true,
+      model: '',
       type: 'text',
-      placeholder: 'Tambahkan Catatan',
-      autogrow: true
+      placeholder: 'Tambahkan Catatan'
     },
-    cancel: {
-      flat: true,
-      color: 'secondary'
-    },
-    ok: 'Confirm',
+    color: 'negative',
+    cancel: true,
     persistent: true
   }).onOk((payload) => {
     form.catatan = payload;
@@ -137,7 +131,7 @@ function rejectPengajuanDana() {
 
       <q-fab-action
         color="green-7"
-        label="Terima"
+        label="Terima Lunas"
         icon="check"
         @click="acceptPengajuanDana"
       />
