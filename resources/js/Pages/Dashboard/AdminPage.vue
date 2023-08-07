@@ -7,11 +7,37 @@ import Layout from '@/Layouts/AuthenticatedLayout.vue';
 
 // comps
 import { DashboardOverview } from '@/Components/Dashboard/dashboard-page';
+import { ProyekTable } from '@/Components/Dashboard/Admin/dashboard-admin-page';
+
+// types
+import { Proyek } from '@/types';
+import { OverviewProps } from '@/Components/Dashboard/DashboardOverview.vue';
 
 const breadcrumbs = [
   { label: 'Dashboard', url: '#' },
   { label: 'Overview', url: '#' }
 ];
+
+export interface JoinedWithProyek {
+  nilai_kontrak: string;
+  rab: string;
+  pengajuan_sebelumnya: string;
+  pengajuan_dalam_proses: string;
+  total_pengajuan: string;
+  sisa_anggaran: string;
+  estimasi_laba: string;
+  persentase_laba: string;
+}
+
+export interface Options {
+  tahunAnggaran: string[];
+}
+
+defineProps<{
+  proyek: Array<Proyek & JoinedWithProyek>;
+  overview: OverviewProps[];
+  options: Options;
+}>();
 </script>
 
 <template>
@@ -27,6 +53,13 @@ const breadcrumbs = [
       </q-breadcrumbs>
     </template>
 
-    <dashboard-overview />
+    <dashboard-overview
+      :overview="overview"
+    />
+
+    <proyek-table
+      :rows="proyek"
+      :options="options"
+    />
   </layout>
 </template>

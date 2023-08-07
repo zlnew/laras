@@ -143,9 +143,14 @@ class DashboardController extends Controller
             ]
         ];
 
+        $options = (Object) [
+            'tahunAnggaran' => $proyekQuery->pluck('tahun_anggaran')
+        ];
+
         return Inertia::render('Dashboard/AdminPage', [
             'proyek' => $proyek,
-            'overview' => $overview
+            'overview' => $overview,
+            'options' => $options
         ]);
     }
 
@@ -322,7 +327,7 @@ class DashboardController extends Controller
                 'pg.deleted_at' => null,
                 'p.status_proyek' => '100'
             ])
-            ->groupBy('p.id_proyek', 'rab.tax', 'rab.additional_tax')
+            ->groupBy('p.id_proyek', 'rab.tax', 'rab.additional_tax', 'pg.id_penagihan')
             ->select(
                 'p.id_proyek', 'p.nama_proyek',
                 DB::raw(
@@ -550,9 +555,14 @@ class DashboardController extends Controller
             ]
         ];
 
+        $options = (Object) [
+            'tahunAnggaran' => $proyekQuery->pluck('tahun_anggaran')
+        ];
+
         return Inertia::render('Dashboard/DirekturUtamaPage', [
             'proyek' => $proyek,
-            'overview' => $overview
+            'overview' => $overview,
+            'options' => $options
         ]);
     }
 }

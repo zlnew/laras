@@ -1,0 +1,1 @@
+export {default as ProyekTable} from '@/Components/Dashboard/KepalaDivisi/ProyekTable.vue';

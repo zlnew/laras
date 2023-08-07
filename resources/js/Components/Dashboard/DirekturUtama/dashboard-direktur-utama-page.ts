@@ -1,0 +1,1 @@
+export {default as ProyekTable} from '@/Components/Dashboard/Admin/ProyekTable.vue';
