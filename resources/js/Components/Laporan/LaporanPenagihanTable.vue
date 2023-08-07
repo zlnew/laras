@@ -1,26 +1,47 @@
 <script setup lang="ts">
 // cores
 import { router, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 // utils
 import { isRejected } from '@/utils/permissions';
+import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number';
+import { createBody, tableToPdf } from '@/utils/pdf';
+import { excelParser } from '@/utils/excel';
 
 // types
 import { Penagihan, Proyek } from '@/types';
-import { QTableColumn, useQuasar } from 'quasar';
+import { QTable, QTableColumn, useQuasar } from 'quasar';
 import { FormOptions } from '@/Pages/Laporan/LaporanPenagihanPage.vue';
 
 // comps
 import { LaporanPenagihanSearchDialog } from '@/Components/Laporan/laporan-page';
 import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
-import { toRupiah } from '@/utils/money';
-import { toFloat } from '@/utils/number';
 
 const props = defineProps<{
-  rows: Array<Penagihan>;
+  rows: Array<Penagihan & {
+    jumlah_penagihan: string, sisa_penagihan: string
+  }>;
   formOptions: FormOptions; 
 }>();
+
+const rows = computed(() => {
+  return props.rows.map(row => {
+    const status = row.status_penagihan === '400' ? 'Closed' : 'Open';
+    const jumlah_penagihan = toFloat(row.jumlah_penagihan).toFixed(2);
+    const jumlah_diterima = toFloat(row.jumlah_diterima).toFixed(2);
+    const sisa_penagihan = toFloat(row.sisa_penagihan).toFixed(2);
+
+    return {
+      ...row,
+      status: status,
+      jumlah_penagihan: jumlah_penagihan,
+      jumlah_diterima: jumlah_diterima,
+      sisa_penagihan: sisa_penagihan,
+    }
+  });
+});
 
 const $q = useQuasar();
 
@@ -59,11 +80,31 @@ const tableFullscreen = ref(false);
 function toggleFullscreen() {
   tableFullscreen.value = !tableFullscreen.value;
 }
+
+const table = ref<QTable>();
+const pdfTable = ref();
+const excelTable = ref();
+
+onMounted(() => {
+  pdfTable.value = {
+    columns: table.value?.columns,
+    body: {
+      rows: table.value?.computedRows,
+      props: ['index', 'nama_proyek', 'tahun_anggaran', 'keperluan', 'kas_masuk', 'jumlah_penagihan', 'jumlah_diterima', 'sisa_penagihan', 'status']
+    }
+  };
+
+  excelTable.value = createBody({
+    rows: (table.value?.computedRows as any[]),
+    props: ['nama_proyek', 'tahun_anggaran', 'keperluan', 'kas_masuk', 'jumlah_penagihan', 'jumlah_diterima', 'sisa_penagihan', 'status']
+  });
+});
 </script>
 
 <template>
   <div class="q-pa-md">
     <q-table
+      ref="table"
       flat
       bordered
       row-key="id_rab"
@@ -74,29 +115,59 @@ function toggleFullscreen() {
       :fullscreen="tableFullscreen"
     >
       <template v-slot:top-right>
-        <q-btn
-          v-if="Object.keys($page.props.query).length"
-          flat
-          no-caps
-          label="Clear Filter"
-          icon="clear"
-          color="secondary"
-          @click="router.visit(route('laporan.penagihan'))"
-        />
-        <q-btn
-          flat
-          no-caps
-          label="Pencarian"
-          icon="search"
-          color="primary"
-          @click="search"
-        />
-        <q-btn
-          flat dense
-          :icon="tableFullscreen ? 'fullscreen_exit' : 'fullscreen'"
-          @click="toggleFullscreen"
-          class="q-ml-md"
-        />
+        <div class="q-gutter-sm">
+          <q-btn
+            v-if="Object.keys($page.props.query).length"
+            flat
+            no-caps
+            label="Clear Filter"
+            icon="clear"
+            color="secondary"
+            @click="router.visit(route('laporan.penagihan'))"
+          />
+
+          <q-btn
+            flat
+            no-caps
+            label="Pencarian"
+            icon="search"
+            color="primary"
+            @click="search"
+          />
+
+          <q-btn
+              flat dense
+              label="xls"
+              color="green"
+              @click="excelParser().exportDataFromJSON({
+                data: excelTable,
+                name:'penagihan', type: 'xls'
+              })"
+            >
+              <q-tooltip>Export to xls</q-tooltip>
+          </q-btn>
+  
+          <q-btn
+            flat dense
+            label="pdf"
+            color="red-8"
+            @click="tableToPdf({
+              filename: 'penagihan',
+              header: 'Penagihan',
+              columns: pdfTable.columns,
+              body: pdfTable.body
+            })"
+          >
+            <q-tooltip>Export to pdf</q-tooltip>
+          </q-btn>
+
+          <q-btn
+            flat dense
+            :icon="tableFullscreen ? 'fullscreen_exit' : 'fullscreen'"
+            @click="toggleFullscreen"
+            class="q-ml-md"
+          />
+        </div>
       </template>
 
       <template v-slot:header="props">

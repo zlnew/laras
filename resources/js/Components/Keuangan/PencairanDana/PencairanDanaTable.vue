@@ -35,7 +35,7 @@ const rows = computed(() => {
       status: status
     }
   });
-})
+});
 
 const $q = useQuasar();
 
