@@ -1,1 +1,1 @@
-export {default as ProyekTable} from '@/Components/Dashboard/Admin/ProyekTable.vue';
+export {default as ProyekTable} from '@/Components/Dashboard/DirekturUtama/ProyekTable.vue';

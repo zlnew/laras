@@ -7,7 +7,7 @@ import Layout from '@/Layouts/AuthenticatedLayout.vue';
 
 // comps
 import { DashboardOverview } from '@/Components/Dashboard/dashboard-page';
-import { ProyekTable } from '@/Components/Dashboard/KepalaDivisi/dashboard-kepala-divisi-page';
+import { ProyekTable, PiutangTable } from '@/Components/Dashboard/KepalaDivisi/dashboard-kepala-divisi-page';
 
 // types
 import { Proyek } from '@/types';
@@ -26,9 +26,27 @@ export interface JoinedWithProyek {
   sisa_penagihan: string;
 }
 
+export interface Piutang {
+  id_penagihan: string;
+  keperluan: string;
+  pengguna_jasa: string;
+  id_user: number;
+  jumlah_piutang: string;
+}
+
+export interface Options {
+  pic: {
+    id: number;
+    name: string;
+  }[];
+  penggunaJasa: string[];
+};
+
 defineProps<{
   proyek: Array<Proyek & JoinedWithProyek>;
+  piutang: Array<Piutang>;
   overview: OverviewProps[];
+  options: Options;
 }>();
 </script>
 
@@ -51,6 +69,11 @@ defineProps<{
 
     <proyek-table
       :rows="proyek"
+    />
+
+    <piutang-table
+      :rows="piutang"
+      :options="options"
     />
   </layout>
 </template>

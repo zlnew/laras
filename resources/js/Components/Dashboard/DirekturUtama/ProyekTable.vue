@@ -62,25 +62,28 @@ function search(data: {tahun_anggaran: string}) {
       row-key="id_proyek"
     >
       <template v-slot:top-right>
-        <q-select
-          dense
-          outlined
-          use-input
-          input-debounce="500"
-          label="Filter by Tahun Anggaran"
-          v-model="tahunAnggaran"
-          :options="tahunAnggaranOptionsRef"
-          @filter="tahunAnggaranFilter"
-          @update:model-value="(val) => search({tahun_anggaran: val})"
-        > 
-          <template v-slot:no-option>
-            <q-item>
-              <q-item-section class="text-grey">
-                No results
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
+        <div class="row items-center q-col-gutter-sm">
+          <div class="text-caption">Filter by</div>
+          <q-select
+            dense
+            filled
+            use-input
+            input-debounce="500"
+            label="Tahun Anggaran"
+            v-model="tahunAnggaran"
+            :options="tahunAnggaranOptionsRef"
+            @filter="tahunAnggaranFilter"
+            @update:model-value="(val) => search({tahun_anggaran: val})"
+          > 
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No results
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </div>
       </template> 
 
       <template v-slot:header="props">
