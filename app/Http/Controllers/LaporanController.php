@@ -152,15 +152,17 @@ class LaporanController extends Controller
                 "),
                 DB::raw("
                     (SELECT SUM(dpd.jumlah_pengajuan)
-                    FROM detail_pengajuan_dana AS dpd
-                    WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                    AND(
-                        dpd.status_persetujuan = '400'
+                        FROM detail_pengajuan_dana AS dpd
+                        WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
+                        AND(
+                            dpd.status_persetujuan = '400'
+                            AND dpd.deleted_at IS NULL
+                        )) -
+                    IFNULL((SELECT SUM(dpd.jumlah_pencairan)
+                        FROM detail_pencairan_dana AS dpd
+                        WHERE dpd.id_pencairan_dana = pc.id_pencairan_dana
                         AND dpd.deleted_at IS NULL
-                    )) - (SELECT SUM(dpd.jumlah_pencairan)
-                    FROM detail_pencairan_dana AS dpd
-                    WHERE dpd.id_pencairan_dana = pc.id_pencairan_dana
-                    AND dpd.deleted_at IS NULL) AS jumlah_belum_dibayar
+                    ), 0) AS jumlah_belum_dibayar
                 ")
             )
             ->orderBy('pc.id_pencairan_dana', 'asc')

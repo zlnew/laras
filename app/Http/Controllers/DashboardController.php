@@ -113,7 +113,8 @@ class DashboardController extends Controller
                             AND rap.status_rap = '400'
                         )
                         GROUP BY rap.id_rap
-                    ) - (SELECT SUM(dpd.jumlah_pengajuan)
+                    ) -
+                    IFNULL((SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         LEFT JOIN pengajuan_dana AS pd
                         ON pd.id_pengajuan_dana = dpd.id_pengajuan_dana
@@ -124,7 +125,7 @@ class DashboardController extends Controller
                             AND pd.status_pengajuan = '400'
                         )
                         GROUP BY pd.id_proyek
-                    ) AS sisa_anggaran"
+                    ), 0) AS sisa_anggaran"
                 ),
                 DB::raw(
                     "(SELECT (SUM(drab.harga_satuan * drab.volume) - (rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
@@ -321,7 +322,8 @@ class DashboardController extends Controller
                             AND rap.status_rap = '400'
                         )
                         GROUP BY rap.id_rap
-                    ) - (SELECT SUM(dpd.jumlah_pengajuan)
+                    ) -
+                    IFNULL((SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         LEFT JOIN pengajuan_dana AS pd
                         ON pd.id_pengajuan_dana = dpd.id_pengajuan_dana
@@ -332,7 +334,7 @@ class DashboardController extends Controller
                             AND pd.status_pengajuan = '400'
                         )
                         GROUP BY pd.id_proyek
-                    ) AS sisa_anggaran"
+                    ), 0) AS sisa_anggaran"
                 ),
                 DB::raw(
                     "(SELECT (SUM(drab.harga_satuan * drab.volume) - (rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
@@ -616,8 +618,200 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function keuangan(): Response
+    public function keuangan(Request $request): Response
     {
+        $sisaDanaRekening = DB::table('rekening as rk')
+            ->where('rk.deleted_at', null)
+            ->groupBy('rk.id_rekening')
+            ->select(
+                'rk.id_rekening', 'rk.nama_bank',
+                'rk.nama_rekening', 'rk.nomor_rekening',
+                DB::raw("
+                    (SELECT SUM(dpd.jumlah_pengajuan)
+                        FROM detail_pengajuan_dana AS dpd
+                        LEFT JOIN pengajuan_dana AS pd
+                        ON pd.id_pengajuan_dana = dpd.id_pengajuan_dana
+                        WHERE dpd.id_rekening = rk.id_rekening
+                        AND (
+                            dpd.deleted_at IS NULL
+                            AND pd.deleted_at IS NULL
+                            AND dpd.status_persetujuan = '400'
+                        )
+                    ) AS total_pengajuan_dana"
+                ),
+                DB::raw("
+                    (SELECT SUM(dpc.jumlah_pencairan)
+                        FROM detail_pencairan_dana AS dpc
+                        LEFT JOIN pencairan_dana AS pc
+                        ON pc.id_pencairan_dana = dpc.id_pencairan_dana
+                        LEFT JOIN detail_pengajuan_dana AS dpd
+                        ON dpd.id_detail_pengajuan_dana = dpc.id_detail_pengajuan_dana
+                        WHERE dpd.id_rekening = rk.id_rekening
+                        AND (
+                            dpc.deleted_at IS NULL
+                            AND pc.deleted_at IS NULL
+                            AND dpd.deleted_at IS NULL
+                            AND dpc.status_pembayaran = '400'
+                        )
+                    ) AS total_pencairan_dana"
+                ),
+                DB::raw("
+                    (SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                        FROM detail_penagihan AS dpg
+                        LEFT JOIN penagihan AS pg
+                        ON pg.id_penagihan = dpg.id_penagihan
+                        WHERE pg.id_rekening = rk.id_rekening
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND dpg.deleted_at IS NULL
+                        )
+                    ) AS total_penagihan"
+                ),
+                DB::raw("
+                    (SELECT SUM(pg.jumlah_diterima)
+                        FROM penagihan AS pg
+                        WHERE pg.id_rekening = rk.id_rekening
+                        AND pg.deleted_at IS NULL
+                    ) AS total_penagihan_diterima"
+                )
+            )
+            ->orderBy('rk.id_rekening', 'desc')
+            ->get();
+
+        $proyeksiInvoiceProyek = DB::table('proyek as p')
+            ->where('p.deleted_at', null)
+            ->groupBy('p.id_proyek')
+            ->select(
+                'p.id_proyek', 'p.nama_proyek',
+                DB::raw("
+                    (SELECT SUM(pg.jumlah_diterima)
+                        FROM penagihan as pg
+                        WHERE pg.id_proyek = p.id_proyek
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND pg.status_penagihan = '400'
+                        )
+                    ) AS invoice_sebelumnya
+                "),
+                DB::raw("
+                    (SELECT SUM(pg.jumlah_diterima)
+                        FROM penagihan as pg
+                        WHERE pg.id_proyek = p.id_proyek
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND pg.status_penagihan = '100'
+                        )
+                    ) AS invoice_saat_ini
+                "),
+                DB::raw("
+                    CAST((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
+                        FROM detail_rab as drab
+                        LEFT JOIN rab
+                        ON rab.id_rab = drab.id_rab
+                        WHERE rab.id_proyek = p.id_proyek
+                        AND (
+                            rab.deleted_at IS NULL
+                            AND drab.deleted_at IS NULL
+                            AND rab.status_rab = '400'
+                        )
+                        GROUP BY rab.id_rab
+                    ) -
+                    ((SELECT SUM(pg.jumlah_diterima)
+                        FROM penagihan as pg
+                        WHERE pg.id_proyek = p.id_proyek
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND pg.status_penagihan = '400'
+                        )
+                    ) +
+                    (SELECT SUM(pg.jumlah_diterima)
+                        FROM penagihan as pg
+                        WHERE pg.id_proyek = p.id_proyek
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND pg.status_penagihan = '100'
+                        )
+                    )) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
+                ")
+            )
+            ->orderBy('p.id_proyek', 'asc')
+            ->get();
+            
+        $proyeksiKebutuhanDanaProyek = DB::table('proyek as p')
+            ->where('p.deleted_at', null)
+            ->groupBy('p.id_proyek')
+            ->select(
+                'p.id_proyek', 'p.nama_proyek',
+                DB::raw("
+                    CAST((SELECT SUM(dpd.jumlah_pengajuan)
+                        FROM detail_pengajuan_dana as dpd
+                        LEFT JOIN pengajuan_dana as pd
+                        ON pd.id_pengajuan_dana = dpd.id_pengajuan_dana
+                        WHERE pd.id_proyek = p.id_proyek
+                        AND (
+                            pd.deleted_at IS NULL
+                            AND dpd.deleted_at IS NULL
+                        )
+                        GROUP BY pd.id_proyek
+                    ) AS DECIMAL(20, 2)) -
+                    IFNULL(CAST((SELECT SUM(dpc.jumlah_pencairan)
+                        FROM detail_pengajuan_dana as dpd
+                        LEFT JOIN pengajuan_dana as pd
+                        ON pd.id_pengajuan_dana = dpd.id_pengajuan_dana
+                        LEFT JOIN detail_pencairan_dana as dpc
+                        ON dpc.id_detail_pengajuan_dana = dpd.id_detail_pengajuan_dana
+                        WHERE pd.id_proyek = p.id_proyek
+                        AND (
+                            pd.deleted_at IS NULL
+                            AND dpd.deleted_at IS NULL
+                            AND dpc.deleted_at IS NULL
+                            AND dpd.status_persetujuan = '400'
+                            AND dpc.status_pembayaran = '100'
+                        )
+                        GROUP BY pd.id_proyek
+                    ) AS DECIMAL(20, 2)), 0) AS total
+                ")
+            )
+            ->orderBy('p.id_proyek', 'asc')
+            ->get();
+
+        $proyeksiUtang = DB::table('proyek');
+
+        $proyeksiPiutangQuery = DB::table('penagihan AS pg')
+            ->leftJoin('proyek as p', 'p.id_proyek', '=', 'pg.id_proyek')
+            ->where([
+                'p.deleted_at' => null,
+                'pg.deleted_at' => null,
+                'pg.status_penagihan' => '100',
+            ])
+            ->where('pg.status_aktivitas', '!=', 'Dibuat');
+
+        if ($request->isMethod('get') && $request->get('piutang_query')) {
+            $proyeksiPiutangQuery->when($request->get('piutang_pengguna_jasa'), function($query, $input) {
+                $query->where('p.pengguna_jasa', $input);
+            });
+
+            $proyeksiPiutangQuery->when($request->get('piutang_pic'), function($query, $input) {
+                $query->where('p.id_user', $input['id']);
+            });
+        }
+
+        $proyeksiPiutang = $proyeksiPiutangQuery->groupBy('pg.id_penagihan')
+            ->select(
+                'p.nama_proyek',
+                'pg.id_penagihan', 'pg.keperluan',
+                'p.pengguna_jasa', 'p.id_user',
+                DB::raw("
+                    (SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                    FROM detail_penagihan AS dpg
+                    WHERE dpg.id_penagihan = pg.id_penagihan
+                    AND dpg.deleted_at IS NULL) - pg.jumlah_diterima
+                    AS jumlah_piutang
+                ")
+            )
+            ->orderBy('pg.id_penagihan', 'desc')
+            ->get();
+
         $overview = [
             (Object) [
                 'title' => 'Proyek Selesai',
@@ -634,6 +828,11 @@ class DashboardController extends Controller
         ];
 
         return Inertia::render('Dashboard/KeuanganPage', [
+            'sisaDanaRekening' => $sisaDanaRekening,
+            'proyeksiInvoiceProyek' => $proyeksiInvoiceProyek,
+            'proyeksiKebutuhabDanaProyek' => $proyeksiKebutuhanDanaProyek,
+            'proyeksiUtang' => $proyeksiUtang,
+            'proyeksiPiutang' => $proyeksiPiutang,
             'overview' => $overview
         ]);
     }
@@ -740,7 +939,8 @@ class DashboardController extends Controller
                             AND rap.status_rap = '400'
                         )
                         GROUP BY rap.id_rap
-                    ) - (SELECT SUM(dpd.jumlah_pengajuan)
+                    ) -
+                    IFNULL((SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         LEFT JOIN pengajuan_dana AS pd
                         ON pd.id_pengajuan_dana = dpd.id_pengajuan_dana
@@ -751,7 +951,7 @@ class DashboardController extends Controller
                             AND pd.status_pengajuan = '400'
                         )
                         GROUP BY pd.id_proyek
-                    ) AS sisa_anggaran"
+                    ), 0) AS sisa_anggaran"
                 ),
                 DB::raw(
                     "(SELECT (SUM(drab.harga_satuan * drab.volume) - (rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))

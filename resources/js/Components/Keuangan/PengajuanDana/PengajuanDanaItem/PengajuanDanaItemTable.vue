@@ -167,7 +167,7 @@ const selectedIds = computed(() => {
 
 export interface ApprovedPengajuanSaatIni {
   id_detail_rap: DetailPengajuanDana['id_detail_rap'];
-  jumlah_pengajuan: DetailPengajuanDana['jumlah_pengajuan'];
+  jumlah_pengajuan: number;
 };
 
 const approvedPengajuanSaatIni = computed(() => {
@@ -179,13 +179,13 @@ const approvedPengajuanSaatIni = computed(() => {
     const matchedItem = result.find((group) => group.id_detail_rap === item.id_detail_rap);
 
     if (matchedItem) {
-      matchedItem.jumlah_pengajuan += item.jumlah_pengajuan;
+      matchedItem.jumlah_pengajuan += toFloat(item.jumlah_pengajuan);
     }
     
     else {
       result.push({
         id_detail_rap: item.id_detail_rap,
-        jumlah_pengajuan: item.jumlah_pengajuan,
+        jumlah_pengajuan: toFloat(item.jumlah_pengajuan),
       });
     }
 
