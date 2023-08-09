@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('penagihan', function (Blueprint $table) {
             $table->ulid('id_penagihan')->primary();
             $table->string('keperluan');
+            $table->timestamp('tanggal_pengajuan');
 
             $table->string('nomor_sp2d')->nullable();
             $table->date('tanggal_sp2d')->nullable();
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->enum('kas_masuk', ['Utang', 'Setoran Modal']);
             $table->enum('status_penagihan', [100, 400])->default(100);
             $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Ditolak', 'Diterima Bertahap', 'Diterima'])->default('Dibuat');
+            $table->decimal('jumlah_diterima', 20, 2)->default(0);
             
             $table->foreignUlid('id_proyek');
             $table->foreignUlid('id_rekening');

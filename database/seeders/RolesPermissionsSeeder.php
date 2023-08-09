@@ -141,19 +141,19 @@ class RolesPermissionsSeeder extends Seeder
         });
         
         User::factory()->count(1)->create([
-          'email' => 'pic@gmail.com'
+          'email' => 'manajer.proyek@gmail.com'
         ])->each(function ($user) {
             $user->assignRole('manajer proyek');
         });
 
         User::factory()->count(1)->create([
-          'email' => 'kadiv@gmail.com'
+          'email' => 'kepala.divisi@gmail.com'
         ])->each(function ($user) {
             $user->assignRole('kepala divisi');
         });
 
         User::factory()->count(1)->create([
-          'email' => 'dirut@gmail.com'
+          'email' => 'direktur.utama@gmail.com'
         ])->each(function ($user) {
             $user->assignRole('direktur utama');
         });

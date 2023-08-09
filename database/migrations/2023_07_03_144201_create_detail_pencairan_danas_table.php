@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('detail_pencairan_dana', function (Blueprint $table) {
             $table->id('id_detail_pencairan_dana');
             $table->decimal('jumlah_pencairan', 20, 2);
+            $table->enum('status_pembayaran', [100, 400])->default(100);
             $table->foreignUlid('id_pencairan_dana');
             $table->foreignUlid('id_detail_pengajuan_dana');
             $table->timestamps();
