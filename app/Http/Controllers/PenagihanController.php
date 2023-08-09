@@ -227,6 +227,7 @@ class PenagihanController extends Controller
 
             $totalPenagihan = DB::table('detail_penagihan')
                 ->where('deleted_at', null)
+                ->where('id_penagihan', $penagihan->id_penagihan)
                 ->sum(DB::raw('volume_penagihan * harga_satuan_penagihan'));
             $status_penagihan = '400';
             $status_aktivitas = 'Diterima';

@@ -1,13 +1,11 @@
 <script setup lang="ts">
 // cores
 import { router, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { QTable, QTableColumn, useQuasar } from 'quasar';
 
 // utils
 import { isRejected } from '@/utils/permissions';
-import { tableToPdf, createBody } from '@/utils/pdf';
-import { excelParser } from '@/utils/excel';
 
 // types
 import { PencairanDana, Proyek } from '@/types';
@@ -18,8 +16,6 @@ import {
   PencairanDanaSearchDialog,
 } from '@/Components/Keuangan/pencairan-dana-page';
 import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
-import { onMounted } from 'vue';
-import { computed } from 'vue';
 
 const props = defineProps<{
   rows: Array<PencairanDana>;
@@ -76,25 +72,6 @@ const tableFullscreen = ref(false);
 function toggleFullscreen() {
   tableFullscreen.value = !tableFullscreen.value;
 }
-
-const table = ref<QTable>();
-const pdfTable = ref();
-const excelTable = ref();
-
-onMounted(() => {
-  pdfTable.value = {
-    columns: table.value?.columns,
-    body: {
-      rows: table.value?.computedRows,
-      props: ['index', 'nama_proyek', 'tahun_anggaran', 'keperluan', 'status']
-    }
-  };
-
-  excelTable.value = createBody({
-    rows: (table.value?.computedRows as any[]),
-    props: ['nama_proyek', 'tahun_anggaran', 'keperluan', 'status'],
-  });
-});
 </script>
 
 <template>
@@ -130,32 +107,6 @@ onMounted(() => {
             color="primary"
             @click="searchPencairanDana"
           />
-  
-          <q-btn
-            flat dense
-            label="xls"
-            color="green"
-            @click="excelParser().exportDataFromJSON({
-              data: excelTable,
-              name:'pencairan-dana', type: 'xls'
-            })"
-          >
-            <q-tooltip>Export to xls</q-tooltip>
-          </q-btn>
-  
-          <q-btn
-            flat dense
-            label="pdf"
-            color="red-8"
-            @click="tableToPdf({
-              filename: 'pencairan_dana',
-              header: 'Pencairan Dana',
-              columns: pdfTable.columns,
-              body: pdfTable.body
-            })"
-          >
-            <q-tooltip>Export to pdf</q-tooltip>
-          </q-btn>
   
           <q-btn
             flat dense

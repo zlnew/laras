@@ -2,7 +2,7 @@
 // cores
 import { useForm, usePage } from '@inertiajs/vue3';
 import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 // utils
 import { toRupiah } from '@/utils/money';
@@ -53,9 +53,11 @@ function tahunAnggaranFilter (val: string, update: Function) {
   });
 }
 
-function picFilter (val: string, update: Function) {    
+function picFilter (val: string, update: Function) {
   update(() => {
-    picOptionsRef.value = filterOptions(val, props.options.currentPic)
+    picOptionsRef.value = multiFilterOptions(
+      val, props.options.currentPic, ['id', 'name']
+    )
   });
 }
 
@@ -70,6 +72,10 @@ function rekeningFilter (val: string, update: Function) {
 const page = usePage();
 const params = page.props.query as Proyek & ProyekSearch;
 
+const pic = computed(() => {
+  return props.options.currentPic.find(item => item.id == params.id_user);
+});
+
 const form = useForm({
   nama_proyek: params.nama_proyek,
   nomor_kontrak: params.nomor_kontrak,
@@ -83,7 +89,7 @@ const form = useForm({
   nilai_kontrak_max: params.nilai_kontrak_max || 0,
   tanggal_mulai: params.tanggal_mulai,
   tanggal_selesai: params.tanggal_selesai,
-  id_user: params.id_user,
+  id_user: pic.value,
   id_rekening: params.id_rekening,
   status_proyek: params.status_proyek
 });
@@ -273,7 +279,6 @@ function search() {
               clearable
               use-input
               use-chips
-              multiple
               emit-value
               map-options
               input-debounce="500"
@@ -284,20 +289,6 @@ function search() {
               :options="picOptionsRef"
               @filter="picFilter"
             >
-              <template v-slot:option="{itemProps, opt, selected, toggleOption}">
-                <q-item v-bind="itemProps">
-                  <q-item-section side>
-                    <q-checkbox
-                      size="sm"
-                      :model-value="selected"
-                      @update:model-value="toggleOption(opt)"
-                    />
-                  </q-item-section>
-                  <q-item-section>
-                    {{ opt.name }}
-                  </q-item-section>
-                </q-item>
-              </template>
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">

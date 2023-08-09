@@ -165,6 +165,7 @@ function isAdmin(): boolean {
 
           <Link
             :preserve-scroll="true"
+            :preserve-state="true"
             :href="menuItem.link"
             style="text-decoration: none;"
           >

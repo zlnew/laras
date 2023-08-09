@@ -29,16 +29,10 @@ const props = defineProps<{
 const rows = computed(() => {
   return props.rows.map(row => {
     const status = row.status_penagihan === '400' ? 'Closed' : 'Open';
-    const jumlah_penagihan = toFloat(row.jumlah_penagihan).toFixed(2);
-    const jumlah_diterima = toFloat(row.jumlah_diterima).toFixed(2);
-    const sisa_penagihan = toFloat(row.sisa_penagihan).toFixed(2);
 
     return {
       ...row,
       status: status,
-      jumlah_penagihan: jumlah_penagihan,
-      jumlah_diterima: jumlah_diterima,
-      sisa_penagihan: sisa_penagihan,
     }
   });
 });

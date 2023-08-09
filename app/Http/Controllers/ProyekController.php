@@ -83,7 +83,7 @@ class ProyekController extends Controller
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->where('proyek.deleted_at', null)
             ->groupBy('proyek.id_user')
-            ->select('proyek.id_user as id', 'users.name')
+            ->select('users.id', 'users.name')
             ->get();
         
         $rekeningOptions = DB::table('rekening')
@@ -155,7 +155,7 @@ class ProyekController extends Controller
         });
 
         $proyekQuery->when($searchRequest->get('id_user'), function($query, $input) {
-            $query->whereIn('proyek.id_user', $input);
+            $query->where('proyek.id_user', $input);
         });
 
         $proyekQuery->when($searchRequest->get('id_rekening'), function($query, $input) {

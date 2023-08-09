@@ -53,12 +53,14 @@ class LaporanController extends Controller
                 'pd.keperluan', 'pd.tanggal_pengajuan',
                 'pd.status_pengajuan', 'pd.status_aktivitas',
                 DB::raw("SUM(dpd.jumlah_pengajuan) AS nilai_pengajuan"),
-                DB::raw("SUM(
-                    CASE
-                        WHEN dpd.status_persetujuan = '400'
-                        AND dpd.deleted_at IS NULL
-                        THEN dpd.jumlah_pengajuan
-                    END) AS jumlah_disetujui"
+                DB::raw("
+                    CAST(SUM(
+                        CASE
+                            WHEN dpd.status_persetujuan = '400'
+                            AND dpd.deleted_at IS NULL
+                            THEN dpd.jumlah_pengajuan
+                        END
+                    ) AS DECIMAL(20, 2)) AS jumlah_disetujui"
                 ),
             )
             ->orderBy('pd.id_pengajuan_dana', 'asc')
@@ -134,35 +136,36 @@ class LaporanController extends Controller
                 'pd.keperluan', 'pd.tanggal_pengajuan',
                 'pc.status_pencairan', 'pc.status_aktivitas',
                 DB::raw("
-                    (SELECT SUM(dpd.jumlah_pengajuan)
-                    FROM detail_pengajuan_dana AS dpd
-                    WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                    AND(
-                        dpd.status_persetujuan = '400'
-                        AND dpd.deleted_at IS NULL
-                    )) AS nilai_pengajuan
-                "),
-                DB::raw("
-                    (SELECT SUM(dpd.jumlah_pencairan)
-                    FROM detail_pencairan_dana AS dpd
-                    WHERE dpd.id_pencairan_dana = pc.id_pencairan_dana
-                    AND(
-                        dpd.deleted_at IS NULL
-                    )) AS jumlah_sudah_dibayar
-                "),
-                DB::raw("
-                    (SELECT SUM(dpd.jumlah_pengajuan)
+                    CAST((SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
                         AND(
                             dpd.status_persetujuan = '400'
                             AND dpd.deleted_at IS NULL
-                        )) -
-                    IFNULL((SELECT SUM(dpd.jumlah_pencairan)
+                    )) AS DECIMAL(20, 2)) AS nilai_pengajuan
+                "),
+                DB::raw("
+                    CAST((SELECT SUM(dpd.jumlah_pencairan)
+                        FROM detail_pencairan_dana AS dpd
+                        WHERE dpd.id_pencairan_dana = pc.id_pencairan_dana
+                        AND(
+                            dpd.deleted_at IS NULL
+                    )) AS DECIMAL(20, 2)) AS jumlah_sudah_dibayar
+                "),
+                DB::raw("
+                    CAST((SELECT SUM(dpd.jumlah_pengajuan)
+                        FROM detail_pengajuan_dana AS dpd
+                        WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
+                        AND(
+                            dpd.status_persetujuan = '400'
+                            AND dpd.deleted_at IS NULL
+                        )
+                    ) AS DECIMAL(20, 2)) -
+                    IFNULL(CAST((SELECT SUM(dpd.jumlah_pencairan)
                         FROM detail_pencairan_dana AS dpd
                         WHERE dpd.id_pencairan_dana = pc.id_pencairan_dana
                         AND dpd.deleted_at IS NULL
-                    ), 0) AS jumlah_belum_dibayar
+                    ) AS DECIMAL(20, 2)), 0) AS jumlah_belum_dibayar
                 ")
             )
             ->orderBy('pc.id_pencairan_dana', 'asc')
@@ -238,10 +241,18 @@ class LaporanController extends Controller
                 'pg.keperluan', 'pg.tanggal_pengajuan',
                 'pg.status_penagihan', 'pg.status_aktivitas',
                 'pg.jumlah_diterima',
-                DB::raw("SUM(dpg.volume_penagihan * dpg.harga_satuan_penagihan)
-                    AS jumlah_penagihan"),
-                DB::raw("(SUM(dpg.volume_penagihan * dpg.harga_satuan_penagihan) - pg.jumlah_diterima)
-                    AS sisa_penagihan"),
+                DB::raw("
+                    CAST(
+                        SUM(dpg.volume_penagihan * dpg.harga_satuan_penagihan)
+                    AS DECIMAL(20, 2))
+                    AS jumlah_penagihan
+                "),
+                DB::raw("
+                    CAST(
+                        (SUM(dpg.volume_penagihan * dpg.harga_satuan_penagihan) - pg.jumlah_diterima)
+                    AS DECIMAL(20, 2))
+                    AS sisa_penagihan
+                "),
             )
             ->orderBy('pg.id_penagihan', 'asc')
             ->get();

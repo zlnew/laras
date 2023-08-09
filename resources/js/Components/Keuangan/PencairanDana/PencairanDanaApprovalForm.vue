@@ -130,13 +130,13 @@ function rejectPengajuanDana() {
       </template>
 
       <q-fab-action
-        color="green-7"
+        color="green"
         label="Terima Lunas"
         icon="check"
         @click="acceptPengajuanDana"
       />
       <q-fab-action
-        color="green"
+        color="secondary"
         label="Terima Bertahap"
         icon="check"
         @click="shallowAcceptPengajuanDana"
