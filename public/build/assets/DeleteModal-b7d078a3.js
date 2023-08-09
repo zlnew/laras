@@ -1,1 +1,0 @@
-import{_ as o}from"./DeleteModal.vue_vue_type_script_setup_true_lang-028634de.js";import"./app-c4fe6d5f.js";import"./Modal.vue_vue_type_style_index_0_scoped_fdb70d85_lang-04b6c65c.js";import"./Footer-39f05cc2.js";import"./_plugin-vue_export-helper-c27b6911.js";import"./Head.vue_vue_type_script_setup_true_lang-0717370f.js";export{o as default};
