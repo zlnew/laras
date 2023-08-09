@@ -1,1 +1,0 @@
-const c=r=>{if(r)return new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR"}).format(r)},t=r=>{if(r){const e=r.replace(/[^\d,-]/g,"").replace(",",".");return parseFloat(e)}};export{t as f,c as t};

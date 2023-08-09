@@ -14,9 +14,9 @@ class RAP extends Model
     protected $table = 'rap';
     protected $primaryKey = 'id_rap';
     protected $fillable = [
-        'id_proyek',
         'status_rap',
-        'status_aktivitas'
+        'status_aktivitas',
+        'id_proyek'
     ];
     
     public $autoIncrement = false;

@@ -19,6 +19,7 @@ class Rekening extends Model
         'nama_bank',
         'nomor_rekening',
         'nama_rekening',
+        'tujuan_rekening'
     ];
     
     public $autoIncrement = false;

@@ -15,14 +15,20 @@ class Proyek extends Model
     protected $primaryKey = 'id_proyek';
     protected $fillable = [
         'nama_proyek',
-        'tahun_anggaran',
+        'nomor_kontrak',
+        'tanggal_kontrak',
         'pengguna_jasa',
+        'penyedia_jasa',
+        'tahun_anggaran',
+        'nomor_spmk',
+        'tanggal_spmk',
         'nilai_kontrak',
-        'waktu_mulai',
-        'waktu_selesai',
-        'pic',
-        'status_proyek',
-        'slug',
+        'tanggal_mulai',
+        'durasi',
+        'tanggal_selesai',
+        'id_user',
+        'id_rekening',
+        'status_proyek'
     ];
 
     public $autoIncrement = false;

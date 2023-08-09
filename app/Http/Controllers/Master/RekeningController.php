@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class RekeningController extends Controller
 {
@@ -26,26 +27,40 @@ class RekeningController extends Controller
         $rekening = $rekeningQuery->select(
                 'id_rekening', 'nama',
                 'jabatan', 'nama_bank',
-                'nomor_rekening', 'nama_rekening'
+                'nomor_rekening', 'nama_rekening',
+                'tujuan_rekening'
             )
             ->orderBy('id_rekening', 'desc')
-            ->paginate(10);
-
-        $banks = DB::table('rekening')
-            ->groupBy('nama_bank')
-            ->select('nama_bank')
             ->get();
 
-        return Inertia::render('Master/Rekening/Index', [
+        $formOptions = $this->formOptions();
+
+        return Inertia::render('Master/RekeningPage', [
             'rekening' => $rekening,
-            'banks' => $banks,
+            'formOptions' => $formOptions
         ]);
+    }
+
+    public function formOptions(): stdClass
+    {
+        $banks = DB::table('rekening')
+            ->groupBy('nama_bank')
+            ->pluck('nama_bank');
+
+        $tujuanRekening = ['Penerimaan Invoice', 'Daftar Rekening Keluar'];
+
+        $options = (object) [
+            'banks' => $banks,
+            'tujuanRekening' => $tujuanRekening
+        ];
+
+        return $options;
     }
 
     public function filter(Request $request, $rekeningQuery): Builder
     {
         $rekeningQuery->when($request->get('nama_bank'), function ($query, $nama_bank) {
-            $query->where('nama_bank', $nama_bank);
+            $query->whereIn('nama_bank', $nama_bank);
         });
 
         $rekeningQuery->when($request->get('nomor_rekening'), function ($query, $nomor_rekening) {
@@ -54,6 +69,10 @@ class RekeningController extends Controller
 
         $rekeningQuery->when($request->get('nama_rekening'), function ($query, $nama_rekening) {
             $query->where('nama_rekening', 'like', $nama_rekening . '%');
+        });
+
+        $rekeningQuery->when($request->get('tujuan_rekening'), function ($query, $tujuan_rekening) {
+            $query->whereIn('tujuan_rekening', $tujuan_rekening);
         });
 
         return $rekeningQuery;
@@ -70,7 +89,8 @@ class RekeningController extends Controller
             'jabatan' => $validated->jabatan,
             'nama_bank' => $validated->nama_bank,
             'nomor_rekening' => $validated->nomor_rekening,
-            'nama_rekening' => $validated->nama_rekening
+            'nama_rekening' => $validated->nama_rekening,
+            'tujuan_rekening' => $validated->tujuan_rekening
         ]);
 
         $rekening->save();
@@ -87,7 +107,8 @@ class RekeningController extends Controller
             'jabatan' => $validated->jabatan,
             'nama_bank' => $validated->nama_bank,
             'nomor_rekening' => $validated->nomor_rekening,
-            'nama_rekening' => $validated->nama_rekening
+            'nama_rekening' => $validated->nama_rekening,
+            'tujuan_rekening' => $validated->tujuan_rekening
         ]);
 
         $rekening->save();

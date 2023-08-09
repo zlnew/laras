@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\PencairanDana\StoreRequest;
 use App\Models\DetailPencairanDana;
 use App\Models\PencairanDana;
 use App\Models\Timeline;
@@ -11,93 +10,83 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
+use stdClass;
 
 class PencairanDanaController extends Controller
 {
-    public function detail(PencairanDana $pencairanDana): Response
+    public function index(Request $request): Response
     {
-        $keuangan = DB::table('keuangan')
-            ->leftJoin('proyek', 'keuangan.id_proyek', '=', 'proyek.id_proyek')
-            ->where('keuangan.deleted_at', null)
-            ->where('keuangan.id_keuangan', $pencairanDana->id_keuangan)
-            ->select(
-                'keuangan.id_keuangan', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran','proyek.pengguna_jasa',
-                'keuangan.keperluan'
-            )
-            ->first();
+        $pencairanDana = DB::table('pencairan_dana')
+            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_pengajuan_dana', '=', 'pencairan_dana.id_pengajuan_dana')
+            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'pengajuan_dana.id_proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
+            ->where('pencairan_dana.deleted_at', NULL);
 
-        $detailPencairanDana = DB::table('detail_pencairan_dana')
-            ->where('id_pencairan_dana', $pencairanDana->id_pencairan_dana)
-            ->where('deleted_at', null)
+        if ($request->isMethod('get') && $request->all()) {
+            $pencairanDana = $this->filter($request, $pencairanDana);
+        }
+
+        $pencairanDana = $pencairanDana->groupBy('pencairan_dana.id_pencairan_dana')
             ->select(
-                'id_detail_pencairan_dana', 'id_pencairan_dana',
-                'id_detail_pengajuan_dana', 'jumlah_pencairan'
+                'pencairan_dana.id_pencairan_dana', 'pencairan_dana.status_aktivitas',
+                'pengajuan_dana.keperluan', 'pencairan_dana.status_pencairan',
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening' 
             )
-            ->orderBy('id_detail_pengajuan_dana', 'asc')
+            ->orderBy('pencairan_dana.id_pencairan_dana', 'desc')
             ->get();
-        
-        $pengajuanDana = DB::table('pengajuan_dana')
-            ->where('deleted_at', null)
-            ->where('id_keuangan', $keuangan->id_keuangan)
-            ->select('id_pengajuan_dana')
-            ->first();
+
+        $formOptions = $this->formOptions();
             
-        $detailPengajuanDana = DB::table('detail_pengajuan_dana as d_pgd')
-            ->leftJoin('rekening as rek', 'rek.id_rekening', '=', 'd_pgd.id_rekening')
-            ->leftJoin('detail_rap as d_rap', 'd_rap.id_detail_rap', '=', 'd_pgd.id_detail_rap')
-            ->leftJoin('detail_pencairan_dana as d_pcd', 'd_pcd.id_detail_pengajuan_dana', '=', 'd_pgd.id_detail_pengajuan_dana')
-            ->where('d_pgd.deleted_at', NULL)
-            ->where('d_pgd.id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
-            ->groupBy('d_pgd.id_detail_pengajuan_dana')
-            ->select(
-                'd_pgd.id_detail_pengajuan_dana', 'd_pgd.id_pengajuan_dana',
-                'd_pgd.uraian', 'd_pgd.jenis_pembayaran',
-                'd_pgd.id_rekening', 'd_pgd.jumlah_pengajuan',
-                'rek.nomor_rekening', 'rek.nama_rekening',
-                'rek.nama_bank', 'd_rap.id_detail_rap',
-                'd_rap.uraian as uraian_rap', DB::raw('SUM(d_pcd.jumlah_pencairan) as jumlah_pencairan'),
-            )
-            ->orderBy('d_pgd.id_detail_pengajuan_dana', 'asc')
-            ->get();
-
-        $timeline = DB::table('timeline')
-            ->leftJoin('users', 'users.id', '=', 'timeline.user_id')
-            ->leftJoin('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
-            ->leftJoin('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->where('timeline.deleted_at', null)
-            ->where('timeline.model_id', $pencairanDana->id_pencairan_dana)
-            ->select(
-                'timeline.created_at', 'timeline.catatan',
-                'timeline.status_aktivitas', 'users.name as user_name',
-                'roles.name as user_role'
-            )
-            ->get();
-
-        return Inertia::render('PencairanDana/Detail', [
-            'keuangan' => $keuangan,
-            'pencairan_dana' => $pencairanDana,
-            'detail_pencairan_dana' => $detailPencairanDana,
-            'detail_pengajuan_dana' => $detailPengajuanDana,
-            'timeline' => $timeline,
+        return Inertia::render('Keuangan/PencairanDanaPage', [
+            'pencairanDana' => $pencairanDana,
+            'formOptions' => $formOptions
         ]);
     }
 
-    public function store(StoreRequest $request, PencairanDana $pencairanDana): RedirectResponse
+    public function formOptions(): stdClass
     {
-        $validated = $request->safe();
+        $currentProyek = DB::table('proyek')
+            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_proyek', '=', 'proyek.id_proyek')
+            ->where('proyek.deleted_at', null)
+            ->where('pengajuan_dana.deleted_at', null)
+            ->groupBy('proyek.id_proyek')
+            ->select(
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.tahun_anggaran'
+            )
+            ->get();
 
-        $detailPencairanDana = new DetailPencairanDana();
+        $options = (object) [
+            'currentProyek' => $currentProyek
+        ];
 
-        $detailPencairanDana->fill([
-            'id_pencairan_dana' => $pencairanDana->id_pencairan_dana,
-            'id_detail_pengajuan_dana' => $validated->id_detail_pengajuan_dana,
-            'jumlah_pencairan' => $validated->jumlah_pencairan,
-        ]);
+        return $options;
+    }
 
-        $detailPencairanDana->save();
+    public function filter($searchRequest, $pencairanDana) {
+        $pencairanDana->when($searchRequest->get('id_proyek'), function($query, $input) {
+            $query->whereIn('proyek.id_proyek', $input);
+        });
 
-        return redirect()->back()->with('success', 'Uraian Pencairan Dana berhasil dibuat!');
+        $pencairanDana->when($searchRequest->get('status_pencairan'), function($query, $input) {
+            $query->where('pencairan_dana.status_pencairan', $input);
+        });
+
+        $pencairanDana->when($searchRequest->get('ditolak') === 'true', function($query) {
+            $query->where('pencairan_dana.status_aktivitas', 'Ditolak');
+        });
+
+        return $pencairanDana;
     }
 
     public function submit(Request $request, PencairanDana $pencairanDana): RedirectResponse
@@ -122,19 +111,19 @@ class PencairanDanaController extends Controller
         return redirect()->back()->with('success', 'Pencairan Dana berhasil dibayar!');
     }
 
-    public function accept(Request $request, PencairanDana $pencairanDana): RedirectResponse
+    public function confirm(Request $request, PencairanDana $pencairanDana): RedirectResponse
     {
         DB::transaction(function () use ($request, $pencairanDana) {
-            $is_lunas = $request->post('is_lunas');
+            $bertahap = $request->post('bertahap');
 
             $status_pencairan = '400';
             $status_aktivitas = 'Diterima';
 
-            if ($is_lunas === 'false') {
+            if ($bertahap) {
                 $status_pencairan = '100';
-                $status_aktivitas = 'Dibuat';
+                $status_aktivitas = 'Diterima Bertahap';
             }
-
+            
             // Create A Timeline
             $Timeline = new Timeline;
             $Timeline->fill([
@@ -142,9 +131,17 @@ class PencairanDanaController extends Controller
                 'model_id' => $pencairanDana->id_pencairan_dana,
                 'model_type' => get_class($pencairanDana),
                 'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Diterima',
+                'status_aktivitas' => $status_aktivitas,
             ]);
             $Timeline->save();
+
+            // Update The Item of Pencairan Dana Status
+            DetailPencairanDana::query()
+                ->where([
+                    'id_pencairan_dana' => $pencairanDana->id_pencairan_dana,
+                    'status_pembayaran' => '100'
+                ])
+                ->update(['status_pembayaran' => '400']);
 
             // Update The Pencairan Dana Status
             $pencairanDana->status_pencairan = $status_pencairan;
@@ -170,7 +167,7 @@ class PencairanDanaController extends Controller
             $timeline->save();
     
             // Update The Pencairan Dana Status
-            $pencairanDana->status_aktivitas = 'Dibuat';
+            $pencairanDana->status_aktivitas = 'Ditolak';
             $pencairanDana->save();
         });
 

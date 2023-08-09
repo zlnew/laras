@@ -14,11 +14,11 @@ class RAB extends Model
     protected $table = 'rab';
     protected $primaryKey = 'id_rab';
     protected $fillable = [
-        'id_proyek',
         'tax',
         'additional_tax',
         'status_rab',
-        'status_aktivitas'
+        'status_aktivitas',
+        'id_proyek'
     ];
     
     public $autoIncrement = false;

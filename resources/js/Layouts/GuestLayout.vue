@@ -1,20 +1,14 @@
-<script setup lang="ts">
-const fullYear: number = new Date().getFullYear();
-</script>
-
 <template>
-    <main class="mt-0 transition-all duration-200 ease-soft-in-out">
-        <slot></slot>
-    </main>
-    <footer class="py-12">
-        <div class="container">
-            <div class="flex flex-wrap -mx-3">
-                <div class="w-8/12 max-w-full px-3 mx-auto mt-1 text-center flex-0">
-                <p class="mb-0 text-slate-400">
-                    Copyright © {{ fullYear }} Creatoku All Rights Reserved.
-                </p>
-                </div>
-            </div>
-        </div>
-    </footer>
+  <q-layout view="hHh lpR fFf" class="bg-blue-grey-1">
+
+    <q-page-container>
+      <slot></slot>
+    </q-page-container>
+
+    <q-toolbar class="q-pa-lg bg-blue-grey-1">
+      <q-toolbar-title class="text-center text-secondary text-subtitle2">
+        Copyright © 2023 Creatoku All Rights Reserved.
+      </q-toolbar-title>
+    </q-toolbar>
+  </q-layout>
 </template>

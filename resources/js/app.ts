@@ -1,21 +1,21 @@
 import './bootstrap';
 import '../css/app.css';
 
+// cores
 import { createApp, h, DefineComponent } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
+
+// laravel configuration
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
-import { createPinia } from "pinia";
-import { EaseButton, useEaseButton } from 'ease-button-ui';
 
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { fas } from '@fortawesome/free-solid-svg-icons';
+// plugins
+import { quasar, plugins } from '@/plugins/quasar';
 
-library.add(fas)
+// directives
+import InertiaLink from '@/directives/inertia-link';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
-const pinia = createPinia();
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -24,43 +24,11 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue, Ziggy)
-            .component('FasIcon', FontAwesomeIcon)
-            .component('EaseButton', EaseButton)
-            .use(pinia)
+            .use(quasar, {
+                plugins: plugins
+            })
+            .directive('in-link', InertiaLink)
             .mount(el);
-            
-        const easeButton = useEaseButton();
-        
-        easeButton.defaultStyle({
-            bgColor: '#0284c7',
-            borderRadius: '0.5rem',
-            outlineColor: '#0284c7',
-            classes: 'transition ease-in-out',
-        });
-
-        easeButton.addVariant({
-            'danger': {
-                color: '#fff',
-                bgColor: '#ef4444'
-            },
-            'transparent': {
-                color: '#0284c7',
-                bgColor: 'transparent',
-            },
-            'success-transparent': {
-                color: '#22c55e',
-                bgColor: 'transparent',
-            },
-            'danger-transparent': {
-                color: '#ef4444',
-                bgColor: 'transparent',
-            },
-            'danger-link': {
-                color: '#ef4444',
-                bgColor: 'transparent',
-                textDecoration: 'underline'
-            },
-        });
     },
     progress: { color: '#0284c7' },
 });

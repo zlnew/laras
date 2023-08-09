@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('timeline', function (Blueprint $table) {
             $table->id('id_timeline');
-            $table->foreignId('user_id');
-            $table->foreignUlid('model_id');
             $table->string('model_type');
             $table->string('catatan')->nullable();
             $table->string('status_aktivitas');
+            $table->foreignId('user_id');
+            $table->foreignUlid('model_id');
             $table->timestamps();
             $table->softDeletes();
         });

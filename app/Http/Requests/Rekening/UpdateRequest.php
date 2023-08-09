@@ -19,6 +19,7 @@ class UpdateRequest extends FormRequest
             'nama_bank' => ['required', 'string', 'max:255'],
             'nomor_rekening' => ['required', 'numeric'],
             'nama_rekening' => ['required', 'string', 'max:255'],
+            'tujuan_rekening' => ['required', 'string', 'max:255']
         ];
     }
 }

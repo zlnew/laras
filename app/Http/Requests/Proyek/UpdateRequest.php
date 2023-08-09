@@ -14,9 +14,8 @@ class UpdateRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'waktu_mulai' => 'tanggal mulai',
-            'waktu_selesai' => 'tanggal selesai',
-            'pic' => 'penanggung jawab',
+            'id_user' => 'penanggung jawab',
+            'id_rekening' => 'rekening'
         ];
     }
 
@@ -24,12 +23,19 @@ class UpdateRequest extends FormRequest
     {
         return [
             'nama_proyek' => ['required', 'string', 'max:255'],
-            'tahun_anggaran' => ['required', 'string', 'max:15'],
-            'pengguna_jasa' => ['required', 'string', 'max:50'],
-            'nilai_kontrak' => ['required', 'numeric'],
-            'waktu_mulai' => ['required', 'date'],
-            'waktu_selesai' => ['required', 'date'],
-            'pic' => ['required', 'string', 'max:50'],
+            'nomor_kontrak' => ['required', 'string', 'max:25'],
+            'tanggal_kontrak' => ['required', 'date'],
+            'pengguna_jasa' => ['required', 'string', 'max:128'],
+            'penyedia_jasa' => ['required', 'string', 'max:128'],
+            'tahun_anggaran' => ['required', 'string', 'max:25'],
+            'nomor_spmk' => ['required', 'string', 'max:255'],
+            'tanggal_spmk' => ['required', 'date'],
+            'nilai_kontrak' => ['required', 'numeric', 'min:1'],
+            'tanggal_mulai' => ['required', 'date'],
+            'durasi' => ['required', 'numeric', 'min:1'],
+            'tanggal_selesai' => ['required', 'date'],
+            'id_user' => ['required', 'exists:users,id'],
+            'id_rekening' => ['required', 'exists:rekening,id_rekening']
         ];
     }
 }

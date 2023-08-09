@@ -13,10 +13,10 @@ class Timeline extends Model
     protected $table = 'timeline';
     protected $primaryKey = 'id_timeline';
     protected $fillable = [
-        'user_id',
-        'model_id',
         'model_type',
         'catatan',
         'status_aktivitas',
+        'user_id',
+        'model_id'
     ];
 }

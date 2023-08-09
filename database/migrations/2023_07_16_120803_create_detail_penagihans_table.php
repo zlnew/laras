@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('detail_penagihan', function (Blueprint $table) {
             $table->id('id_detail_penagihan');
+            $table->decimal('volume_penagihan', 5, 2);
+            $table->decimal('harga_satuan_penagihan', 20, 2);
+            $table->enum('status_diterima', [100, 400])->default(100);
             $table->foreignUlid('id_penagihan');
             $table->foreignUlid('id_detail_rab');
-            $table->decimal('volume_penagihan', 3, 0);
-            $table->enum('status_diterima', [100, 400])->default(100);
             $table->timestamps();
             $table->softDeletes();
         });

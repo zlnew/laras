@@ -13,8 +13,8 @@ class DetailPencairanDana extends Model
     protected $table = 'detail_pencairan_dana';
     protected $primaryKey = 'id_detail_pencairan_dana';
     protected $fillable = [
+        'jumlah_pencairan',
         'id_pencairan_dana',
-        'id_detail_pengajuan_dana',
-        'jumlah_pencairan'
+        'id_detail_pengajuan_dana'
     ];
 }
