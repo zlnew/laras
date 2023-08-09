@@ -92,7 +92,13 @@ const totaAmount = computed(() => {
         </q-td>
 
         <q-td key="rekening" :props="props">
-          {{ props.row.nama_rekening }}
+            <span class="text-caption text-weight-bold">
+              {{ props.row.nama_bank }}
+            </span> |
+            <span class="text-caption">
+              {{ props.row.nomor_rekening }}
+            </span> -
+            {{ props.row.nama_rekening }}
         </q-td>
 
         <q-td key="sisa_dana" :props="props">
