@@ -1,0 +1,1 @@
+.table td:last-child{background-color:#fff}.table tr th{position:sticky;z-index:2;background:#fff}.table thead tr:last-child th{top:48px;z-index:3}.table thead tr:first-child th{top:0;z-index:1}.table tr:last-child th:last-child{z-index:3}.table td:last-child{z-index:1}.table td:last-child,.table th:last-child{position:sticky;right:0}.table tbody{scroll-margin-top:48px}

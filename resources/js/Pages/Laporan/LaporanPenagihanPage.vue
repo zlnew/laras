@@ -21,7 +21,9 @@ export interface FormOptions {
 }
 
 defineProps<{
-  penagihan: Array<Penagihan>;
+  penagihan: Array<Penagihan & {
+    jumlah_penagihan: string, sisa_penagihan: string
+  }>;
   formOptions: FormOptions;
 }>();
 </script>
