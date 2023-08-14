@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('proyek', function (Blueprint $table) {
             $table->ulid('id_proyek')->primary();
             $table->string('nama_proyek');
-            $table->string('nomor_kontrak', 25);
+            $table->string('nomor_kontrak');
             $table->date('tanggal_kontrak');
             $table->decimal('nilai_kontrak', 20, 2, true);
 
-            $table->string('pengguna_jasa', 128);
-            $table->string('penyedia_jasa', 128);
-            $table->year('tahun_anggaran');
+            $table->string('pengguna_jasa');
+            $table->string('penyedia_jasa');
+            $table->string('tahun_anggaran');
 
             $table->string('nomor_spmk');
             $table->string('tanggal_spmk');
