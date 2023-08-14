@@ -22,7 +22,7 @@ const rows = computed(() => {
 
     return {
       ...item,
-      sisa_dana: modal - pengeluaran
+      sisa_dana: modal - toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan_diterima)
     }
   });
 });
