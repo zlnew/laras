@@ -63,7 +63,7 @@ class DetailRAPController extends Controller
 
         $detailRab = DB::table('detail_rab')
             ->where('deleted_at', null)
-            ->where('id_rab', $rab->id_rab)
+            ->where('id_rab', $rab?->id_rab)
             ->select('volume', 'harga_satuan',)
             ->get();
 
