@@ -43,6 +43,7 @@ export interface SisaDanaRekening {
   nama_bank: string;
   nama_rekening: string;
   nomor_rekening: string;
+  nilai_kontrak: string;
   total_pengajuan_dana: string;
   total_pencairan_dana: string;
   total_penagihan: string;
@@ -99,10 +100,11 @@ const props = defineProps<{
 
 const overview = computed(() => {
   const total_sisa_dana_rekening = props.sisaDanaRekening.reduce((total, item) => {
-    const modal = toFloat(item.total_pengajuan_dana) + toFloat(item.total_penagihan);
+    const modal = toFloat(item.nilai_kontrak);
+    const pengeluaran = toFloat(item.total_pengajuan_dana) + toFloat(item.total_penagihan);
     const pemasukan = toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan_diterima);
 
-    return total + (modal - pemasukan);
+    return total + (modal - pengeluaran);
   }, 0);
 
   const total_proyeksi_invoice_proyek = props.proyeksiInvoiceProyek.reduce((total, item) => {

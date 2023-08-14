@@ -192,12 +192,20 @@ class DashboardController extends Controller
             ->orderBy('p.id_proyek', 'asc')
             ->get();
 
-            $sisaDanaRekening = DB::table('rekening as rk')
+        $sisaDanaRekening = DB::table('rekening as rk')
             ->where('rk.deleted_at', null)
             ->groupBy('rk.id_rekening')
             ->select(
                 'rk.id_rekening', 'rk.nama_bank',
                 'rk.nama_rekening', 'rk.nomor_rekening',
+                DB::raw("
+                    (SELECT SUM(p.nilai_kontrak)
+                        FROM proyek AS p
+                        WHERE p.id_rekening = rk.id_rekening
+                        AND p.deleted_at IS  NULL
+                        GROUP BY p.id_rekening
+                    ) AS nilai_kontrak
+                "),
                 DB::raw("
                     (SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
@@ -885,6 +893,14 @@ class DashboardController extends Controller
                 'rk.id_rekening', 'rk.nama_bank',
                 'rk.nama_rekening', 'rk.nomor_rekening',
                 DB::raw("
+                    (SELECT SUM(p.nilai_kontrak)
+                        FROM proyek AS p
+                        WHERE p.id_rekening = rk.id_rekening
+                        AND p.deleted_at IS  NULL
+                        GROUP BY p.id_rekening
+                    ) AS nilai_kontrak
+                "),
+                DB::raw("
                     (SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         LEFT JOIN pengajuan_dana AS pd
@@ -1343,6 +1359,14 @@ class DashboardController extends Controller
             ->select(
                 'rk.id_rekening', 'rk.nama_bank',
                 'rk.nama_rekening', 'rk.nomor_rekening',
+                DB::raw("
+                    (SELECT SUM(p.nilai_kontrak)
+                        FROM proyek AS p
+                        WHERE p.id_rekening = rk.id_rekening
+                        AND p.deleted_at IS  NULL
+                        GROUP BY p.id_rekening
+                    ) AS nilai_kontrak
+                "),
                 DB::raw("
                     (SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd

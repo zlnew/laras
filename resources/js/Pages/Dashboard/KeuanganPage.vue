@@ -29,6 +29,7 @@ export interface SisaDanaRekening {
   nama_bank: string;
   nama_rekening: string;
   nomor_rekening: string;
+  nilai_kontrak: string;
   total_pengajuan_dana: string;
   total_pencairan_dana: string;
   total_penagihan: string;

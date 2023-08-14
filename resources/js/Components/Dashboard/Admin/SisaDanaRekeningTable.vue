@@ -16,12 +16,13 @@ const props = defineProps<{
 
 const rows = computed(() => {
   return props.rows.map(item => {
-    const modal = toFloat(item.total_pengajuan_dana) + toFloat(item.total_penagihan);
+    const modal = toFloat(item.nilai_kontrak);
+    const pengeluaran = toFloat(item.total_pengajuan_dana) + toFloat(item.total_penagihan);
     const pemasukan = toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan_diterima);
 
     return {
       ...item,
-      sisa_dana: modal - pemasukan
+      sisa_dana: modal - pengeluaran
     }
   });
 });
