@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('penagihan', function (Blueprint $table) {
             $table->ulid('id_penagihan')->primary();
             $table->string('keperluan');
-            $table->timestamp('tanggal_pengajuan');
+            $table->timestamp('tanggal_pengajuan')->nullable();
 
             $table->string('nomor_sp2d')->nullable();
             $table->date('tanggal_sp2d')->nullable();

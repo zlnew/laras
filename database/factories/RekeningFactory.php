@@ -19,12 +19,17 @@ class RekeningFactory extends Factory
         $tujuan_rekening = ['Penerimaan Invoice', 'Daftar Rekening Keluar'];
         $random_tujuan_rekening_key = array_rand($tujuan_rekening);
 
+        $bank = ['BCA', 'BTN', 'BSI', 'Mandiri', 'BRI'];
+        $random_bank_key = array_rand($bank);
+
+        $nama = fake()->name;
+
         return [
-            'nama' => fake()->name,
+            'nama' => $nama,
             'jabatan' => fake()->jobTitle,
-            'nama_bank' => fake()->word,
+            'nama_bank' => $bank[$random_bank_key],
             'nomor_rekening' => fake()->bankAccountNumber,
-            'nama_rekening' => fake()->name,
+            'nama_rekening' => $nama,
             'tujuan_rekening' => $tujuan_rekening[$random_tujuan_rekening_key]
         ];
     }

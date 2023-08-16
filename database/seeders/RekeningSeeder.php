@@ -12,6 +12,6 @@ class RekeningSeeder extends Seeder
      */
     public function run(): void
     {
-        Rekening::factory()->count(10)->create();
+        Rekening::factory()->count(5)->create();
     }
 }

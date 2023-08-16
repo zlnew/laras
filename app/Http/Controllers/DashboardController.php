@@ -361,7 +361,6 @@ class DashboardController extends Controller
                             AND dpd.deleted_at IS NULL
                             AND dpc.deleted_at IS NULL
                             AND dpd.status_persetujuan = '400'
-                            AND dpc.status_pembayaran = '400'
                         )
                         GROUP BY pd.id_proyek
                     ) AS DECIMAL(20, 2)), 0) AS jumlah_belum_dibayar
