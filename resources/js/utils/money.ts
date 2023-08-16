@@ -2,7 +2,6 @@ function fromRupiah (formattedAmount: string) {
     const sanitizedAmount = formattedAmount
         .replace(/[^\d,-]/g, "")
         .replace(",", ".");
-    
     return parseFloat(sanitizedAmount);
 }
 
@@ -11,7 +10,6 @@ function toRupiah (amount: number) {
         style: 'currency',
         currency: 'IDR',
     }).format(amount);
-
     return formattedAmount;
 }
 

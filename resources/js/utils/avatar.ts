@@ -5,7 +5,6 @@ const avatar = (seed: string) => {
   const avt = createAvatar(initials, {
     seed: seed
   });
-
   return avt.toDataUriSync();
 }
 

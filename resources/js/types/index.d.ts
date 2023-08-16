@@ -1,28 +1,3 @@
-export interface Pagination {
-    total: number;
-    per_page: number;
-    current_page: number;
-    last_page: number;
-    first_page_url: string;
-    last_page_url: string;
-    next_page_url: string | null;
-    prev_page_url: string | null;
-    path: string;
-    from: number;
-    to: number;
-    links: Array<PaginationLink>;
-}
-
-export interface PaginationLink {
-    active: boolean;
-    label: string;
-    url: string;
-}
-
-export interface DataWithPagination<T> extends Pagination {
-    data: Array<T>;
-}
-
 export interface User {
     id: number;
     name: string;
@@ -61,8 +36,8 @@ export interface Proyek {
     tanggal_mulai: string;
     durasi: number;
     tanggal_selesai: string;
-    id_user: number;
-    id_rekening: string;
+    id_user: User['id'];
+    id_rekening: Rekening['id_rekening'];
     status_proyek: '100' | '400';
 };
 
@@ -89,18 +64,18 @@ export interface RAP {
     id_rap: string;
     id_proyek: Proyek['id_proyek'];
     status_rap: '100' | '400';
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Disetujui';
 }
 
 export interface DetailRAP {
     id_detail_rap: number;
-    id_rap: RAP['id_rap'];
-    id_satuan: Satuan['id_satuan'];
     uraian: string;
     volume: string;
     harga_satuan: string;
     keterangan: string;
     status_uraian: 'Gaji' | 'Sewa' | 'Beli' | 'Subkon/Vendor';
+    id_rap: RAP['id_rap'];
+    id_satuan: Satuan['id_satuan'];
 };
 
 export interface PengajuanDana {
@@ -108,18 +83,18 @@ export interface PengajuanDana {
     keperluan: string;
     tanggal_pengajuan: string;
     status_pengajuan: '100' | '400';
-    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak' | 'Disetujui';
+    status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dievaluasi' | 'Ditolak';
     id_proyek: Proyek['id_proyek'];
 };
 
 export interface DetailPengajuanDana {
     id_detail_pengajuan_dana: number;
+    uraian: string;
+    jumlah_pengajuan: string;
+    jenis_pembayaran: 'Cash' | 'Transfer';
     id_pengajuan_dana: PengajuanDana['id_pengajuan_dana'];
     id_detail_rap: DetailRAP['id_detail_rap'];
     id_rekening: Rekening['id_rekening'];
-    uraian: string;
-    jumlah_pengajuan: string;
-    jenis_pembayaran: string;
 };
 
 export interface PencairanDana {
@@ -132,18 +107,17 @@ export interface PencairanDana {
 
 export interface DetailPencairanDana {
     id_detail_pencairan_dana: number;
-    id_pencairan_dana: PencairanDana['id_pencairan_dana'];
-    id_detail_pengajuan_dana: DetailPengajuanDana['id_detail_pengajuan_dana'];
     jumlah_pencairan: string;
     status_pembayaran: '100' | '400';
+    id_pencairan_dana: PencairanDana['id_pencairan_dana'];
+    id_detail_pengajuan_dana: DetailPengajuanDana['id_detail_pengajuan_dana'];
 };
 
 export interface Penagihan {
     id_penagihan: string;
-    id_proyek: Proyek['id_proyek'];
-    id_rekening: Rekening['id_rekening'];
     keperluan: string;
     tanggal_pengajuan: string;
+    jumlah_diterima: string;
     nomor_sp2d: string;
     tanggal_sp2d: string;
     tanggal_terbit: string;
@@ -155,25 +129,26 @@ export interface Penagihan {
     kas_masuk: 'Utang' | 'Setoran Modal';
     status_penagihan: '100' | '400';
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Diterima Bertahap' | 'Diterima';
-    jumlah_diterima: string;
+    id_proyek: Proyek['id_proyek'];
+    id_rekening: Rekening['id_rekening'];
 }
 
 export interface DetailPenagihan {
     id_detail_penagihan: number;
-    id_penagihan: Penagihan['id_penagihan'];
-    id_detail_rab: DetailRAB['id_detail_rab'];
     volume_penagihan: string;
     harga_satuan_penagihan: string;
     status_diterima: '100' | '400';
+    id_penagihan: Penagihan['id_penagihan'];
+    id_detail_rab: DetailRAB['id_detail_rab'];
 };
 
 export interface Timeline {
     id_timeline: number;
-    user_id: User['id'];
     model_id: string | number;
     model_type: string;
     catatan: string;
     status_aktivitas: 'Dibuat' | 'Diajukan' | 'Dibayar' | 'Dievaluasi' | 'Ditolak' | 'Disetujui' | 'Diterima Bertahap' | 'Diterima';
+    user_id: User['id'];
 };
 
 export interface Satuan {
@@ -203,21 +178,19 @@ export type UserPermissions =
 
   'view rap'|
   'create & modify rap'|
-  'evaluate rap'|
   'approve rap'|
 
   'view pengajuan dana'|
   'create & modify pengajuan dana'|
-  'evaluate pengajuan dana'|
   'approve pengajuan dana'|
 
   'view pencairan dana'|
   'create & modify pencairan dana'|
-  'receipt pencairan dana'|
+  'confirm pencairan dana'|
 
   'view penagihan'|
   'create & modify penagihan'|
-  'receipt penagihan';
+  'confirm penagihan';
 
 interface Auth {
     user: User;
