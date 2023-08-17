@@ -54,6 +54,13 @@ const menuList = [
     label: 'Satuan',
     link: route('satuan'),
     active: route().current('satuan'),
+    onlyAdmin: true
+  },
+  {
+    icon: 'accessibility',
+    label: 'User Permissions',
+    link: route('permissions'),
+    active: route().current('permissions'),
     onlyAdmin: true,
     separator: true
   },

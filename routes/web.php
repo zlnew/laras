@@ -21,6 +21,7 @@ use App\Http\Controllers\DetailPencairanDanaController;
 use App\Http\Controllers\DetailPenagihanController;
 use App\Http\Controllers\FilesController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Master\PermissionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,9 @@ Route::middleware('auth')->group(function() {
         Route::post('/rekening', [RekeningController::class, 'store'])->name('rekening.store');
         Route::patch('/rekening/{rekening}', [RekeningController::class, 'update'])->name('rekening.update');
         Route::delete('/rekening/{rekening}', [RekeningController::class, 'destroy'])->name('rekening.destroy');
+
+        Route::get('/permissions', [PermissionsController::class, 'index'])->name('permissions');
+        Route::post('/permissions/sync/{role}', [PermissionsController::class, 'sync'])->name('permissions.sync');
     });
     
     Route::prefix('proyek')->group(function() {
