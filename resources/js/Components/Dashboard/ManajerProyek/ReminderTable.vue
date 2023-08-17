@@ -1,21 +1,21 @@
 <script setup lang="ts">
 // cores
-import { QTableColumn } from 'quasar';
-import { Link } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3'
 
 // types
-import { Reminder } from '@/Pages/Dashboard/ManajerProyekPage.vue';
+import type { Reminder } from '@/Pages/Dashboard/ManajerProyekPage.vue'
+import type { QTableColumn } from 'quasar'
 
 defineProps<{
-  rows: Array<Reminder>;
-}>();
+  rows: Reminder[]
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
-  { name: 'actions', label: 'Actions', field: '', align: 'left', sortable: true },
-];
+  { name: 'actions', label: 'Actions', field: '', align: 'left', sortable: true }
+]
 </script>
 
 <template>
@@ -41,7 +41,7 @@ const columns: QTableColumn[] = [
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>

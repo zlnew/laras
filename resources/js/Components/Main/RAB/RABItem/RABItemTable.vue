@@ -1,17 +1,18 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
-import { QTableColumn, useQuasar } from 'quasar';
-import { useForm } from '@inertiajs/vue3';
+import { ref, computed } from 'vue'
+import { useQuasar } from 'quasar'
+import { useForm } from '@inertiajs/vue3'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { can, isAdmin, isEditable } from '@/utils/permissions';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { can, isAdmin, isEditable } from '@/utils/permissions'
+import { toFloat } from '@/utils/number'
 
 // types
-import { DetailRAB, RAB } from '@/types';
-import { FormOptions } from '@/Pages/Main/RABPage.vue';
+import type { DetailRAB, RAB } from '@/types'
+import type { FormOptions } from '@/Pages/Main/RABPage.vue'
+import type { QTableColumn } from 'quasar'
 
 // comps
 import {
@@ -19,45 +20,45 @@ import {
   RABItemCreateDialog,
   RABItemEditDialog,
   RABItemDeleteDialog
-} from '@/Components/Main/detail-rab-page';
+} from '@/Components/Main/detail-rab-page'
 
 interface Data {
-  rab: RAB;
+  rab: RAB
 }
 
 const props = defineProps<{
-  rows: Array<DetailRAB>;
-  data: Data;
-  formOptions: FormOptions; 
-}>();
+  rows: DetailRAB[]
+  data: Data
+  formOptions: FormOptions
+}>()
 
 const totalAmount = computed(() => {
   const dpp = props.rows.reduce((total, item) => {
-    return total + (toFloat(item.harga_satuan) * toFloat(item.volume));
-  }, 0);
+    return total + (toFloat(item.harga_satuan) * toFloat(item.volume))
+  }, 0)
 
-  const ppn = (toFloat(form.tax) / 100) * dpp;
-  const pph = (toFloat(form.additional_tax) / 100) * dpp;
+  const ppn = (toFloat(form.tax) / 100) * dpp
+  const pph = (toFloat(form.additional_tax) / 100) * dpp
 
   return {
-    dpp: dpp,
-    ppn: ppn,
-    pph: pph
+    dpp,
+    ppn,
+    pph
   }
-});
+})
 
 const form = useForm({
   tax: props.data.rab.tax,
   additional_tax: props.data.rab.additional_tax
-});
+})
 
-function updateTax() {
-  form.patch(route('rab.update_tax', props.data.rab.id_rab));
+function updateTax () {
+  form.patch(route('rab.update_tax', props.data.rab.id_rab))
 }
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function importRABItem() {
+function importRABItem () {
   $q.dialog({
     component: RABItemImportDialog,
     componentProps: {
@@ -67,12 +68,12 @@ function importRABItem() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function createRABItem() {
+function createRABItem () {
   $q.dialog({
     component: RABItemCreateDialog,
     componentProps: {
@@ -83,12 +84,12 @@ function createRABItem() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editRABItem(data: DetailRAB) {
+function editRABItem (data: DetailRAB) {
   $q.dialog({
     component: RABItemEditDialog,
     componentProps: {
@@ -99,12 +100,12 @@ function editRABItem(data: DetailRAB) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteRABItem(id: DetailRAB['id_detail_rab']) {
+function deleteRABItem (id: DetailRAB['id_detail_rab']) {
   $q.dialog({
     component: RABItemDeleteDialog,
     componentProps: {
@@ -114,12 +115,12 @@ function deleteRABItem(id: DetailRAB['id_detail_rab']) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'uraian',
@@ -134,15 +135,15 @@ const columns: Array<QTableColumn> = [
   { name: 'total_harga', label: 'Total Harga', field: '', align: 'right', sortable: true },
   { name: 'keterangan', label: 'Ket', field: 'keterangan', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const filter = ref('');
+const filter = ref('')
 </script>
 
 <template>
@@ -204,7 +205,7 @@ const filter = ref('');
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>
@@ -264,7 +265,7 @@ const filter = ref('');
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"
@@ -292,7 +293,7 @@ const filter = ref('');
 
       <template v-if="rows.length" v-slot:bottom-row>
         <q-tr no-hover>
-          <q-td colspan="4" style="border: none;"></q-td>
+          <q-td colspan="4" style="border: none"></q-td>
           <q-td class="text-right">
             PPN
           </q-td>
@@ -316,11 +317,11 @@ const filter = ref('');
             </q-input>
             <span v-else>{{ data.rab.tax }}%</span>
           </q-td>
-          <q-td colspan="2" style="border: none;"></q-td>
+          <q-td colspan="2" style="border: none"></q-td>
         </q-tr>
 
         <q-tr no-hover>
-          <q-td colspan="4" style="border: none;"></q-td>
+          <q-td colspan="4" style="border: none"></q-td>
           <q-td class="text-right">
             PPH
           </q-td>
@@ -344,40 +345,40 @@ const filter = ref('');
             </q-input>
             <span v-else>{{ data.rab.additional_tax }}%</span>
           </q-td>
-          <q-td colspan="2" style="border: none;"></q-td>
+          <q-td colspan="2" style="border: none"></q-td>
         </q-tr>
 
         <q-tr no-hover>
-          <q-td colspan="4" style="border: none;"></q-td>
+          <q-td colspan="4" style="border: none"></q-td>
           <q-td class="text-right">
             Total RAB
           </q-td>
           <q-td class="text-right text-weight-bold">
             {{ toRupiah(totalAmount.dpp) }}
           </q-td>
-          <q-td colspan="2" style="border: none;"></q-td>
+          <q-td colspan="2" style="border: none"></q-td>
         </q-tr>
 
         <q-tr no-hover>
-          <q-td colspan="4" style="border: none;"></q-td>
+          <q-td colspan="4" style="border: none"></q-td>
           <q-td class="text-right">
             Nilai Kontrak
           </q-td>
           <q-td class="text-right text-weight-bold">
             {{ toRupiah(totalAmount.dpp + totalAmount.ppn) }}
           </q-td>
-          <q-td colspan="2" style="border: none;"></q-td>
+          <q-td colspan="2" style="border: none"></q-td>
         </q-tr>
 
         <q-tr no-hover>
-          <q-td colspan="4" style="border: none;"></q-td>
+          <q-td colspan="4" style="border: none"></q-td>
           <q-td class="text-right">
             Netto
           </q-td>
           <q-td class="text-right text-weight-bold">
             {{ toRupiah(totalAmount.dpp - totalAmount.pph) }}
           </q-td>
-          <q-td colspan="2" style="border: none;"></q-td>
+          <q-td colspan="2" style="border: none"></q-td>
         </q-tr>
       </template>
     </q-table>

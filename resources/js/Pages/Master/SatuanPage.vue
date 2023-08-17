@@ -1,24 +1,24 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
-import { SatuanTable } from '@/Components/Master/satuan-page';
+import { SatuanTable } from '@/Components/Master/satuan-page'
 
 // types
-import { Satuan } from '@/types';
+import type { Satuan } from '@/types'
 
 const breadcrumbs = [
   { label: 'Master', url: '#' },
   { label: 'Satuan', url: '#' }
-];
+]
 
 defineProps<{
-  satuan: Array<Satuan>;
-}>();
+  satuan: Satuan[]
+}>()
 </script>
 
 <template>
@@ -29,6 +29,7 @@ defineProps<{
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         />

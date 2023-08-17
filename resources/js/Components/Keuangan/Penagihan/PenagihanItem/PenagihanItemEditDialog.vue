@@ -1,42 +1,43 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options';
-import { toRupiah } from '@/utils/money';
-import { toFloat } from '@/utils/number';
+import { multiFilterOptions } from '@/utils/options'
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
 
 // types
-import { FormOptions } from '@/Pages/Keuangan/DetailPenagihanPage.vue';
-import { DetailPenagihan } from '@/types';
+import { type FormOptions } from '@/Pages/Keuangan/DetailPenagihanPage.vue'
+import { type DetailPenagihan } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
   detailPenagihan: DetailPenagihan
-  options: FormOptions;
-}>();
+  options: FormOptions
+}>()
 
-const rabOptionsRef = ref(props.options.detailRab);
+const rabOptionsRef = ref(props.options.detailRab)
 
-function rabFilter (val: string, update: Function) {
+function rabFilter (val: string, update: any) {
   update(() => {
-    rabOptionsRef.value = multiFilterOptions(val, props.options.detailRab, ['uraian']);
-  });
+    rabOptionsRef.value = multiFilterOptions(val, props.options.detailRab, ['uraian'])
+  })
 }
 
-function getHargaSatuan(id: number) {
-  const matchedItem = props.options.detailRab.find(drab => drab.id_detail_rab === id);
-  
+function getHargaSatuan (id: number) {
+  const matchedItem = props.options.detailRab.find(drab => drab.id_detail_rab === id)
+
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/prefer-optional-chain
   if (matchedItem && matchedItem.harga_satuan) {
-    form.harga_satuan_penagihan = matchedItem.harga_satuan;
+    form.harga_satuan_penagihan = matchedItem.harga_satuan
   }
 }
 
@@ -44,17 +45,17 @@ const form = useForm({
   id_detail_rab: props.detailPenagihan.id_detail_rab,
   volume_penagihan: props.detailPenagihan.volume_penagihan,
   harga_satuan_penagihan: props.detailPenagihan.harga_satuan_penagihan
-});
+})
 
-function submit() {
+function submit () {
   form.patch(route('detail_penagihan.update', props.detailPenagihan.id_detail_penagihan), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -102,7 +103,7 @@ function submit() {
                 form.id_detail_rab = value;
                 getHargaSatuan(value);
               }"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -159,7 +160,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

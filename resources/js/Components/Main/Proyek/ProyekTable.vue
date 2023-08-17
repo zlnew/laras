@@ -1,17 +1,18 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { router } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { fullDate } from '@/utils/date';
-import { can, isAdmin, isModuleEditable } from '@/utils/permissions';
+import { toRupiah } from '@/utils/money'
+import { fullDate } from '@/utils/date'
+import { can, isAdmin, isModuleEditable } from '@/utils/permissions'
 
 // types
-import { Proyek } from '@/types';
-import { QTableColumn, useQuasar } from 'quasar';
-import { FormOptions } from '@/Pages/Main/ProyekPage.vue';
+import type { Proyek } from '@/types'
+import type { QTableColumn } from 'quasar'
+import type { FormOptions } from '@/Pages/Main/ProyekPage.vue'
 
 // comps
 import {
@@ -20,35 +21,35 @@ import {
   ProyekCreateDialog,
   ProyekEditDialog,
   ProyekDeleteDialog
-} from '@/Components/Main/proyek-page';
+} from '@/Components/Main/proyek-page'
 
 const props = defineProps<{
-  rows: Array<Proyek>;
-  formOptions: FormOptions; 
-}>();
+  rows: Proyek[]
+  formOptions: FormOptions
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function detailProyek(data: Proyek) {
+function detailProyek (data: Proyek) {
   $q.dialog({
     component: ProyekDetailDialog,
     componentProps: {
-      proyek: data,
+      proyek: data
     }
-  });
+  })
 }
 
-function searchProyek() {
+function searchProyek () {
   $q.dialog({
     component: ProyekSearchDialog,
     componentProps: {
       rows: props.rows,
       options: props.formOptions
     }
-  });
+  })
 }
 
-function createProyek() {
+function createProyek () {
   $q.dialog({
     component: ProyekCreateDialog,
     componentProps: {
@@ -58,12 +59,12 @@ function createProyek() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editProyek(data: Proyek) {
+function editProyek (data: Proyek) {
   $q.dialog({
     component: ProyekEditDialog,
     componentProps: {
@@ -74,12 +75,12 @@ function editProyek(data: Proyek) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteProyek(id: Proyek['id_proyek']) {
+function deleteProyek (id: Proyek['id_proyek']) {
   $q.dialog({
     component: ProyekDeleteDialog,
     componentProps: {
@@ -89,12 +90,12 @@ function deleteProyek(id: Proyek['id_proyek']) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'nama_proyek',
@@ -112,24 +113,24 @@ const columns: Array<QTableColumn> = [
   { name: 'tanggal_selesai', label: 'Tanggal Selesai', field: 'tanggal_selesai', align: 'left', sortable: true },
   { name: 'status_proyek', label: 'Status', field: 'status_proyek', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-function toggleStatus(id: string, status: string) {
+function toggleStatus (id: string, status: string) {
   router.patch(route('proyek.status', id), {
-    status_proyek: status,
+    status_proyek: status
   }, {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
         position: 'top'
-      });
+      })
     }
   })
 }
@@ -191,7 +192,7 @@ function toggleStatus(id: string, status: string) {
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>
@@ -235,7 +236,7 @@ function toggleStatus(id: string, status: string) {
           <q-td key="nilai_kontrak" :props="props">
             {{ toRupiah(props.row.nilai_kontrak) }}
           </q-td>
-          
+
           <q-td key="tanggal_mulai" :props="props">
             {{ fullDate(props.row.tanggal_mulai) }}
           </q-td>
@@ -247,7 +248,7 @@ function toggleStatus(id: string, status: string) {
           <q-td key="tanggal_selesai" :props="props">
             {{ fullDate(props.row.tanggal_selesai) }}
           </q-td>
-          
+
           <q-td key="status_proyek" :props="props">
             <div v-if="can('create & modify proyek')">
               <q-btn-dropdown
@@ -323,7 +324,7 @@ function toggleStatus(id: string, status: string) {
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"

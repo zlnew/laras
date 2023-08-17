@@ -172,28 +172,6 @@ class RAPController extends Controller
         return redirect()->back()->with('success', 'RAP berhasil diajukan!');
     }
 
-    public function evaluate(Request $request, RAP $rap): RedirectResponse
-    {
-        DB::transaction(function () use ($request, $rap) {
-            // Update The RAP Status
-            $rap->status_aktivitas = 'Dievaluasi';
-            $rap->save();
-            
-            // Create A Timeline
-            $timeline = new Timeline;
-            $timeline->fill([
-                'user_id' => $request->user()->id,
-                'model_id' => $rap->id_rap,
-                'model_type' => get_class($rap),
-                'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Dievaluasi'
-            ]);
-            $timeline->save();
-        });
-
-        return redirect()->back()->with('success', 'RAP berhasil disetujui!');
-    }
-
     public function approve(Request $request, RAP $rap): RedirectResponse
     {
         DB::transaction(function () use ($request, $rap) {

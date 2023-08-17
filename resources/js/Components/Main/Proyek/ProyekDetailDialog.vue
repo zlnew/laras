@@ -1,32 +1,32 @@
 <script setup lang="ts">
 // cores
-import { useDialogPluginComponent } from 'quasar';
+import { useDialogPluginComponent } from 'quasar'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { fullDate } from '@/utils/date';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { fullDate } from '@/utils/date'
+import { toFloat } from '@/utils/number'
 
 // types
-import { Proyek } from '@/types';
+import type { Proyek } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 interface JoinedQuery {
-  id_user: number;
-  pic: string;
-  nama_bank: string;
-  nomor_rekening: string;
-  nama_rekening: string;
+  id_user: number
+  pic: string
+  nama_bank: string
+  nomor_rekening: string
+  nama_rekening: string
 }
 
 defineProps<{
-  proyek: Proyek & JoinedQuery;
-}>();
+  proyek: Proyek & JoinedQuery
+}>()
 </script>
 
 <template>

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 // cores
-import { router, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { router, Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 // utils
-import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions';
+import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions'
 
 // types
-import { Proyek, RAB } from '@/types';
-import { QTableColumn, useQuasar } from 'quasar';
-import { FormOptions } from '@/Pages/Main/RABPage.vue';
+import type { Proyek, RAB } from '@/types'
+import type { QTableColumn } from 'quasar'
+import type { FormOptions } from '@/Pages/Main/RABPage.vue'
 
 // comps
 import {
@@ -17,35 +18,35 @@ import {
   RABCreateDialog,
   RABEditDialog,
   RABDeleteDialog
-} from '@/Components/Main/rab-page';
-import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
+} from '@/Components/Main/rab-page'
+import { ProyekDetailDialog } from '@/Components/Main/proyek-page'
 
 const props = defineProps<{
-  rows: Array<RAB>;
-  formOptions: FormOptions; 
-}>();
+  rows: RAB[]
+  formOptions: FormOptions
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function detailProyek(data: Proyek) {
+function detailProyek (data: Proyek) {
   $q.dialog({
     component: ProyekDetailDialog,
     componentProps: {
-      proyek: data,
+      proyek: data
     }
-  });
+  })
 }
 
-function searchRAB() {
+function searchRAB () {
   $q.dialog({
     component: RABSearchDialog,
     componentProps: {
       options: props.formOptions
     }
-  });
+  })
 }
 
-function createRAB() {
+function createRAB () {
   $q.dialog({
     component: RABCreateDialog,
     componentProps: {
@@ -55,12 +56,12 @@ function createRAB() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editRAB(data: RAB) {
+function editRAB (data: RAB) {
   $q.dialog({
     component: RABEditDialog,
     componentProps: {
@@ -71,12 +72,12 @@ function editRAB(data: RAB) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteRAB(id: RAB['id_rab']) {
+function deleteRAB (id: RAB['id_rab']) {
   $q.dialog({
     component: RABDeleteDialog,
     componentProps: {
@@ -86,12 +87,12 @@ function deleteRAB(id: RAB['id_rab']) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'nama_proyek',
@@ -105,12 +106,12 @@ const columns: Array<QTableColumn> = [
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'status_rab', label: 'Status', field: 'status_rab', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 </script>
 
@@ -134,7 +135,6 @@ function toggleFullscreen() {
           color="primary"
           @click="createRAB"
         />
-        
         <div v-else class="text-h6">List RAB</div>
       </template>
 
@@ -170,7 +170,7 @@ function toggleFullscreen() {
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>
@@ -210,7 +210,7 @@ function toggleFullscreen() {
           <q-td key="tahun_anggaran" :props="props">
             {{ props.row.tahun_anggaran }}
           </q-td>
-          
+
           <q-td key="status_rab" :props="props">
             <q-btn
               v-if="isRejected(props.row.status_aktivitas)"
@@ -223,7 +223,7 @@ function toggleFullscreen() {
             >
               <q-tooltip>Ditolak</q-tooltip>
             </q-btn>
-            
+
             <Link :href="route('detail_rab', props.row.id_rab)">
               <q-badge
                 :color="props.row.status_rab == 400 ? 'red' : 'primary'"
@@ -255,7 +255,7 @@ function toggleFullscreen() {
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"

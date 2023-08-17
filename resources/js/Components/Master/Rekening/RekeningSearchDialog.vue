@@ -1,60 +1,60 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { filterOptions } from '@/utils/options';
+import { filterOptions } from '@/utils/options'
 
 // types
-import { FormOptions } from '@/Pages/Master/RekeningPage.vue';
-import { Rekening } from '@/types';
+import type { FormOptions } from '@/Pages/Master/RekeningPage.vue'
+import type { Rekening } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  options: FormOptions;
-}>();
+  options: FormOptions
+}>()
 
-const banksOptionsRef = ref(props.options.banks);
-const tujuanRekeningOptionsRef = ref(props.options.tujuanRekening);
+const banksOptionsRef = ref(props.options.banks)
+const tujuanRekeningOptionsRef = ref(props.options.tujuanRekening)
 
-function banksFilter(val: string, update: Function) {
+function banksFilter (val: string, update: any) {
   update(() => {
-    banksOptionsRef.value = filterOptions(val, props.options.banks);
-  });
+    banksOptionsRef.value = filterOptions(val, props.options.banks)
+  })
 }
 
-function tujuanRekeningFilter(val: string, update: Function) {
+function tujuanRekeningFilter (val: string, update: any) {
   update(() => {
-    tujuanRekeningOptionsRef.value = filterOptions(val, props.options.tujuanRekening);
-  });
+    tujuanRekeningOptionsRef.value = filterOptions(val, props.options.tujuanRekening)
+  })
 }
 
-const page = usePage();
-const params = page.props.query as Rekening;
+const page = usePage()
+const params = page.props.query as unknown as Rekening
 
 const form = useForm({
   nama_bank: params.nama_bank,
   nomor_rekening: params.nomor_rekening,
   nama_rekening: params.nama_rekening,
   tujuan_rekening: params.tujuan_rekening
-});
+})
 
-function submit() {
+function submit () {
   form.get(route('rekening'), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -149,7 +149,7 @@ function submit() {
               v-model="form.tujuan_rekening"
               :options="tujuanRekeningOptionsRef"
               @filter="tujuanRekeningFilter"
-            > 
+            >
               <template v-slot:option="{itemProps, opt, selected, toggleOption}">
                 <q-item v-bind="itemProps">
                   <q-item-section side>
@@ -176,7 +176,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn
             flat

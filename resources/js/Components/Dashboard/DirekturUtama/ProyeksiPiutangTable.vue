@@ -1,59 +1,62 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { router } from '@inertiajs/vue3'
+import { computed, ref } from 'vue'
+import { useQuasar, QTable } from 'quasar'
 
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
+
+// comps
+import PiutangFilterDialog from '@/Components/Dialogs/PiutangFilterDialog.vue'
 
 // types
-import { QTable, QTableColumn, useQuasar } from 'quasar';
-import { Options, ProyeksiPiutang } from '@/Pages/Dashboard/KeuanganPage.vue';
-import PiutangFilterDialog from '@/Components/Dialogs/PiutangFilterDialog.vue';
+import type { QTableColumn } from 'quasar'
+import type { Options, ProyeksiPiutang } from '@/Pages/Dashboard/DirekturUtamaPage.vue'
 
 const props = defineProps<{
-  rows: Array<ProyeksiPiutang>;
+  rows: ProyeksiPiutang[]
   options: Options
-}>();
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
-  { name: 'jumlah_piutang', label: 'Jumlah Piutang', field: 'jumlah_piutang', align: 'right', sortable: true },
-];
+  { name: 'jumlah_piutang', label: 'Jumlah Piutang', field: 'jumlah_piutang', align: 'right', sortable: true }
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const table = ref<QTable>();
+const table = ref<QTable>()
 
 const totaAmount = computed(() => {
-  const piutang = table.value?.computedRows.reduce((total, item) => {    
-    return total + toFloat(item.jumlah_piutang);
-  }, 0);
+  const piutang = table.value?.computedRows.reduce((total, item) => {
+    return (total as number) + toFloat((item.jumlah_piutang as string))
+  }, 0)
 
   return {
-    piutang: piutang,
+    piutang
   }
-});
+})
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function search() {
+function search () {
   $q.dialog({
     component: PiutangFilterDialog,
     componentProps: {
       options: props.options,
       data: {
-        route: route('dashboard.direktur_utama')
+        route: route('dashboard.admin')
       }
     }
-  });
+  })
 }
 </script>
 
@@ -93,7 +96,7 @@ function search() {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          style="font-weight: bold;"
+          style="font-weight: bold"
         >
           {{ col.label }}
         </q-th>
@@ -104,7 +107,7 @@ function search() {
       <q-tr
         :props="props"
         @click="router.visit(route('detail_penagihan', props.row.id_penagihan))"
-        style="cursor: pointer;"
+        style="cursor: pointer"
       >
         <q-td key="index" :props="props">
           {{ ++props.rowIndex }}
@@ -155,7 +158,7 @@ function search() {
   thead tr:first-child th
     top: 0
     z-index: 1
-    
+
   tr:last-child th:last-child
     z-index: 3
 

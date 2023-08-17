@@ -1,116 +1,102 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
-import { QTableColumn, useQuasar } from 'quasar';
+import { ref, computed } from 'vue'
+import { type QTableColumn, useQuasar } from 'quasar'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { can, isAdmin, isEditable } from '@/utils/permissions';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { can, isAdmin, isEditable } from '@/utils/permissions'
+import { toFloat } from '@/utils/number'
 
 // types
-import { DetailPencairanDana, DetailPengajuanDana, PencairanDana, PengajuanDana } from '@/types';
-import { JoinedWithDetailPengajuanDana } from '@/Pages/Keuangan/DetailPencairanDanaPage.vue';
+import { type DetailPencairanDana, type DetailPengajuanDana, type PencairanDana, type PengajuanDana } from '@/types'
+import { type JoinedWithDetailPengajuanDana } from '@/Pages/Keuangan/DetailPencairanDanaPage.vue'
 
 // comps
-import {
-  PencairanDanaItemDialog,
-} from '@/Components/Keuangan/detail-pencairan-dana-page';
-import { router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3'
 
 interface Data {
-  pencairanDana: PencairanDana;
-  pengajuanDana: PengajuanDana;
-  detailPencairanDana: Array<DetailPencairanDana>;
+  pencairanDana: PencairanDana
+  pengajuanDana: PengajuanDana
+  detailPencairanDana: DetailPencairanDana[]
 }
 
 const props = defineProps<{
-  rows: Array<DetailPengajuanDana & JoinedWithDetailPengajuanDana>;
-  data: Data;
-}>();
+  rows: Array<DetailPengajuanDana & JoinedWithDetailPengajuanDana>
+  data: Data
+}>()
 
 const rows = computed(() => {
   return props.rows.map(pg => {
-    pg.pembayaran_lalu = '0';
-    pg.pembayaran_saat_ini = '0';
+    pg.pembayaran_lalu = '0'
+    pg.pembayaran_saat_ini = '0'
 
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (props.data.detailPencairanDana) {
+      // eslint-disable-next-line array-callback-return
       props.data.detailPencairanDana.map(pc => {
-        const itemMatched = pc.id_detail_pengajuan_dana == pg.id_detail_pengajuan_dana;
-  
+        // eslint-disable-next-line eqeqeq
+        const itemMatched = pc.id_detail_pengajuan_dana == pg.id_detail_pengajuan_dana
+
         if (itemMatched) {
           if (pc.status_pembayaran === '100') {
-            pg.pembayaran_saat_ini = (toFloat(pg.pembayaran_saat_ini) + toFloat(pc.jumlah_pencairan)).toString();
+            pg.pembayaran_saat_ini = (toFloat(pg.pembayaran_saat_ini) + toFloat(pc.jumlah_pencairan)).toString()
           }
-  
-          if (pc.status_pembayaran === '400') {        
-            pg.pembayaran_lalu = (toFloat(pg.pembayaran_lalu) + toFloat(pc.jumlah_pencairan)).toString();
+
+          if (pc.status_pembayaran === '400') {
+            pg.pembayaran_lalu = (toFloat(pg.pembayaran_lalu) + toFloat(pc.jumlah_pencairan)).toString()
           }
         }
       })
     }
 
-    const total_pembayaran = toFloat(pg.pembayaran_lalu) + toFloat(pg.pembayaran_saat_ini);
-    const belum_dibayarkan = toFloat(pg.jumlah_pengajuan) - total_pembayaran;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const total_pembayaran = toFloat(pg.pembayaran_lalu) + toFloat(pg.pembayaran_saat_ini)
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    const belum_dibayarkan = toFloat(pg.jumlah_pengajuan) - total_pembayaran
 
     return {
       ...pg,
-      belum_dibayarkan: belum_dibayarkan
+      belum_dibayarkan
     }
-  });
-});
+  })
+})
 
 const totalAmount = computed(() => {
   const pengajuan = props.rows.reduce((total, item) => {
-    return total + toFloat(item.jumlah_pengajuan);
-  }, 0);
+    return (total as number) + toFloat(item.jumlah_pengajuan)
+  }, 0)
 
   const pembayaranLalu = rows.value.reduce((total, item) => {
-    return total + toFloat(item.pembayaran_lalu);
-  }, 0);
+    return (total as number) + toFloat(item.pembayaran_lalu)
+  }, 0)
 
   const pembayaranSaatIni = rows.value.reduce((total, item) => {
-    return total + toFloat(item.pembayaran_saat_ini);
-  }, 0);
+    return (total as number) + toFloat(item.pembayaran_saat_ini)
+  }, 0)
 
   const belumDibayarkan = rows.value.reduce((total, item) => {
-    return total + item.belum_dibayarkan;
-  }, 0);
+    return (total as number) + (item.belum_dibayarkan as number)
+  }, 0)
 
   return {
-    pengajuan: pengajuan,
-    pembayaranLalu:  pembayaranLalu,
-    pembayaranSaatIni: pembayaranSaatIni,
-    belumDibayarkan: belumDibayarkan
+    pengajuan,
+    pembayaranLalu,
+    pembayaranSaatIni,
+    belumDibayarkan
   }
-});
+})
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function pencairanDanaItem(id_detail_pengajuan_dana: DetailPengajuanDana['id_detail_pengajuan_dana']) {
-  $q.dialog({
-    component: PencairanDanaItemDialog,
-    componentProps: {
-      id_pencairan_dana: props.data.pencairanDana.id_pencairan_dana,
-      id_detail_pengajuan_dana: id_detail_pengajuan_dana
-    }
-  }).onOk((payload) => {
-    $q.notify({
-      type: payload.type,
-      message: payload.message,
-      position: 'top',
-    });
-  });
-}
-
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'uraian',
     label: 'Uraian',
     field: 'uraian',
     align: 'left',
-    sortable: true,
+    sortable: true
   },
   { name: 'pos', label: 'POS', field: 'pos', align: 'left', sortable: true },
   { name: 'jenis_pembayaran', label: 'Jenis Pembayaran', field: 'jenis_pembayaran', align: 'left', sortable: true },
@@ -119,18 +105,18 @@ const columns: Array<QTableColumn> = [
   { name: 'jumlah', label: 'Jumlah Pengajuan', field: 'jumlah_pengajuan', align: 'right', sortable: true },
   { name: 'pembayaran_lalu', label: 'Pembayaran Lalu', field: '', align: 'right', sortable: true },
   { name: 'pembayaran_saat_ini', label: 'Pembayaran Saat Ini', field: '', align: 'right', sortable: true },
-  { name: 'belum_dibayarkan', label: 'Belum Dibayarkan', field: '', align: 'right', sortable: true },
-];
+  { name: 'belum_dibayarkan', label: 'Belum Dibayarkan', field: '', align: 'right', sortable: true }
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const filter = ref('');
+const filter = ref('')
 
-function save(amount: string, id: number) {
+function save (amount: string, id: number) {
   const data = {
     id_detail_pengajuan_dana: id,
     jumlah_pencairan: toFloat(amount)
@@ -141,10 +127,10 @@ function save(amount: string, id: number) {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -235,9 +221,9 @@ function save(amount: string, id: number) {
             style="cursor: pointer;"
           >
             {{ toRupiah(props.row.pembayaran_saat_ini) }}
-  
+
             <q-tooltip>Click to edit</q-tooltip>
-  
+
             <q-popup-edit
               v-model.number="props.row.pembayaran_saat_ini"
               title="Pembayaran Saat Ini"

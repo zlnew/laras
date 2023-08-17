@@ -1,75 +1,75 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 // utils
-import { can, isEditable, isEvaluated, isSubmitted } from '@/utils/permissions';
-import { fullDate } from '@/utils/date';
+import { can, isEditable, isSubmitted } from '@/utils/permissions'
+import { fullDate } from '@/utils/date'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
 import {
   PengajuanDanaItemTable,
   PengajuanDanaSubmissionForm,
-  PengajuanDanaApprovalForm,
   PengajuanDanaEvaluateForm
-} from '@/Components/Keuangan/detail-pengajuan-dana-page';
-import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue';
-import { FilesTable } from '@/Components/Files/files-page';
+} from '@/Components/Keuangan/detail-pengajuan-dana-page'
+import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue'
+import { FilesTable } from '@/Components/Files/files-page'
 
 // types
-import { DetailPengajuanDana, DetailRAP, File, PengajuanDana, Proyek, Rekening, Timeline } from '@/types';
-import { ApprovedPengajuanSaatIni } from '@/Components/Keuangan/PengajuanDana/PengajuanDanaItem/PengajuanDanaItemTable.vue';
+import type { DetailPengajuanDana, DetailRAP, File, PengajuanDana, Proyek, Rekening, Timeline } from '@/types'
+import type { ApprovedPengajuanSaatIni } from '@/Components/Keuangan/PengajuanDana/PengajuanDanaItem/PengajuanDanaItemTable.vue'
 
 export interface FormOptions {
-  detailRap: Array<Partial<DetailRAP>>;
-  rekening: Array<Partial<Rekening>>;
+  detailRap: Array<Partial<DetailRAP>>
+  rekening: Array<Partial<Rekening>>
 }
 
 export interface Evaluasi {
-  id_detail_rap: number;
-  id_proyek: string;
-  uraian: string;
-  nama_satuan: string;
-  harga_satuan: string;
-  volume: number;
-  total_harga: number;
-} 
+  id_detail_rap: number
+  id_proyek: string
+  uraian: string
+  nama_satuan: string
+  harga_satuan: string
+  volume: number
+  total_harga: number
+}
 
 const props = defineProps<{
-  pengajuanDana: PengajuanDana & Proyek;
-  detailPengajuanDana: Array<DetailPengajuanDana>;
-  dokumenPenunjang: Array<File>;
-  evaluasi: Array<Evaluasi>;
-  formOptions: FormOptions;
-  timeline: Array<Timeline>;
-}>();
+  pengajuanDana: PengajuanDana & Proyek
+  detailPengajuanDana: DetailPengajuanDana[]
+  dokumenPenunjang: File[]
+  evaluasi: Evaluasi[]
+  formOptions: FormOptions
+  timeline: Timeline[]
+}>()
 
 const breadcrumbs = [
   { label: 'Keuangan', url: '#' },
   { label: 'Pengajuan Dana', url: route('pengajuan_dana') },
-  { label: props.pengajuanDana.nama_proyek, url: '#' },
-];
+  { label: props.pengajuanDana.nama_proyek, url: '#' }
+]
 
-const tab = ref('uraian');
+const tab = ref('uraian')
 
 const table = ref<{
-  selectedIds: Array<DetailPengajuanDana['id_detail_pengajuan_dana']>;
-  approvedPengajuanSaatIni: Array<ApprovedPengajuanSaatIni>;
-}>();
+  selectedIds: Array<DetailPengajuanDana['id_detail_pengajuan_dana']>
+  approvedPengajuanSaatIni: ApprovedPengajuanSaatIni[]
+}>()
 </script>
 
 <template>
   <Head title="Pengajuan Dana" />
   <layout>
-    
+
     <template #breadcrumbs>
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         >
@@ -122,9 +122,9 @@ const table = ref<{
           <q-tab no-caps name="uraian" label="Uraian" />
           <q-tab no-caps name="dokumen" label="Dokumen Penunjang" />
         </q-tabs>
-  
+
         <q-separator />
-  
+
         <q-tab-panels v-model="tab">
           <q-tab-panel class="q-pa-none" name="uraian">
             <pengajuan-dana-item-table
@@ -136,7 +136,7 @@ const table = ref<{
               :form-options="formOptions"
             />
           </q-tab-panel>
-    
+
           <q-tab-panel class="q-pa-none" name="dokumen">
             <files-table
               :rows="dokumenPenunjang"
@@ -159,18 +159,10 @@ const table = ref<{
     />
 
     <pengajuan-dana-evaluate-form
-      v-if="can('evaluate pengajuan dana') && isSubmitted(pengajuanDana)"
+      v-if="can('approve pengajuan dana') && isSubmitted(pengajuanDana)"
       :data="{
         evaluasi: evaluasi,
         approvedPengajuanSaatIni: table?.approvedPengajuanSaatIni,
-        id_pengajuan_dana: pengajuanDana.id_pengajuan_dana,
-        selected_ids_detail_pengajuan_dana: table?.selectedIds
-      }"
-    />
-
-    <pengajuan-dana-approval-form
-      v-if="can('approve pengajuan dana') && isEvaluated(pengajuanDana)"
-      :data="{
         id_pengajuan_dana: pengajuanDana.id_pengajuan_dana,
         selected_ids_detail_pengajuan_dana: table?.selectedIds
       }"

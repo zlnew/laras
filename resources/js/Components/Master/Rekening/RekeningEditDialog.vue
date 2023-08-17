@@ -1,40 +1,40 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { filterOptions } from '@/utils/options';
+import { filterOptions } from '@/utils/options'
 
 // types
-import { FormOptions } from '@/Pages/Master/RekeningPage.vue';
-import { Rekening } from '@/types';
+import type { FormOptions } from '@/Pages/Master/RekeningPage.vue'
+import type { Rekening } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  rekening: Rekening;
-  options: FormOptions;
-}>();
+  rekening: Rekening
+  options: FormOptions
+}>()
 
-const banksOptionsRef = ref(props.options.banks);
-const tujuanRekeningOptionsRef = ref(props.options.tujuanRekening);
+const banksOptionsRef = ref(props.options.banks)
+const tujuanRekeningOptionsRef = ref(props.options.tujuanRekening)
 
-function banksFilter(val: string, update: Function) {
+function banksFilter (val: string, update: any) {
   update(() => {
-    banksOptionsRef.value = filterOptions(val, props.options.banks);
-  });
+    banksOptionsRef.value = filterOptions(val, props.options.banks)
+  })
 }
 
-function tujuanRekeningFilter(val: string, update: Function) {
+function tujuanRekeningFilter (val: string, update: any) {
   update(() => {
-    tujuanRekeningOptionsRef.value = filterOptions(val, props.options.tujuanRekening);
-  });
+    tujuanRekeningOptionsRef.value = filterOptions(val, props.options.tujuanRekening)
+  })
 }
 
 const form = useForm({
@@ -44,17 +44,17 @@ const form = useForm({
   nomor_rekening: props.rekening.nomor_rekening,
   nama_rekening: props.rekening.nama_rekening,
   tujuan_rekening: props.rekening.tujuan_rekening
-});
+})
 
-function submit() {
+function submit () {
   form.patch(route('rekening.update', props.rekening.id_rekening), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -122,7 +122,7 @@ function submit() {
               :error="form.errors.nama_bank ? true : false"
               :error-message="form.errors.nama_bank"
               @filter="banksFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -171,7 +171,7 @@ function submit() {
               :error="form.errors.tujuan_rekening ? true : false"
               :error-message="form.errors.tujuan_rekening"
               @filter="tujuanRekeningFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -184,7 +184,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

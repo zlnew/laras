@@ -186,40 +186,6 @@ class PengajuanDanaController extends Controller
         return redirect()->back()->with('success', 'Pengajuan Dana berhasil diajukan!');
     }
 
-    public function evaluate(Request $request, PengajuanDana $pengajuanDana): RedirectResponse
-    {
-        DB::transaction(function () use ($request, $pengajuanDana) {
-            // Create A Timeline
-            $timeline = new Timeline;
-            $timeline->fill([
-                'user_id' => $request->user()->id,
-                'model_id' => $pengajuanDana->id_pengajuan_dana,
-                'model_type' => get_class($pengajuanDana),
-                'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Dievaluasi',
-            ]);
-            $timeline->save();
-
-            // Update The Detail Pengajuan Dana
-            DetailPengajuanDana::query()
-                ->where('id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
-                ->whereIn('id_detail_pengajuan_dana', $request->post('selected_ids_detail_pengajuan_dana'))
-                ->update(['status_persetujuan' => '400']);
-
-            // Delete The Detail Pengajuan Dana
-            DetailPengajuanDana::query()
-                ->where('id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
-                ->whereNotIn('id_detail_pengajuan_dana', $request->post('selected_ids_detail_pengajuan_dana'))
-                ->delete();
-
-            // Update The Pengajuan Dana Status
-            $pengajuanDana->status_aktivitas = 'Dievaluasi';
-            $pengajuanDana->save();
-        });
-
-        return redirect()->back()->with('success', 'Pengajuan Dana berhasil disetujui!');
-    }
-
     public function approve(Request $request, PengajuanDana $pengajuanDana): RedirectResponse
     {
         DB::transaction(function () use ($request, $pengajuanDana) {
@@ -230,7 +196,7 @@ class PengajuanDanaController extends Controller
                 'model_id' => $pengajuanDana->id_pengajuan_dana,
                 'model_type' => get_class($pengajuanDana),
                 'catatan' => $request->post('catatan'),
-                'status_aktivitas' => 'Disetujui'
+                'status_aktivitas' => 'Disetujui',
             ]);
             $timeline->save();
 
@@ -255,16 +221,6 @@ class PengajuanDanaController extends Controller
             $pencairanDana = new PencairanDana;
             $pencairanDana->id_pengajuan_dana = $pengajuanDana->id_pengajuan_dana;
             $pencairanDana->save();
-
-            // Create A Timeline
-            $timeline = new Timeline;
-            $timeline->fill([
-                'user_id' => $request->user()->id,
-                'model_id' => $pencairanDana->id_pencairan_dana,
-                'model_type' => get_class($pencairanDana),
-                'status_aktivitas' => 'Dibuat'
-            ]);
-            $timeline->save();
         });
 
         return redirect()->back()->with('success', 'Pengajuan Dana berhasil disetujui!');

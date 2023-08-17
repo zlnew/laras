@@ -1,35 +1,35 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options';
-import { toRupiah } from '@/utils/money';
-import { toFloat } from '@/utils/number';
+import { multiFilterOptions } from '@/utils/options'
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
 
 // types
-import { FormOptions } from '@/Pages/Main/DetailRABPage.vue';
-import { DetailRAB } from '@/types';
+import type { FormOptions } from '@/Pages/Main/DetailRABPage.vue'
+import type { DetailRAB } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  detailRab: DetailRAB;
-  options: FormOptions;
-}>();
+  detailRab: DetailRAB
+  options: FormOptions
+}>()
 
-const satuanOptionsRef = ref(props.options.satuan);
+const satuanOptionsRef = ref(props.options.satuan)
 
-function satuanFilter (val: string, update: Function) {
+function satuanFilter (val: string, update: any) {
   update(() => {
-    satuanOptionsRef.value = multiFilterOptions(val, props.options.satuan, ['nama_satuan']);
-  });
+    satuanOptionsRef.value = multiFilterOptions(val, props.options.satuan, ['nama_satuan'])
+  })
 }
 
 const form = useForm({
@@ -37,18 +37,18 @@ const form = useForm({
   harga_satuan: props.detailRab.harga_satuan,
   volume: props.detailRab.volume,
   keterangan: props.detailRab.keterangan,
-  id_satuan: props.detailRab.id_satuan,
-});
+  id_satuan: props.detailRab.id_satuan
+})
 
-function submit() {
+function submit () {
   form.patch(route('detail_rab.update', props.detailRab.id_detail_rab), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -103,7 +103,7 @@ function submit() {
               :error="form.errors.id_satuan ? true : false"
               :error-message="form.errors.id_satuan"
               @filter="satuanFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -169,7 +169,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

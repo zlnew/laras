@@ -1,9 +1,9 @@
-import { Quasar, Dialog, Notify } from 'quasar';
+import { Quasar, Dialog, Notify } from 'quasar'
 
-import '@quasar/extras/material-icons/material-icons.css';
-import 'quasar/src/css/index.sass';
+import '@quasar/extras/material-icons/material-icons.css'
+import 'quasar/src/css/index.sass'
 
-const quasar = Quasar;
+const quasar = Quasar
 
 const plugins = {
   Dialog,
@@ -13,4 +13,4 @@ const plugins = {
 export {
   quasar,
   plugins
-};
+}

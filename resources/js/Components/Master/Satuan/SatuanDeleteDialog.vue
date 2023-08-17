@@ -1,34 +1,34 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
 
 // types
-import { Satuan } from '@/types';
+import type { Satuan } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  id_satuan: Satuan['id_satuan'];
-}>();
+  idSatuan: Satuan['id_satuan']
+}>()
 
 const form = useForm({
-  id_satuan: props.id_satuan,
-});
+  id_satuan: props.idSatuan
+})
 
-function destroy() {
-  form.delete(route('satuan.destroy', props.id_satuan), {
+function destroy () {
+  form.delete(route('satuan.destroy', props.idSatuan), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 

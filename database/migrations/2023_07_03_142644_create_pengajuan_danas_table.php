@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('keperluan');
             $table->timestamp('tanggal_pengajuan')->nullable();
             $table->enum('status_pengajuan', [100, 400])->default(100);
-            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Dievaluasi', 'Ditolak'])->default('Dibuat');
+            $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Ditolak', 'Disetujui'])->default('Dibuat');
             $table->foreignUlid('id_proyek');
             $table->timestamps();
             $table->softDeletes();

@@ -1,57 +1,57 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { filterOptions, multiFilterOptions } from '@/utils/options';
+import { filterOptions, multiFilterOptions } from '@/utils/options'
 
 // types
-import { FormOptions } from '@/Pages/Keuangan/PenagihanPage.vue';
+import { type FormOptions } from '@/Pages/Keuangan/PenagihanPage.vue'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  options: FormOptions;
-}>();
+  options: FormOptions
+}>()
 
-const kasMasukOptions = ['Utang', 'Setoran Modal'];
+const kasMasukOptions = ['Utang', 'Setoran Modal']
 
-const proyekOptionsRef = ref(props.options.proyek);
-const kasMasukOptionsRef = ref(kasMasukOptions);
+const proyekOptionsRef = ref(props.options.proyek)
+const kasMasukOptionsRef = ref(kasMasukOptions)
 
-function proyekFilter (val: string, update: Function) {
+function proyekFilter (val: string, update: any) {
   update(() => {
-    proyekOptionsRef.value = multiFilterOptions(val, props.options.proyek, ['nama_proyek', 'tahun_anggaran']);
-  });
+    proyekOptionsRef.value = multiFilterOptions(val, props.options.proyek, ['nama_proyek', 'tahun_anggaran'])
+  })
 }
 
-function kasMasukFilter (val: string, update: Function) {
+function kasMasukFilter (val: string, update: any) {
   update(() => {
-    kasMasukOptionsRef.value = filterOptions(val, kasMasukOptions);
-  });
+    kasMasukOptionsRef.value = filterOptions(val, kasMasukOptions)
+  })
 }
 
 const form = useForm({
   id_proyek: null,
   keperluan: null,
   kas_masuk: null
-});
+})
 
-function submit() {
+function submit () {
   form.post(route('penagihan.store'), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -96,7 +96,7 @@ function submit() {
               :error="form.errors.id_proyek ? true : false"
               :error-message="form.errors.id_proyek"
               @filter="proyekFilter"
-            > 
+            >
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
@@ -139,7 +139,7 @@ function submit() {
               :error="form.errors.kas_masuk ? true : false"
               :error-message="form.errors.kas_masuk"
               @filter="kasMasukFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -152,7 +152,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

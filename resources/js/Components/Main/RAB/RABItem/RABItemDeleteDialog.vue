@@ -1,34 +1,34 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
 
 // types
-import { DetailRAB } from '@/types';
+import type { DetailRAB } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  id_detail_rab: DetailRAB['id_detail_rab'];
-}>();
+  id_detail_rab: DetailRAB['id_detail_rab']
+}>()
 
 const form = useForm({
-  id_detail_rab: props.id_detail_rab,
-});
+  id_detail_rab: props.id_detail_rab
+})
 
-function destroy() {
+function destroy () {
   form.delete(route('detail_rab.destroy', props.id_detail_rab), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 

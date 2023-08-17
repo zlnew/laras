@@ -1,51 +1,51 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
-import { QTableColumn, useQuasar } from 'quasar';
+import { ref, computed } from 'vue'
+import { type QTableColumn, useQuasar } from 'quasar'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { can, isAdmin, isEditable } from '@/utils/permissions';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { can, isAdmin, isEditable } from '@/utils/permissions'
+import { toFloat } from '@/utils/number'
 
 // types
-import { DetailPenagihan, Penagihan } from '@/types';
-import { FormOptions } from '@/Pages/Keuangan/DetailPenagihanPage.vue';
+import { type DetailPenagihan, type Penagihan } from '@/types'
+import { type FormOptions } from '@/Pages/Keuangan/DetailPenagihanPage.vue'
 
 // comps
 import {
   PenagihanItemCreateDialog,
   PenagihanItemEditDialog,
   PenagihanItemDeleteDialog
-} from '@/Components/Keuangan/detail-penagihan-page';
-import { useForm } from '@inertiajs/vue3';
+} from '@/Components/Keuangan/detail-penagihan-page'
+import { useForm } from '@inertiajs/vue3'
 
 interface Data {
-  penagihan: Penagihan;
+  penagihan: Penagihan
 }
 
 const props = defineProps<{
-  rows: Array<DetailPenagihan>;
-  data: Data;
-  formOptions: FormOptions; 
-}>();
+  rows: DetailPenagihan[]
+  data: Data
+  formOptions: FormOptions
+}>()
 
 const totalAmount = computed(() => {
   const penagihan = props.rows.reduce((total, item) => {
-    return total + (toFloat(item.harga_satuan_penagihan) * toFloat(item.volume_penagihan));
-  }, 0);
+    return total + (toFloat(item.harga_satuan_penagihan) * toFloat(item.volume_penagihan))
+  }, 0)
 
-  const pencairan = penagihan - toFloat(form.potongan_ppn) - toFloat(form.potongan_pph) - toFloat(form.potongan_lainnya);
+  const pencairan = penagihan - toFloat(form.potongan_ppn) - toFloat(form.potongan_pph) - toFloat(form.potongan_lainnya)
 
   return {
-    penagihan: penagihan,
-    pencairan: pencairan
+    penagihan,
+    pencairan
   }
-});
+})
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function createPenagihanItem() {
+function createPenagihanItem () {
   $q.dialog({
     component: PenagihanItemCreateDialog,
     componentProps: {
@@ -56,12 +56,12 @@ function createPenagihanItem() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editPenagihanItem(data: DetailPenagihan) {
+function editPenagihanItem (data: DetailPenagihan) {
   $q.dialog({
     component: PenagihanItemEditDialog,
     componentProps: {
@@ -72,12 +72,12 @@ function editPenagihanItem(data: DetailPenagihan) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deletePenagihanItem(id: DetailPenagihan['id_detail_penagihan']) {
+function deletePenagihanItem (id: DetailPenagihan['id_detail_penagihan']) {
   $q.dialog({
     component: PenagihanItemDeleteDialog,
     componentProps: {
@@ -87,12 +87,12 @@ function deletePenagihanItem(id: DetailPenagihan['id_detail_penagihan']) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'uraian', label: 'Uraian', field: 'uraian', align: 'left', sortable: true },
   { name: 'harga_satuan', label: 'Harga Satuan', field: 'harga_satuan', align: 'right', sortable: true },
@@ -100,31 +100,31 @@ const columns: Array<QTableColumn> = [
   { name: 'total_harga', label: 'Total Harga', field: 'total_harga', align: 'right', sortable: true },
   // { name: 'penerimaan', label: 'Penerimaan', field: '', align: 'left' },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const filter = ref('');
-const selected = ref<Array<DetailPenagihan>>([]);
+const filter = ref('')
+const selected = ref<DetailPenagihan[]>([])
 
 const form = useForm({
   potongan_ppn: props.data.penagihan.potongan_ppn,
   potongan_pph: props.data.penagihan.potongan_pph,
   potongan_lainnya: props.data.penagihan.potongan_lainnya,
   keterangan_potongan_lainnya: props.data.penagihan.keterangan_potongan_lainnya
-});
+})
 
-function saveTax() {
+function saveTax () {
   form.put(route('penagihan.tax', props.data.penagihan.id_penagihan), {
     preserveScroll: true,
     onSuccess: () => {
-      return true;
+      return true
     }
-  });
+  })
 }
 </script>
 
@@ -245,7 +245,7 @@ function saveTax() {
                 </q-item>
 
                 <q-separator />
-                
+
                 <q-item clickable>
                   <q-item-section
                     class="text-red"

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
 // layout
-import Layout from '@/Layouts/GuestLayout.vue';
+import Layout from '@/Layouts/GuestLayout.vue'
 
 // comps
-import { LoginForm, LoginBackground } from '@/Components/Auth/login-page';
+import { LoginForm, LoginBackground } from '@/Components/Auth/login-page'
 </script>
 
 <template>

@@ -1,30 +1,30 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
-import { RekeningTable } from '@/Components/Master/rekening-page';
+import { RekeningTable } from '@/Components/Master/rekening-page'
 
 // types
-import { Rekening } from '@/types';
+import type { Rekening } from '@/types'
 
 const breadcrumbs = [
   { label: 'Master', url: '#' },
   { label: 'Rekening', url: '#' }
-];
+]
 
 export interface FormOptions {
-  banks: string[];
-  tujuanRekening: string[];
+  banks: string[]
+  tujuanRekening: string[]
 }
 
 defineProps<{
-  rekening: Array<Rekening>;
-  formOptions: FormOptions;
-}>();
+  rekening: Rekening[]
+  formOptions: FormOptions
+}>()
 </script>
 
 <template>
@@ -35,6 +35,7 @@ defineProps<{
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         />

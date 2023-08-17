@@ -1,63 +1,63 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
+import { filterOptions, multiFilterOptions } from '@/utils/options'
 
 // types
-import { QTableColumn } from 'quasar';
-import { Options, Piutang } from '@/Pages/Dashboard/KepalaDivisiPage.vue';
-import { ref } from 'vue';
-import { filterOptions, multiFilterOptions } from '@/utils/options';
+import type { QTableColumn } from 'quasar'
+import type { Options, Piutang } from '@/Pages/Dashboard/KepalaDivisiPage.vue'
 
 const props = defineProps<{
-  rows: Array<Piutang>;
+  rows: Piutang[]
   options: Options
-}>();
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
-  { name: 'jumlah_piutang', label: 'Jumlah Piutang', field: 'jumlah_piutang', align: 'right', sortable: true },
-];
+  { name: 'jumlah_piutang', label: 'Jumlah Piutang', field: 'jumlah_piutang', align: 'right', sortable: true }
+]
 
-const picOptionsRef = ref(props.options.pic);
-const penggunaJasaOptionsRef = ref(props.options.penggunaJasa);
+const picOptionsRef = ref(props.options.pic)
+const penggunaJasaOptionsRef = ref(props.options.penggunaJasa)
 
-function picFilter (val: string, update: Function) {
+function picFilter (val: string, update: any) {
   update(() => {
-    picOptionsRef.value = multiFilterOptions(val, props.options.pic, ['id', 'name']);
-  });
+    picOptionsRef.value = multiFilterOptions(val, props.options.pic, ['id', 'name'])
+  })
 }
 
-function penggunaJasaFilter (val: string, update: Function) {
+function penggunaJasaFilter (val: string, update: any) {
   update(() => {
-    penggunaJasaOptionsRef.value = filterOptions(val, props.options.penggunaJasa);
-  });
+    penggunaJasaOptionsRef.value = filterOptions(val, props.options.penggunaJasa)
+  })
 }
 
-const page = usePage();
+const page = usePage()
 
 interface SearchParams {
-  piutang_pengguna_jasa: string;
-  piutang_pic: number;
+  piutang_pengguna_jasa: string
+  piutang_pic: number
 }
 
-const params = page.props.query as SearchParams;
+const params = page.props.query as unknown as SearchParams
 
 const form = useForm({
   piutang_query: true,
   piutang_pengguna_jasa: params.piutang_pengguna_jasa,
   piutang_pic: params.piutang_pic
-});
+})
 
-function search() {
+function search () {
   form.get(route('dashboard.kepala_divisi'), {
     preserveScroll: true
-  });
+  })
 }
 </script>
 
@@ -93,7 +93,7 @@ function search() {
               </q-item>
             </template>
           </q-select>
-  
+
           <q-select
             dense
             filled
@@ -125,7 +125,7 @@ function search() {
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>

@@ -1,55 +1,55 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options';
+import { multiFilterOptions } from '@/utils/options'
 
 // types
-import { Role, User } from '@/types';
+import type { Role, User } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  roles: Array<Role>;
-}>();
+  roles: Role[]
+}>()
 
-const rolesOptionsRef = ref(props.roles);
+const rolesOptionsRef = ref(props.roles)
 
-function rolesFilter(val: string, update: Function) {
+function rolesFilter (val: string, update: any) {
   update(() => {
-    rolesOptionsRef.value = multiFilterOptions(val, props.roles, ['name']);
-  });
+    rolesOptionsRef.value = multiFilterOptions(val, props.roles, ['name'])
+  })
 }
 
 interface UserRole {
-  role: string;
+  role: string
 }
 
-const page = usePage();
-const params = page.props.query as User & UserRole;
+const page = usePage()
+const params = page.props.query as unknown as User & UserRole
 
 const form = useForm({
   name: params.name,
   email: params.email,
   role: params.role
-});
+})
 
-function submit() {
+function submit () {
   form.get(route('users'), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -110,7 +110,7 @@ function submit() {
               :options="rolesOptionsRef"
               @filter="rolesFilter"
               class="text-capitalize"
-            > 
+            >
               <template v-slot:option="{itemProps, opt, selected, toggleOption}">
                 <q-item v-bind="itemProps">
                   <q-item-section side>
@@ -137,7 +137,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn
             flat

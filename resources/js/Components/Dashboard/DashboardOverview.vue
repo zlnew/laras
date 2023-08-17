@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3'
 
 export interface OverviewProps {
-  title: string;
-  data: string | number | null;
-  color?: string;
-  href?: string;
+  title: string
+  data: string | number | null
+  color?: string
+  href?: string
 }
 
 defineProps<{
-  overview: OverviewProps[];
-}>();
+  overview: OverviewProps[]
+}>()
 
-function visitUrl(url: string | undefined) {
-  if (url) {
-    router.visit(url);
+function visitUrl (url: string | undefined) {
+  if (url !== undefined) {
+    router.visit(url)
   }
 }
 </script>

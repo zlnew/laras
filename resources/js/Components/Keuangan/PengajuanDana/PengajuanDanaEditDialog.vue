@@ -1,49 +1,49 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options';
+import { multiFilterOptions } from '@/utils/options'
 
 // types
-import { FormOptions } from '@/Pages/Keuangan/PengajuanDanaPage.vue';
-import { PengajuanDana } from '@/types';
+import { type FormOptions } from '@/Pages/Keuangan/PengajuanDanaPage.vue'
+import { type PengajuanDana } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  pengajuanDana: PengajuanDana;
-  options: FormOptions;
-}>();
+  pengajuanDana: PengajuanDana
+  options: FormOptions
+}>()
 
-const proyekOptionsRef = ref(props.options.proyek);
+const proyekOptionsRef = ref(props.options.proyek)
 
-function proyekFilter (val: string, update: Function) {
+function proyekFilter (val: string, update: any) {
   update(() => {
-    proyekOptionsRef.value = multiFilterOptions(val, props.options.proyek, ['nama_proyek', 'tahun_anggaran']);
-  });
+    proyekOptionsRef.value = multiFilterOptions(val, props.options.proyek, ['nama_proyek', 'tahun_anggaran'])
+  })
 }
 
 const form = useForm({
   id_proyek: props.pengajuanDana.id_proyek,
-  keperluan: props.pengajuanDana.keperluan,
-});
+  keperluan: props.pengajuanDana.keperluan
+})
 
-function submit() {
+function submit () {
   form.patch(route('pengajuan_dana.update', props.pengajuanDana.id_pengajuan_dana), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -88,7 +88,7 @@ function submit() {
               :error="form.errors.id_proyek ? true : false"
               :error-message="form.errors.id_proyek"
               @filter="proyekFilter"
-            > 
+            >
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
@@ -121,7 +121,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

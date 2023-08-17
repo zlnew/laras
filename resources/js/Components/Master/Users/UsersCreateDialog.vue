@@ -1,31 +1,31 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options';
+import { multiFilterOptions } from '@/utils/options'
 
 // types
-import { Role } from '@/types';
+import type { Role } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  roles: Array<Role>;
-}>();
+  roles: Role[]
+}>()
 
-const rolesOptionsRef = ref(props.roles);
+const rolesOptionsRef = ref(props.roles)
 
-function rolesFilter(val: string, update: Function) {
+function rolesFilter (val: string, update: any) {
   update(() => {
-    rolesOptionsRef.value = multiFilterOptions(val, props.roles, ['name']);
-  });
+    rolesOptionsRef.value = multiFilterOptions(val, props.roles, ['name'])
+  })
 }
 
 const form = useForm({
@@ -33,17 +33,17 @@ const form = useForm({
   email: null,
   password: null,
   role: null
-});
+})
 
-function submit() {
+function submit () {
   form.post(route('users.store'), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -120,7 +120,7 @@ function submit() {
               :error-message="form.errors.role"
               @filter="rolesFilter"
               class="text-capitalize"
-            > 
+            >
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section class="text-capitalize">
@@ -140,7 +140,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

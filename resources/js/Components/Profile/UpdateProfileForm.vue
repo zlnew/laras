@@ -1,38 +1,38 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useQuasar } from 'quasar';
+import { useForm } from '@inertiajs/vue3'
+import { useQuasar } from 'quasar'
 
 // utils
-import { avatar } from '@/utils/avatar';
+import { avatar } from '@/utils/avatar'
 
 // types
-import { User } from '@/types';
+import type { User } from '@/types'
 
 const props = defineProps<{
   data: {
-    user: User;
-    role: string;
+    user: User
+    role: string
   }
-}>();
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const form = useForm({
   name: props.data.user.name,
-  email: props.data.user.email,
-});
+  email: props.data.user.email
+})
 
-function save() {
+function save () {
   form.patch(route('profile.update'), {
     onSuccess: (page) => {
       $q.notify({
         color: 'positive',
         message: page.props.flash.success,
         position: 'top'
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -66,7 +66,7 @@ function save() {
             :error="form.errors.name ? true : false"
             :error-message="form.errors.name"
           />
-    
+
           <q-input
             outlined
             counter
@@ -79,9 +79,9 @@ function save() {
           />
         </div>
       </q-card-section>
-  
+
       <q-separator />
-  
+
       <q-card-actions align="right">
         <q-btn
           flat

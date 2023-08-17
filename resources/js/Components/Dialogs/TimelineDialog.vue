@@ -1,55 +1,53 @@
 <script setup lang="ts">
 // cores
-import { useDialogPluginComponent } from 'quasar';
+import { useDialogPluginComponent } from 'quasar'
 
 // utils
-import { fullDate } from '@/utils/date';
+import { fullDate } from '@/utils/date'
 
 // types
-import { Timeline } from '@/types';
+import type { Timeline } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 interface JoinedWithTimeline {
-  user_name: string;
-  user_role: string;
-  created_at: string;
+  user_name: string
+  user_role: string
+  created_at: string
 }
 
 defineProps<{
-  title: string;
-  timeline: Array<Timeline & JoinedWithTimeline>;
-}>();
+  title: string
+  timeline: Timeline[] & JoinedWithTimeline[]
+}>()
 
 const icon = (status: Timeline['status_aktivitas']) => {
-   switch (status) {
-    case 'Dibuat': return 'commit';
-    case 'Diajukan': return 'send';
-    case 'Dibayar': return 'price_check';
-    case 'Ditolak': return 'priority_high';
-    case 'Dievaluasi': return 'done';
-    case 'Disetujui': return 'done_all';
-    case 'Diterima Bertahap': return 'done';
-    case 'Diterima': return 'done_all';
-   }
-};
+  switch (status) {
+    case 'Dibuat': return 'commit'
+    case 'Diajukan': return 'send'
+    case 'Dibayar': return 'price_check'
+    case 'Ditolak': return 'priority_high'
+    case 'Disetujui': return 'done_all'
+    case 'Diterima Bertahap': return 'done'
+    case 'Diterima': return 'done_all'
+  }
+}
 
 const color = (status: Timeline['status_aktivitas']) => {
-   switch (status) {
-    case 'Dibuat': return 'secondary';
-    case 'Diajukan': return 'primary';
-    case 'Dibayar': return 'primary';
-    case 'Ditolak': return 'red';
-    case 'Dievaluasi': return 'green';
-    case 'Disetujui': return 'green';
-    case 'Diterima Bertahap': return 'green';
-    case 'Diterima': return 'green';
-   }
-};
+  switch (status) {
+    case 'Dibuat': return 'secondary'
+    case 'Diajukan': return 'primary'
+    case 'Dibayar': return 'primary'
+    case 'Ditolak': return 'red'
+    case 'Disetujui': return 'green'
+    case 'Diterima Bertahap': return 'green'
+    case 'Diterima': return 'green'
+  }
+}
 </script>
 
 <template>

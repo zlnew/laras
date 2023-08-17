@@ -1,6 +1,5 @@
 <template>
   <q-layout view="hHh lpR fFf" class="bg-blue-grey-1">
-
     <q-page-container>
       <slot></slot>
     </q-page-container>

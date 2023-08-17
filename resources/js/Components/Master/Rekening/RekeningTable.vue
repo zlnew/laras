@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
-import { QTableColumn, useQuasar } from 'quasar';
-import { ref } from 'vue';
+import { router } from '@inertiajs/vue3'
+import { useQuasar } from 'quasar'
+import { ref } from 'vue'
 
 // comps
 import {
@@ -10,29 +10,30 @@ import {
   RekeningCreateDialog,
   RekeningEditDialog,
   RekeningDeleteDialog
-} from '@/Components/Master/rekening-page';
+} from '@/Components/Master/rekening-page'
 
 // types
-import { Rekening } from '@/types';
-import { FormOptions } from '@/Pages/Master/RekeningPage.vue';
+import type { Rekening } from '@/types'
+import type { FormOptions } from '@/Pages/Master/RekeningPage.vue'
+import type { QTableColumn } from 'quasar'
 
 const props = defineProps<{
-  rows: Array<Rekening>;
-  formOptions: FormOptions;
-}>();
+  rows: Rekening[]
+  formOptions: FormOptions
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function searchRekening() {
+function searchRekening () {
   $q.dialog({
     component: RekeningSearchDialog,
     componentProps: {
       options: props.formOptions
     }
-  });
+  })
 }
 
-function createRekening() {
+function createRekening () {
   $q.dialog({
     component: RekeningCreateDialog,
     componentProps: {
@@ -42,12 +43,12 @@ function createRekening() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editRekening(data: Rekening) {
+function editRekening (data: Rekening) {
   $q.dialog({
     component: RekeningEditDialog,
     componentProps: {
@@ -58,27 +59,27 @@ function editRekening(data: Rekening) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteRekening(id_rekening: Rekening['id_rekening']) {
+function deleteRekening (idRekening: Rekening['id_rekening']) {
   $q.dialog({
     component: RekeningDeleteDialog,
     componentProps: {
-      id_rekening: id_rekening
+      idRekening
     }
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   {
     name: 'index',
     label: '#',
@@ -95,12 +96,12 @@ const columns: Array<QTableColumn> = [
   { name: 'rekening', label: 'Rekening', field: 'nomor_rekening', align: 'left', sortable: true },
   { name: 'tujuan', label: 'Tujuan', field: 'tujuan_rekening', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 </script>
 
@@ -183,7 +184,7 @@ function toggleFullscreen() {
             <div>{{ props.row.nomor_rekening }}</div>
             <div class="text-blue-grey-8">{{ props.row.nama_rekening }}</div>
           </q-td>
-          
+
           <q-td key="tujuan" :props="props">
             {{ props.row.tujuan_rekening }}
           </q-td>
@@ -210,7 +211,7 @@ function toggleFullscreen() {
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"

@@ -1,74 +1,73 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref, computed } from 'vue'
 
 // utils
-import { filterOptions, multiFilterOptions } from '@/utils/options';
+import { filterOptions, multiFilterOptions } from '@/utils/options'
 
 // types
-import { User } from '@/types';
-import { computed } from 'vue';
+import type { User } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 interface Options {
-  pic: Array<User>;
-  penggunaJasa: string[];
+  pic: User[]
+  penggunaJasa: string[]
 }
 
 const props = defineProps<{
-  options: Options;
+  options: Options
   data: {
-    route: string;
+    route: string
   }
-}>();
+}>()
 
-const picOptionsRef = ref(props.options.pic);
-const penggunaJasaOptionsRef = ref(props.options.penggunaJasa);
+const picOptionsRef = ref(props.options.pic)
+const penggunaJasaOptionsRef = ref(props.options.penggunaJasa)
 
-function picFilter (val: string, update: Function) {
+function picFilter (val: string, update: any) {
   update(() => {
-    picOptionsRef.value = multiFilterOptions(val, props.options.pic, ['id', 'name']);
-  });
+    picOptionsRef.value = multiFilterOptions(val, props.options.pic, ['id', 'name'])
+  })
 }
 
-function penggunaJasaFilter (val: string, update: Function) {
+function penggunaJasaFilter (val: string, update: any) {
   update(() => {
-    penggunaJasaOptionsRef.value = filterOptions(val, props.options.penggunaJasa);
-  });
+    penggunaJasaOptionsRef.value = filterOptions(val, props.options.penggunaJasa)
+  })
 }
 
-const page = usePage();
+const page = usePage()
 
 interface SearchQuery {
-  piutang_pic: any;
-  piutang_pengguna_jasa: string;
+  piutang_pic: any
+  piutang_pengguna_jasa: string
 }
 
-const params = page.props.query as SearchQuery;
+const params = page.props.query as unknown as SearchQuery
 
 const pic = computed(() => {
-  return props.options.pic.find(item => item.id == params.piutang_pic);
-});
+  return props.options.pic.find(item => item.id === params.piutang_pic)
+})
 
 const form = useForm({
   piutang_query: true,
   piutang_pic: pic.value,
   piutang_pengguna_jasa: params.piutang_pengguna_jasa
-});
+})
 
-function search() {
+function search () {
   form.get(props.data.route, {
     preserveScroll: true,
     preserveState: true,
-    onSuccess: () => onDialogOK()
-  });
+    onSuccess: () => { onDialogOK() }
+  })
 }
 </script>
 
@@ -140,7 +139,7 @@ function search() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn
             flat

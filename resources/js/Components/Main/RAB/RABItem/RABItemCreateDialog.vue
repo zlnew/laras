@@ -1,34 +1,34 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options';
-import { toRupiah } from '@/utils/money';
+import { multiFilterOptions } from '@/utils/options'
+import { toRupiah } from '@/utils/money'
 
 // types
-import { FormOptions } from '@/Pages/Main/DetailRABPage.vue';
-import { RAB } from '@/types';
+import type { FormOptions } from '@/Pages/Main/DetailRABPage.vue'
+import type { RAB } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  rab: RAB;
-  options: FormOptions;
-}>();
+  rab: RAB
+  options: FormOptions
+}>()
 
-const satuanOptionsRef = ref(props.options.satuan);
+const satuanOptionsRef = ref(props.options.satuan)
 
-function satuanFilter (val: string, update: Function) {
+function satuanFilter (val: string, update: any) {
   update(() => {
-    satuanOptionsRef.value = multiFilterOptions(val, props.options.satuan, ['nama_satuan']);
-  });
+    satuanOptionsRef.value = multiFilterOptions(val, props.options.satuan, ['nama_satuan'])
+  })
 }
 
 const form = useForm({
@@ -36,18 +36,18 @@ const form = useForm({
   harga_satuan: 0,
   volume: 0,
   keterangan: null,
-  id_satuan: null,
-});
+  id_satuan: null
+})
 
-function submit() {
+function submit () {
   form.post(route('detail_rab.store', props.rab.id_rab), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -57,7 +57,7 @@ function submit() {
     :no-backdrop-dismiss="true"
     @hide="onDialogHide"
   >
-    <q-card style="width: 700px; max-width: 80vw;">
+    <q-card style="width: 700px max-width: 80vw">
       <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">Tambah Uraian RAB</div>
           <q-space />
@@ -102,7 +102,7 @@ function submit() {
               :error="form.errors.id_satuan ? true : false"
               :error-message="form.errors.id_satuan"
               @filter="satuanFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -168,7 +168,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

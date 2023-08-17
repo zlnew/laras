@@ -1,48 +1,48 @@
 <script setup lang="ts">
 // cores
-import { useQuasar } from 'quasar';
+import { useQuasar } from 'quasar'
+import { useForm } from '@inertiajs/vue3'
 
 // types
-import { RAB } from '@/types';
-import { useForm } from '@inertiajs/vue3';
+import type { RAB } from '@/types'
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const props = defineProps<{
   data: {
-    id_rab: RAB['id_rab'];
+    id_rab: RAB['id_rab']
   }
-}>();
+}>()
 
 const form = useForm({
   catatan: ''
-});
+})
 
-function approve() {  
+function approve () {
   form.post(route('rab.approve', props.data.id_rab), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function reject() {
+function reject () {
   form.post(route('rab.reject', props.data.id_rab), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function approveRAB() {
+function approveRAB () {
   $q.dialog({
     title: 'Approval Confirmation',
     message: 'Are you sure want to perform this action?',
@@ -57,12 +57,12 @@ function approveRAB() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    approve();
-  });
+    form.catatan = payload
+    approve()
+  })
 }
 
-function rejectRAB() {
+function rejectRAB () {
   $q.dialog({
     title: 'Rejection Confirmation',
     message: 'Are you sure want to perform this action?',
@@ -77,9 +77,9 @@ function rejectRAB() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    reject();
-  });
+    form.catatan = payload
+    reject()
+  })
 }
 </script>
 

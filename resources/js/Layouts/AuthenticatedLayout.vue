@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // cores
-import { ref } from 'vue';
+import { ref } from 'vue'
 
 // comps
 import {
@@ -8,18 +8,18 @@ import {
   AuthenticatedLeftDrawer,
   AuthenticatedPageContainer,
   AuthenticatedFooter
-} from '@/Components/Layouts/authenticated-layout';
+} from '@/Components/Layouts/authenticated-layout'
 
-const leftDrawerOpen = ref(true);
+const leftDrawerOpen = ref(true)
 
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
+function toggleLeftDrawer () {
+  leftDrawerOpen.value = !leftDrawerOpen.value
 }
 </script>
 
 <template>
   <q-layout view="lHh lpR fFf" class="bg-grey-2">
-    
+
     <authenticated-header
       @toggle-left-drawer="toggleLeftDrawer"
     >
@@ -37,6 +37,6 @@ function toggleLeftDrawer() {
 
       <authenticated-footer />
     </authenticated-page-container>
-    
+
   </q-layout>
 </template>

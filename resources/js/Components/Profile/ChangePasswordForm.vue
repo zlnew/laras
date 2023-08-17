@@ -1,29 +1,26 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useQuasar } from 'quasar';
+import { useForm } from '@inertiajs/vue3'
+import { useQuasar } from 'quasar'
 
-// utils
-import { avatar } from '@/utils/avatar';
-
-const $q = useQuasar();
+const $q = useQuasar()
 
 const form = useForm({
   current_password: null,
   password: null,
-  confirmed_password: null,
-});
+  confirmed_password: null
+})
 
-function save() {
+function save () {
   form.patch(route('password.update'), {
     onSuccess: (page) => {
       $q.notify({
         color: 'positive',
         message: page.props.flash.success,
         position: 'top'
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -45,7 +42,7 @@ function save() {
             :error="form.errors.current_password ? true : false"
             :error-message="form.errors.current_password"
           />
-    
+
           <q-input
             outlined
             hide-bottom-space
@@ -67,9 +64,9 @@ function save() {
           />
         </div>
       </q-card-section>
-  
+
       <q-separator />
-  
+
       <q-card-actions align="right">
         <q-btn
           flat

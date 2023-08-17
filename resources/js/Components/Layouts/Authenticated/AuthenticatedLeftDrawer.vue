@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { usePage, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
 
 // utils
-import { userRole } from '@/utils/permissions';
+import { isAdmin, userRole } from '@/utils/permissions'
 
-const props =defineProps<{
-  leftDrawerOpen: boolean;
-}>();
+const props = defineProps<{
+  leftDrawerOpen: boolean
+}>()
 
 const leftDrawerOpen = computed(() => {
-  return props.leftDrawerOpen;
-});
+  return props.leftDrawerOpen
+})
 
 const dashboardPage = computed(() => {
   switch (userRole()) {
-    case 'admin': return 'dashboard.admin';
-    case 'manajer proyek': return 'dashboard.manajer_proyek';
-    case 'kepala divisi': return 'dashboard.kepala_divisi';
-    case 'keuangan': return 'dashboard.keuangan';
-    case 'direktur utama': return 'dashboard.direktur_utama';
-    default: return 'dashboard.admin';
-  };
-});
+    case 'admin': return 'dashboard.admin'
+    case 'manajer proyek': return 'dashboard.manajer_proyek'
+    case 'kepala divisi': return 'dashboard.kepala_divisi'
+    case 'keuangan': return 'dashboard.keuangan'
+    case 'direktur utama': return 'dashboard.direktur_utama'
+    default: return 'dashboard.admin'
+  }
+})
 
 const menuList = [
   {
@@ -30,7 +30,7 @@ const menuList = [
     label: 'Dashboard',
     link: route(dashboardPage.value),
     active: route().current(dashboardPage.value),
-    separator: true,
+    separator: true
   },
   {
     icon: 'group',
@@ -47,7 +47,7 @@ const menuList = [
     link: route('rekening'),
     active: route().current('rekening'),
     onlyAdmin: true,
-    separator: false,
+    separator: false
   },
   {
     icon: 'straighten',
@@ -55,7 +55,7 @@ const menuList = [
     link: route('satuan'),
     active: route().current('satuan'),
     onlyAdmin: true,
-    separator: true,
+    separator: true
   },
   {
     icon: 'topic',
@@ -114,7 +114,7 @@ const menuList = [
     label: 'Pencairan Dana',
     link: route('laporan.pencairan_dana'),
     active: route().current('laporan.pencairan_dana'),
-    separator: false,
+    separator: false
   },
   {
     icon: 'summarize',
@@ -123,18 +123,7 @@ const menuList = [
     active: route().current('laporan.penagihan'),
     separator: false
   }
-];
-
-function isAdmin(): boolean {
-  const page = usePage();
-  const role = page.props.role;
-
-  if (role === 'admin') {
-    return true;
-  }
-
-  return false;
-}
+]
 </script>
 
 <template>
@@ -145,7 +134,7 @@ function isAdmin(): boolean {
     class="q-pa-md q-gutter-y-md"
     v-model="leftDrawerOpen"
   >
-    <div style="border: 1px solid blue;">
+    <div style="border: 1px solid blue">
       <q-img
         no-spinner
         :initial-ratio="4.15"
@@ -167,7 +156,7 @@ function isAdmin(): boolean {
             :preserve-scroll="true"
             :preserve-state="true"
             :href="menuItem.link"
-            style="text-decoration: none;"
+            style="text-decoration: none"
           >
             <q-item
               clickable
@@ -182,7 +171,7 @@ function isAdmin(): boolean {
                   :icon="menuItem.icon"
                 />
               </q-item-section>
-    
+
               <q-item-section
                 :class="{
                   'text-weight-bold': menuItem.active,
@@ -193,7 +182,7 @@ function isAdmin(): boolean {
               </q-item-section>
             </q-item>
           </Link>
-  
+
           <q-separator class="q-mt-sm" :key="'sep' + index" v-if="menuItem.separator" />
         </div>
       </template>

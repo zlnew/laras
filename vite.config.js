@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite';
+import { quasar, transformAssetUrls } from '@quasar/vite-plugin';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
-import { quasar, transformAssetUrls } from '@quasar/vite-plugin'
+import eslint from 'vite-plugin-eslint';
 
 export default defineConfig({
     plugins: [
@@ -14,6 +15,7 @@ export default defineConfig({
         }),
         quasar({
             sassVariables: 'resources/css/quasar-variables.sass'
-        })
+        }),
+        eslint()
     ]
 });

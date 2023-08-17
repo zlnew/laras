@@ -1,27 +1,27 @@
 <script setup lang="ts">
 // cores
-import { useQuasar } from 'quasar';
+import { useQuasar } from 'quasar'
 
 // comps
-import { PengajuanDanaEvaluationDialog } from '@/Components/Keuangan/detail-pengajuan-dana-page';
+import { PengajuanDanaEvaluationDialog } from '@/Components/Keuangan/detail-pengajuan-dana-page'
 
 // types
-import { DetailPengajuanDana, PengajuanDana } from '@/types';
-import { Evaluasi } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue';
-import { ApprovedPengajuanSaatIni } from './PengajuanDanaItem/PengajuanDanaItemTable.vue';
+import { type DetailPengajuanDana, type PengajuanDana } from '@/types'
+import { type Evaluasi } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue'
+import { type ApprovedPengajuanSaatIni } from './PengajuanDanaItem/PengajuanDanaItemTable.vue'
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const props = defineProps<{
   data: {
-    id_pengajuan_dana: PengajuanDana['id_pengajuan_dana'];
-    selected_ids_detail_pengajuan_dana: Array<DetailPengajuanDana['id_detail_pengajuan_dana']> | undefined;
-    approvedPengajuanSaatIni: Array<ApprovedPengajuanSaatIni> | undefined;
-    evaluasi: Array<Evaluasi>;
+    id_pengajuan_dana: PengajuanDana['id_pengajuan_dana']
+    selected_ids_detail_pengajuan_dana: Array<DetailPengajuanDana['id_detail_pengajuan_dana']> | undefined
+    approvedPengajuanSaatIni: ApprovedPengajuanSaatIni[] | undefined
+    evaluasi: Evaluasi[]
   }
-}>();
+}>()
 
-function lembarEvaluasi() {
+function lembarEvaluasi () {
   $q.dialog({
     component: PengajuanDanaEvaluationDialog,
     componentProps: {
@@ -31,9 +31,9 @@ function lembarEvaluasi() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 </script>
 

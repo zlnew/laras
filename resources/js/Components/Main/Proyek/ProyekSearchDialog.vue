@@ -1,80 +1,80 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { computed, ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { computed, ref } from 'vue'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { filterOptions, multiFilterOptions } from '@/utils/options';
-import { FormOptions } from '@/Pages/Main/ProyekPage.vue';
+import { toRupiah } from '@/utils/money'
+import { filterOptions, multiFilterOptions } from '@/utils/options'
 
 // types
-import { Proyek } from '@/types';
+import type { Proyek } from '@/types'
+import type { FormOptions } from '@/Pages/Main/ProyekPage.vue'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 interface ProyekSearch {
-  nilai_kontrak_min: number;
-  nilai_kontrak_max: number;
-  rekening: string;
+  nilai_kontrak_min: number
+  nilai_kontrak_max: number
+  rekening: string
 }
 
 const props = defineProps<{
-  rows: Array<Proyek>;
-  options: FormOptions;
-}>();
+  rows: Proyek[]
+  options: FormOptions
+}>()
 
-const penggunaJasaOptionsRef = ref(props.options.penggunaJasa);
-const penyediaJasaOptionsRef = ref(props.options.penyediaJasa);
-const tahunAnggaranOptionsRef = ref(props.options.tahunAnggaran);
-const picOptionsRef = ref(props.options.currentPic);
-const rekeningOptionsRef = ref(props.options.rekening);
+const penggunaJasaOptionsRef = ref(props.options.penggunaJasa)
+const penyediaJasaOptionsRef = ref(props.options.penyediaJasa)
+const tahunAnggaranOptionsRef = ref(props.options.tahunAnggaran)
+const picOptionsRef = ref(props.options.currentPic)
+const rekeningOptionsRef = ref(props.options.rekening)
 
-function penggunaJasaFilter (val: string, update: Function) {
+function penggunaJasaFilter (val: string, update: any) {
   update(() => {
     penggunaJasaOptionsRef.value = filterOptions(val, props.options.penggunaJasa)
-  });
+  })
 }
 
-function penyediaJasaFilter (val: string, update: Function) {
+function penyediaJasaFilter (val: string, update: any) {
   update(() => {
     penyediaJasaOptionsRef.value = filterOptions(val, props.options.penyediaJasa)
-  });
+  })
 }
 
-function tahunAnggaranFilter (val: string, update: Function) {
+function tahunAnggaranFilter (val: string, update: any) {
   update(() => {
     tahunAnggaranOptionsRef.value = filterOptions(val, props.options.tahunAnggaran)
-  });
+  })
 }
 
-function picFilter (val: string, update: Function) {
+function picFilter (val: string, update: any) {
   update(() => {
     picOptionsRef.value = multiFilterOptions(
       val, props.options.currentPic, ['id', 'name']
     )
-  });
+  })
 }
 
-function rekeningFilter (val: string, update: Function) {
+function rekeningFilter (val: string, update: any) {
   update(() => {
     rekeningOptionsRef.value = multiFilterOptions(
       val, props.options.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
     )
-  });
+  })
 }
 
-const page = usePage();
-const params = page.props.query as Proyek & ProyekSearch;
+const page = usePage()
+const params = page.props.query as unknown as Proyek & ProyekSearch
 
 const pic = computed(() => {
-  return props.options.currentPic.find(item => item.id == params.id_user);
-});
+  return props.options.currentPic.find(item => item.id === params.id_user)
+})
 
 const form = useForm({
   nama_proyek: params.nama_proyek,
@@ -85,25 +85,23 @@ const form = useForm({
   tahun_anggaran: params.tahun_anggaran,
   nomor_spmk: params.nomor_spmk,
   tanggal_spmk: params.tanggal_spmk,
-  nilai_kontrak_min: params.nilai_kontrak_min || 0,
-  nilai_kontrak_max: params.nilai_kontrak_max || 0,
+  nilai_kontrak_min: params.nilai_kontrak_min,
+  nilai_kontrak_max: params.nilai_kontrak_max,
   tanggal_mulai: params.tanggal_mulai,
   tanggal_selesai: params.tanggal_selesai,
   id_user: pic.value,
   id_rekening: params.id_rekening,
   status_proyek: params.status_proyek
-});
+})
 
-function search() {
-  form
-  .transform(form => ({
+function search () {
+  form.transform(form => ({
     ...form,
     nilai_kontrak_min: form.nilai_kontrak_min === 0 ? undefined : form.nilai_kontrak_min,
     nilai_kontrak_max: form.nilai_kontrak_max === 0 ? undefined : form.nilai_kontrak_max
-  }))
-  .get(route('proyek'), {
-    onSuccess: () => onDialogOK()
-  });
+  })).get(route('proyek'), {
+    onSuccess: () => { onDialogOK() }
+  })
 }
 </script>
 
@@ -303,7 +301,6 @@ function search() {
                 <q-input
                   outlined
                   clearable
-  
                   label="Tanggal Mulai"
                   type="date"
                   v-model="form.tanggal_mulai"
@@ -313,7 +310,6 @@ function search() {
                 <q-input
                   outlined
                   clearable
-  
                   label="Tanggal Selesai"
                   type="date"
                   v-model="form.tanggal_selesai"
@@ -367,7 +363,7 @@ function search() {
               :option-label="(opt) => `${opt.nama_bank} | ${opt.nomor_rekening} - ${opt.nama_rekening}`"
               :options="rekeningOptionsRef"
               @filter="rekeningFilter"
-            >              
+            >
               <template v-slot:option="{itemProps, opt, selected, toggleOption}">
                 <q-item v-bind="itemProps">
                   <q-item-section side>
@@ -422,7 +418,7 @@ function search() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn
             flat

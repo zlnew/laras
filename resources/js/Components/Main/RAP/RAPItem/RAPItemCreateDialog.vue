@@ -1,43 +1,43 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { filterOptions, multiFilterOptions } from '@/utils/options';
-import { toRupiah } from '@/utils/money';
+import { filterOptions, multiFilterOptions } from '@/utils/options'
+import { toRupiah } from '@/utils/money'
 
 // types
-import { FormOptions } from '@/Pages/Main/DetailRAPPage.vue';
-import { RAP } from '@/types';
+import type { FormOptions } from '@/Pages/Main/DetailRAPPage.vue'
+import type { RAP } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  rap: RAP;
-  options: FormOptions;
-}>();
+  rap: RAP
+  options: FormOptions
+}>()
 
-const statusOptions = ['Gaji','Sewa','Beli','Subkon/Vendor'];
+const statusOptions = ['Gaji', 'Sewa', 'Beli', 'Subkon/Vendor']
 
-const statusOptionsRef = ref(statusOptions);
-const satuanOptionsRef = ref(props.options.satuan);
+const statusOptionsRef = ref(statusOptions)
+const satuanOptionsRef = ref(props.options.satuan)
 
-function satuanFilter (val: string, update: Function) {
+function satuanFilter (val: string, update: any) {
   update(() => {
-    satuanOptionsRef.value = multiFilterOptions(val, props.options.satuan, ['nama_satuan']);
-  });
+    satuanOptionsRef.value = multiFilterOptions(val, props.options.satuan, ['nama_satuan'])
+  })
 }
 
-function statusFilter (val: string, update: Function) {
+function statusFilter (val: string, update: any) {
   update(() => {
-    statusOptionsRef.value = filterOptions(val, statusOptions);
-  });
+    statusOptionsRef.value = filterOptions(val, statusOptions)
+  })
 }
 
 const form = useForm({
@@ -46,18 +46,18 @@ const form = useForm({
   harga_satuan: 0,
   volume: 0,
   keterangan: null,
-  id_satuan: null,
-});
+  id_satuan: null
+})
 
-function submit() {
+function submit () {
   form.post(route('detail_rap.store', props.rap.id_rap), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -107,7 +107,7 @@ function submit() {
               :error="form.errors.status_uraian ? true : false"
               :error-message="form.errors.status_uraian"
               @filter="statusFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -134,7 +134,7 @@ function submit() {
               :error="form.errors.id_satuan ? true : false"
               :error-message="form.errors.id_satuan"
               @filter="satuanFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -200,7 +200,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

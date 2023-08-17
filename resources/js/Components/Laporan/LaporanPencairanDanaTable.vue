@@ -1,61 +1,62 @@
 <script setup lang="ts">
 // cores
-import { router, Link } from '@inertiajs/vue3';
-import { ref, computed, onMounted } from 'vue';
+import { router, Link } from '@inertiajs/vue3'
+import { ref, computed, onMounted } from 'vue'
+import { QTable, useQuasar } from 'quasar'
 
 // utils
-import { isRejected } from '@/utils/permissions';
-import { toRupiah } from '@/utils/money';
-import { toFloat } from '@/utils/number';
-import { createBody, tableToPdf } from '@/utils/pdf';
-import { excelParser } from '@/utils/excel';
+import { isRejected } from '@/utils/permissions'
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
+import { createBody, tableToPdf } from '@/utils/pdf'
+import { excelParser } from '@/utils/excel'
 
 // types
-import { PencairanDana, Proyek } from '@/types';
-import { QTable, QTableColumn, useQuasar } from 'quasar';
-import { FormOptions } from '@/Pages/Laporan/LaporanPencairanDanaPage.vue';
+import type { PencairanDana, Proyek } from '@/types'
+import type { QTableColumn } from 'quasar'
+import type { FormOptions } from '@/Pages/Laporan/LaporanPencairanDanaPage.vue'
 
 // comps
-import { LaporanPencairanDanaSearchDialog } from '@/Components/Laporan/laporan-page';
-import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
+import { LaporanPencairanDanaSearchDialog } from '@/Components/Laporan/laporan-page'
+import { ProyekDetailDialog } from '@/Components/Main/proyek-page'
 
 const props = defineProps<{
-  rows: Array<PencairanDana>;
-  formOptions: FormOptions; 
-}>();
+  rows: PencairanDana[]
+  formOptions: FormOptions
+}>()
 
 const rows = computed(() => {
   return props.rows.map(row => {
-    const status = row.status_pencairan === '400' ? 'Closed' : 'Open';
+    const status = row.status_pencairan === '400' ? 'Closed' : 'Open'
 
     return {
       ...row,
-      status: status
+      status
     }
-  });
-});
+  })
+})
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function detailProyek(data: Proyek) {
+function detailProyek (data: Proyek) {
   $q.dialog({
     component: ProyekDetailDialog,
     componentProps: {
-      proyek: data,
+      proyek: data
     }
-  });
+  })
 }
 
-function search() {
+function search () {
   $q.dialog({
     component: LaporanPencairanDanaSearchDialog,
     componentProps: {
       options: props.formOptions
     }
-  });
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'nama_proyek', label: 'Nama Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
@@ -63,18 +64,18 @@ const columns: Array<QTableColumn> = [
   { name: 'nilai_pengajuan', label: 'Nilai Pengajuan Dana', field: 'nilai_pengajuan', align: 'right', sortable: true },
   { name: 'jumlah_sudah_dibayar', label: 'Sudah Dibayarkan', field: 'jumlah_sudah_dibayar', align: 'right', sortable: true },
   { name: 'jumlah_belum_dibayar', label: 'Belum Dibayarkan', field: 'jumlah_belum_dibayar', align: 'right', sortable: true },
-  { name: 'status', label: 'Status', field: 'status_pencairan', align: 'left', sortable: true },
-];
+  { name: 'status', label: 'Status', field: 'status_pencairan', align: 'left', sortable: true }
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const table = ref<QTable>();
-const pdfTable = ref();
-const excelTable = ref();
+const table = ref<QTable>()
+const pdfTable = ref()
+const excelTable = ref()
 
 onMounted(() => {
   pdfTable.value = {
@@ -83,13 +84,13 @@ onMounted(() => {
       rows: table.value?.computedRows,
       props: ['index', 'nama_proyek', 'tahun_anggaran', 'keperluan', 'nilai_pengajuan', 'jumlah_sudah_dibayar', 'jumlah_belum_dibayar', 'status']
     }
-  };
+  }
 
   excelTable.value = createBody({
     rows: (table.value?.computedRows as any[]),
     props: ['nama_proyek', 'tahun_anggaran', 'keperluan', 'nilai_pengajuan', 'jumlah_sudah_dibayar', 'jumlah_belum_dibayar', 'status']
-  });
-});
+  })
+})
 </script>
 
 <template>
@@ -137,7 +138,7 @@ onMounted(() => {
             >
               <q-tooltip>Export to xls</q-tooltip>
           </q-btn>
-  
+
           <q-btn
             flat dense
             label="pdf"
@@ -167,7 +168,7 @@ onMounted(() => {
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>
@@ -215,7 +216,7 @@ onMounted(() => {
           <q-td key="jumlah_belum_dibayar" :props="props">
             {{ toRupiah(toFloat(props.row.jumlah_belum_dibayar)) }}
           </q-td>
-          
+
           <q-td key="status" :props="props">
             <q-btn
               v-if="isRejected(props.row.status_aktivitas)"
@@ -228,7 +229,7 @@ onMounted(() => {
             >
               <q-tooltip>Ditolak</q-tooltip>
             </q-btn>
-            
+
             <Link :href="route('detail_pencairan_dana', props.row.id_pencairan_dana)">
               <q-badge
                 :color="props.row.status_pencairan == 400 ? 'red' : 'primary'"

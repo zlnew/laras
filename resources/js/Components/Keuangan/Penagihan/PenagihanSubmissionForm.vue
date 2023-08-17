@@ -1,36 +1,36 @@
 <script setup lang="ts">
 // cores
-import { useQuasar } from 'quasar';
-import { useForm } from '@inertiajs/vue3';
+import { useQuasar } from 'quasar'
+import { useForm } from '@inertiajs/vue3'
 
 // types
-import { Penagihan } from '@/types';
+import { type Penagihan } from '@/types'
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const props = defineProps<{
   data: {
-    id_penagihan: Penagihan['id_penagihan'];
+    id_penagihan: Penagihan['id_penagihan']
   }
-}>();
+}>()
 
 const form = useForm({
   catatan: ''
-});
+})
 
-function submit() {
+function submit () {
   form.post(route('penagihan.submit', props.data.id_penagihan), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function submitPenagihan() {
+function submitPenagihan () {
   $q.dialog({
     title: 'Submission Confirmation',
     message: 'Are you sure want to submit this data?',
@@ -45,9 +45,9 @@ function submitPenagihan() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    submit();
-  });
+    form.catatan = payload
+    submit()
+  })
 }
 </script>
 

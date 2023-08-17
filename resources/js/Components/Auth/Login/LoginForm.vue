@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3'
 
 const form = useForm({
   email: null,
   password: null,
   remember: false
-});
+})
 
 function login () {
-  form.post(route('login.attempt'));
+  form.post(route('login.attempt'))
 }
 </script>
 

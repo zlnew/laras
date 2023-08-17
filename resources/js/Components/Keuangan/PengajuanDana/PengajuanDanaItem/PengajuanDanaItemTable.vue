@@ -1,59 +1,59 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
-import { QTableColumn, useQuasar } from 'quasar';
+import { ref, computed } from 'vue'
+import { type QTableColumn, useQuasar } from 'quasar'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { can, isAdmin, isEditable, isEvaluated, isSubmitted } from '@/utils/permissions';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { can, isAdmin, isEditable, isSubmitted } from '@/utils/permissions'
+import { toFloat } from '@/utils/number'
 
 // types
-import { DetailPengajuanDana, PengajuanDana } from '@/types';
-import { FormOptions } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue';
+import { type DetailPengajuanDana, type PengajuanDana } from '@/types'
+import { type FormOptions } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue'
 
 // comps
 import {
   PengajuanDanaItemCreateDialog,
   PengajuanDanaItemEditDialog,
   PengajuanDanaItemDeleteDialog
-} from '@/Components/Keuangan/detail-pengajuan-dana-page';
+} from '@/Components/Keuangan/detail-pengajuan-dana-page'
 
 interface Data {
-  pengajuanDana: PengajuanDana;
+  pengajuanDana: PengajuanDana
 }
 
 const props = defineProps<{
-  rows: Array<DetailPengajuanDana>;
-  data: Data;
-  formOptions: FormOptions; 
-}>();
+  rows: DetailPengajuanDana[]
+  data: Data
+  formOptions: FormOptions
+}>()
 
 const totalAmount = computed(() => {
   const pengajuan = props.rows.reduce((total, item) => {
-    return total + toFloat(item.jumlah_pengajuan);
-  }, 0);
+    return total + toFloat(item.jumlah_pengajuan)
+  }, 0)
 
   const disetujui = props.rows.reduce((total, item) => {
     if (selectedIds.value.includes(item.id_detail_pengajuan_dana)) {
-      return total + toFloat(item.jumlah_pengajuan);
+      return total + toFloat(item.jumlah_pengajuan)
     }
 
-    return total;
-  }, 0);
+    return total
+  }, 0)
 
-  const ditolak = pengajuan - disetujui;
+  const ditolak = pengajuan - disetujui
 
   return {
-    pengajuan: pengajuan,
-    disetujui: disetujui,
-    ditolak: ditolak
+    pengajuan,
+    disetujui,
+    ditolak
   }
-});
+})
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function createPengajuanDanaItem() {
+function createPengajuanDanaItem () {
   $q.dialog({
     component: PengajuanDanaItemCreateDialog,
     componentProps: {
@@ -64,12 +64,12 @@ function createPengajuanDanaItem() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editPengajuanDanaItem(data: DetailPengajuanDana) {
+function editPengajuanDanaItem (data: DetailPengajuanDana) {
   $q.dialog({
     component: PengajuanDanaItemEditDialog,
     componentProps: {
@@ -80,12 +80,12 @@ function editPengajuanDanaItem(data: DetailPengajuanDana) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deletePengajuanDanaItem(id: DetailPengajuanDana['id_detail_pengajuan_dana']) {
+function deletePengajuanDanaItem (id: DetailPengajuanDana['id_detail_pengajuan_dana']) {
   $q.dialog({
     component: PengajuanDanaItemDeleteDialog,
     componentProps: {
@@ -95,19 +95,19 @@ function deletePengajuanDanaItem(id: DetailPengajuanDana['id_detail_pengajuan_da
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'uraian',
     label: 'Uraian',
     field: 'uraian',
     align: 'left',
-    sortable: true,
+    sortable: true
   },
   { name: 'pos', label: 'POS', field: 'pos', align: 'left', sortable: true },
   { name: 'jenis_pembayaran', label: 'Jenis Pembayaran', field: 'jenis_pembayaran', align: 'left', sortable: true },
@@ -116,89 +116,82 @@ const columns: Array<QTableColumn> = [
   { name: 'jumlah', label: 'Jumlah Pengajuan', field: 'jumlah_pengajuan', align: 'right', sortable: true },
   { name: 'persetujuan', label: 'Approval', field: '', align: 'left' },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
 const visibleColumn = () => {
-  let column = [] as string[];
+  const column = [] as string[]
 
-  if (can('approve pengajuan dana') && isEvaluated(props.data.pengajuanDana)) {
+  if (can('approve pengajuan dana') && isSubmitted(props.data.pengajuanDana)) {
     columns.map(col => {
-      return column.push(col.name);
-    });
-  }
-  
-  else if (can('evaluate pengajuan dana') && isSubmitted(props.data.pengajuanDana)) {
-    columns.map(col => {
-      return column.push(col.name);
-    });
-  }
-  
-  else {
+      return column.push(col.name)
+    })
+  } else {
+    // eslint-disable-next-line array-callback-return
     columns.map(col => {
       if (col.name !== 'persetujuan') {
-        return column.push(col.name);
+        return column.push(col.name)
       }
-    });
+    })
   }
 
-  return column;
+  return column
 }
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const filter = ref('');
-const selected = ref<Array<DetailPengajuanDana>>([]);
+const filter = ref('')
+const selected = ref<DetailPengajuanDana[]>([])
 
 const selectedIds = computed(() => {
-  let ids = [] as Array<DetailPengajuanDana['id_detail_pengajuan_dana']>;
-  
+  const ids = [] as Array<DetailPengajuanDana['id_detail_pengajuan_dana']>
+
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (selected.value) {
     selected.value.map(item => {
-      return ids.push(item.id_detail_pengajuan_dana);
-    });
+      return ids.push(item.id_detail_pengajuan_dana)
+    })
   }
 
-  return ids;
-});
+  return ids
+})
 
 export interface ApprovedPengajuanSaatIni {
-  id_detail_rap: DetailPengajuanDana['id_detail_rap'];
-  jumlah_pengajuan: number;
+  id_detail_rap: DetailPengajuanDana['id_detail_rap']
+  jumlah_pengajuan: number
 };
 
 const approvedPengajuanSaatIni = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (!selected.value) {
-    return [];
+    return []
   }
 
-  const groupedData = selected.value.reduce<Array<ApprovedPengajuanSaatIni>>((result, item) => {
-    const matchedItem = result.find((group) => group.id_detail_rap === item.id_detail_rap);
+  const groupedData = selected.value.reduce<ApprovedPengajuanSaatIni[]>((result, item) => {
+    const matchedItem = result.find((group) => group.id_detail_rap === item.id_detail_rap)
 
-    if (matchedItem) {
-      matchedItem.jumlah_pengajuan += toFloat(item.jumlah_pengajuan);
-    }
-    
-    else {
+    if (matchedItem != null) {
+      matchedItem.jumlah_pengajuan += toFloat(item.jumlah_pengajuan)
+    } else {
       result.push({
         id_detail_rap: item.id_detail_rap,
-        jumlah_pengajuan: toFloat(item.jumlah_pengajuan),
-      });
+        jumlah_pengajuan: toFloat(item.jumlah_pengajuan)
+      })
     }
 
-    return result;
-  }, []);
+    return result
+  }, [])
 
-  return groupedData;
-});
+  return groupedData
+})
 
 defineExpose({
   selectedIds,
   approvedPengajuanSaatIni
-});
+})
 </script>
 
 <template>
@@ -327,7 +320,7 @@ defineExpose({
                 </q-item>
 
                 <q-separator />
-                
+
                 <q-item clickable>
                   <q-item-section
                     class="text-red"

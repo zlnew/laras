@@ -1,101 +1,96 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { filterOptions, multiFilterOptions } from '@/utils/options';
-import { daysDiff, endOfDate } from '@/utils/date';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { filterOptions, multiFilterOptions } from '@/utils/options'
+import { daysDiff, endOfDate } from '@/utils/date'
+import { toFloat } from '@/utils/number'
 
 // types
-import { FormOptions } from '@/Pages/Main/ProyekPage.vue';
-import { Proyek } from '@/types';
+import type { FormOptions } from '@/Pages/Main/ProyekPage.vue'
+import type { Proyek } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  proyek: Proyek;
-  options: FormOptions;
-}>();
+  proyek: Proyek
+  options: FormOptions
+}>()
 
-const penggunaJasaOptionsRef = ref(props.options.penggunaJasa);
-const penyediaJasaOptionsRef = ref(props.options.penyediaJasa);
-const tahunAnggaranOptionsRef = ref(props.options.tahunAnggaran);
-const rekeningOptionsRef = ref(props.options.rekening);
-const picOptionsRef = ref(props.options.pic);
+const penggunaJasaOptionsRef = ref(props.options.penggunaJasa)
+const penyediaJasaOptionsRef = ref(props.options.penyediaJasa)
+const tahunAnggaranOptionsRef = ref(props.options.tahunAnggaran)
+const rekeningOptionsRef = ref(props.options.rekening)
+const picOptionsRef = ref(props.options.pic)
 
-function penggunaJasaFilter (val: string, update: Function) {
+function penggunaJasaFilter (val: string, update: any) {
   update(() => {
     penggunaJasaOptionsRef.value = filterOptions(val, props.options.penggunaJasa)
-  });
+  })
 }
 
-function penyediaJasaFilter (val: string, update: Function) {
+function penyediaJasaFilter (val: string, update: any) {
   update(() => {
     penyediaJasaOptionsRef.value = filterOptions(val, props.options.penyediaJasa)
-  });
+  })
 }
 
-function tahunAnggaranFilter (val: string, update: Function) {
+function tahunAnggaranFilter (val: string, update: any) {
   update(() => {
     tahunAnggaranOptionsRef.value = filterOptions(val, props.options.tahunAnggaran)
-  });
+  })
 }
 
-function rekeningFilter (val: string, update: Function) {
+function rekeningFilter (val: string, update: any) {
   update(() => {
     rekeningOptionsRef.value = multiFilterOptions(
       val, props.options.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
     )
-  });
+  })
 }
 
-function picFilter (val: string, update: Function) {
+function picFilter (val: string, update: any) {
   update(() => {
     picOptionsRef.value = multiFilterOptions(
       val, props.options.pic, ['id', 'name']
     )
-  });
+  })
 }
 
 function updateTanggalMulai (val: string) {
-  form.tanggal_mulai = val;
-
-  updateDaysDiff();
+  form.tanggal_mulai = val
+  updateDaysDiff()
 }
 
 function updateTanggalSelesai (val: string) {
-  form.tanggal_selesai = val;
-
-  updateDaysDiff();
+  form.tanggal_selesai = val
+  updateDaysDiff()
 }
 
 function updateDurasi (val: number) {
-  form.durasi = val;
-
-  updateEndOfDate();
+  form.durasi = val
+  updateEndOfDate()
 }
 
 function updateEndOfDate () {
-  const endDate = endOfDate(form.tanggal_mulai, form.durasi);
-
-  if (endDate && endDate > form.tanggal_mulai) {
-    form.tanggal_selesai = endDate;
+  const endDate = endOfDate(form.tanggal_mulai, form.durasi)
+  if (endDate !== null && endDate > form.tanggal_mulai) {
+    form.tanggal_selesai = endDate
   }
 }
 
 function updateDaysDiff () {
-  const days = daysDiff(form.tanggal_mulai, form.tanggal_selesai);
-
+  const days = daysDiff(form.tanggal_mulai, form.tanggal_selesai)
   if (days >= 0) {
-    form.durasi = days;
+    form.durasi = days
   }
 }
 
@@ -114,22 +109,20 @@ const form = useForm({
   tanggal_selesai: props.proyek.tanggal_selesai,
   id_user: props.proyek.id_user,
   id_rekening: props.proyek.id_rekening
-});
+})
 
-function submit() {
-  form
-  .transform(form => ({
-      ...form,
-      tanggal_selesai: endOfDate(form.tanggal_mulai, form.durasi)
-  }))
-  .patch(route('proyek.update', props.proyek.id_proyek), {
+function submit () {
+  form.transform(form => ({
+    ...form,
+    tanggal_selesai: endOfDate(form.tanggal_mulai, form.durasi)
+  })).patch(route('proyek.update', props.proyek.id_proyek), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -210,7 +203,7 @@ function submit() {
                   :error="form.errors.pengguna_jasa ? true : false"
                   :error-message="form.errors.pengguna_jasa"
                   @filter="penggunaJasaFilter"
-                > 
+                >
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -234,7 +227,7 @@ function submit() {
                   :error="form.errors.penyedia_jasa ? true : false"
                   :error-message="form.errors.penyedia_jasa"
                   @filter="penyediaJasaFilter"
-                > 
+                >
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -260,7 +253,7 @@ function submit() {
               :error="form.errors.tahun_anggaran ? true : false"
               :error-message="form.errors.tahun_anggaran"
               @filter="tahunAnggaranFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -314,7 +307,7 @@ function submit() {
               :error="form.errors.id_user ? true : false"
               :error-message="form.errors.id_user"
               @filter="picFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -405,7 +398,7 @@ function submit() {
               :error="form.errors.id_rekening ? true : false"
               :error-message="form.errors.id_rekening"
               @filter="rekeningFilter"
-            > 
+            >
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
@@ -428,7 +421,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

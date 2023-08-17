@@ -1,18 +1,16 @@
 <script setup lang="ts">
-// cores
-import { QTableColumn } from 'quasar';
-
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
 
 // types
-import { Proyek } from '@/types';
-import { JoinedWithProyek } from '@/Pages/Dashboard/ManajerProyekPage.vue';
+import type { QTableColumn } from 'quasar'
+import type { Proyek } from '@/types'
+import type { JoinedWithProyek } from '@/Pages/Dashboard/ManajerProyekPage.vue'
 
 defineProps<{
-  rows: Array<Proyek & JoinedWithProyek>;
-}>();
+  rows: Array<Proyek & JoinedWithProyek>
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
@@ -23,8 +21,8 @@ const columns: QTableColumn[] = [
   { name: 'pengajuan_dalam_proses', label: 'Pengajuan Dalam Proses', field: 'pengajuan_dalam_proses', align: 'right', sortable: true },
   { name: 'total_pengajuan', label: 'Total Pengajuan', field: 'total_pengajuan', align: 'right', sortable: true },
   { name: 'sisa_anggaran', label: 'Sisa Anggaran', field: 'sisa_anggaran', align: 'right', sortable: true },
-  { name: 'estimasi_laba', label: 'Estimasi Laba', field: 'estimasi_laba', align: 'right', sortable: true },
-];
+  { name: 'estimasi_laba', label: 'Estimasi Laba', field: 'estimasi_laba', align: 'right', sortable: true }
+]
 </script>
 
 <template>
@@ -43,7 +41,7 @@ const columns: QTableColumn[] = [
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>

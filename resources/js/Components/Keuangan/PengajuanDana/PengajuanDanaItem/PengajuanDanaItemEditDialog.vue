@@ -1,51 +1,51 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { filterOptions, multiFilterOptions } from '@/utils/options';
-import { toRupiah } from '@/utils/money';
-import { toFloat } from '@/utils/number';
+import { filterOptions, multiFilterOptions } from '@/utils/options'
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
 
 // types
-import { FormOptions } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue';
-import { DetailPengajuanDana } from '@/types';
+import { type FormOptions } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue'
+import { type DetailPengajuanDana } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
   detailPengajuanDana: DetailPengajuanDana
-  options: FormOptions;
-}>();
+  options: FormOptions
+}>()
 
-const jenisPembayaranOptions = ['Cash', 'Transfer'];
+const jenisPembayaranOptions = ['Cash', 'Transfer']
 
-const posOptionsRef = ref(props.options.detailRap);
-const rekeningOptionsRef = ref(props.options.rekening);
-const jenisPembayaranOptionsRef = ref(jenisPembayaranOptions);
+const posOptionsRef = ref(props.options.detailRap)
+const rekeningOptionsRef = ref(props.options.rekening)
+const jenisPembayaranOptionsRef = ref(jenisPembayaranOptions)
 
-function posFilter (val: string, update: Function) {
+function posFilter (val: string, update: any) {
   update(() => {
-    posOptionsRef.value = multiFilterOptions(val, props.options.detailRap, ['uraian']);
-  });
+    posOptionsRef.value = multiFilterOptions(val, props.options.detailRap, ['uraian'])
+  })
 }
 
-function rekeningFilter (val: string, update: Function) {
+function rekeningFilter (val: string, update: any) {
   update(() => {
-    rekeningOptionsRef.value = multiFilterOptions(val, props.options.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']);
-  });
+    rekeningOptionsRef.value = multiFilterOptions(val, props.options.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening'])
+  })
 }
 
-function jenisPembayaranFilter (val: string, update: Function) {
+function jenisPembayaranFilter (val: string, update: any) {
   update(() => {
-    jenisPembayaranOptionsRef.value = filterOptions(val, jenisPembayaranOptions);
-  });
+    jenisPembayaranOptionsRef.value = filterOptions(val, jenisPembayaranOptions)
+  })
 }
 
 const form = useForm({
@@ -54,17 +54,17 @@ const form = useForm({
   jenis_pembayaran: props.detailPengajuanDana.jenis_pembayaran,
   id_detail_rap: props.detailPengajuanDana.id_detail_rap,
   id_rekening: props.detailPengajuanDana.id_rekening
-});
+})
 
-function submit() {
+function submit () {
   form.patch(route('detail_pengajuan_dana.update', props.detailPengajuanDana.id_detail_pengajuan_dana), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -108,7 +108,7 @@ function submit() {
               :error="form.errors.id_detail_rap ? true : false"
               :error-message="form.errors.id_detail_rap"
               @filter="posFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -160,7 +160,7 @@ function submit() {
                   :error="form.errors.jenis_pembayaran ? true : false"
                   :error-message="form.errors.jenis_pembayaran"
                   @filter="jenisPembayaranFilter"
-                > 
+                >
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
@@ -189,7 +189,7 @@ function submit() {
               :error="form.errors.id_rekening ? true : false"
               :error-message="form.errors.id_rekening"
               @filter="rekeningFilter"
-            > 
+            >
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
                   <q-item-section>
@@ -212,7 +212,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

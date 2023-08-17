@@ -1,53 +1,53 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
 // utils
-import { can, isApprovable, isEditable, isSubmitted } from '@/utils/permissions';
+import { can, isApprovable, isEditable } from '@/utils/permissions'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
 import {
   RAPItemTable,
   RAPSubmissionForm,
-  RAPApprovalForm,
-  RAPEvaluateForm
-} from '@/Components/Main/detail-rap-page';
-import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue';
+  RAPApprovalForm
+} from '@/Components/Main/detail-rap-page'
+import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue'
 
 // types
-import { DetailRAB, DetailRAP, Proyek, RAB, RAP, Satuan, Timeline } from '@/types';
+import type { DetailRAB, DetailRAP, Proyek, RAB, RAP, Satuan, Timeline } from '@/types'
 
 export interface FormOptions {
-  satuan: Array<Partial<Satuan>>;
+  satuan: Array<Partial<Satuan>>
 }
 
 const props = defineProps<{
-  rap: RAP & Proyek;
-  detailRap: Array<DetailRAP>;
-  rab: RAB;
-  detailRab: Array<DetailRAB>;
-  formOptions: FormOptions;
-  timeline: Array<Timeline>;
-}>();
+  rap: RAP & Proyek
+  detailRap: DetailRAP[]
+  rab: RAB
+  detailRab: DetailRAB[]
+  formOptions: FormOptions
+  timeline: Timeline[]
+}>()
 
 const breadcrumbs = [
   { label: 'Main', url: '#' },
   { label: 'RAP', url: route('rap') },
-  { label: props.rap.nama_proyek, url: '#' },
-];
+  { label: props.rap.nama_proyek, url: '#' }
+]
 </script>
 
 <template>
   <Head title="RAPP" />
   <layout>
-    
+
     <template #breadcrumbs>
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         />
@@ -76,13 +76,6 @@ const breadcrumbs = [
 
     <RAP-submission-form
       v-if="can('create & modify rap') && isEditable(rap) && detailRap.length"
-      :data="{
-        id_rap: rap.id_rap,
-      }"
-    />
-
-    <RAP-evaluate-form
-      v-if="can('evaluate rap') && isSubmitted(rap)"
       :data="{
         id_rap: rap.id_rap,
       }"

@@ -1,36 +1,36 @@
 <script setup lang="ts">
 // cores
-import { useQuasar } from 'quasar';
-import { useForm } from '@inertiajs/vue3';
+import { useQuasar } from 'quasar'
+import { useForm } from '@inertiajs/vue3'
 
 // types
-import { RAP } from '@/types';
+import type { RAP } from '@/types'
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const props = defineProps<{
   data: {
-    id_rap: RAP['id_rap'];
+    id_rap: RAP['id_rap']
   }
-}>();
+}>()
 
 const form = useForm({
   catatan: ''
-});
+})
 
-function submit() {
+function submit () {
   form.post(route('rap.submit', props.data.id_rap), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function submitRAP() {
+function submitRAP () {
   $q.dialog({
     title: 'Submission Confirmation',
     message: 'Are you sure want to submit this data?',
@@ -45,9 +45,9 @@ function submitRAP() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    submit();
-  });
+    form.catatan = payload
+    submit()
+  })
 }
 </script>
 

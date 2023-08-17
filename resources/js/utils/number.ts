@@ -1,15 +1,15 @@
 function toInt (string: string): number {
   if (string === null) {
-    return 0;
+    return 0
   }
-  return parseInt(string);
+  return parseInt(string)
 }
 
 function toFloat (string: string): number {
   if (string === null) {
-    return 0;
+    return 0
   }
-  return parseFloat(string);
+  return parseFloat(string)
 }
 
 export {

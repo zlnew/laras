@@ -1,59 +1,59 @@
 <script setup lang="ts">
 // cores
-import { router, Link } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
-import { QTable, QTableColumn, useQuasar } from 'quasar';
+import { router, Link } from '@inertiajs/vue3'
+import { ref, computed } from 'vue'
+import { QTable, type QTableColumn, useQuasar } from 'quasar'
 
 // utils
-import { isRejected } from '@/utils/permissions';
+import { isRejected } from '@/utils/permissions'
 
 // types
-import { PencairanDana, Proyek } from '@/types';
-import { FormOptions } from '@/Pages/Keuangan/PencairanDanaPage.vue';
+import { type PencairanDana, type Proyek } from '@/types'
+import { type FormOptions } from '@/Pages/Keuangan/PencairanDanaPage.vue'
 
 // comps
 import {
-  PencairanDanaSearchDialog,
-} from '@/Components/Keuangan/pencairan-dana-page';
-import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
+  PencairanDanaSearchDialog
+} from '@/Components/Keuangan/pencairan-dana-page'
+import { ProyekDetailDialog } from '@/Components/Main/proyek-page'
 
 const props = defineProps<{
-  rows: Array<PencairanDana>;
-  formOptions: FormOptions; 
-}>();
+  rows: PencairanDana[]
+  formOptions: FormOptions
+}>()
 
 const rows = computed(() => {
   return props.rows.map(row => {
-    const status = row.status_pencairan === '400' ? 'Closed' : 'Open';
+    const status = row.status_pencairan === '400' ? 'Closed' : 'Open'
 
     return {
       ...row,
-      status: status
+      status
     }
-  });
-});
+  })
+})
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function detailProyek(data: Proyek) {
+function detailProyek (data: Proyek) {
   $q.dialog({
     component: ProyekDetailDialog,
     componentProps: {
-      proyek: data,
+      proyek: data
     }
-  });
+  })
 }
 
-function searchPencairanDana() {
+function searchPencairanDana () {
   $q.dialog({
     component: PencairanDanaSearchDialog,
     componentProps: {
       options: props.formOptions
     }
-  });
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'nama_proyek',
@@ -65,12 +65,12 @@ const columns: Array<QTableColumn> = [
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
   { name: 'status', label: 'Status', field: 'status', align: 'left', sortable: true }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 </script>
 
@@ -98,7 +98,7 @@ function toggleFullscreen() {
             color="secondary"
             @click="router.visit(route('pencairan_dana'))"
           />
-  
+
           <q-btn
             flat
             no-caps
@@ -107,7 +107,7 @@ function toggleFullscreen() {
             color="primary"
             @click="searchPencairanDana"
           />
-  
+
           <q-btn
             flat dense
             :icon="tableFullscreen ? 'fullscreen_exit' : 'fullscreen'"
@@ -160,7 +160,7 @@ function toggleFullscreen() {
           <q-td key="keperluan" :props="props">
             {{ props.row.keperluan }}
           </q-td>
-          
+
           <q-td key="status" :props="props">
             <q-btn
               v-if="isRejected(props.row.status_aktivitas)"

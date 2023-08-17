@@ -1,39 +1,39 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
 
 // utils
-import { toRupiah } from '@/utils/money';
+import { toRupiah } from '@/utils/money'
 
 // types
-import { DetailPencairanDana, PencairanDana } from '@/types';
+import { type DetailPencairanDana, type PencairanDana } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  id_pencairan_dana: PencairanDana['id_pencairan_dana'];
-  id_detail_pengajuan_dana: DetailPencairanDana['id_detail_pencairan_dana'];
-}>();
+  id_pencairan_dana: PencairanDana['id_pencairan_dana']
+  id_detail_pengajuan_dana: DetailPencairanDana['id_detail_pencairan_dana']
+}>()
 
 const form = useForm({
   id_detail_pengajuan_dana: props.id_detail_pengajuan_dana,
   jumlah_pencairan: 0
-});
+})
 
-function submit() {
+function submit () {
   form.post(route('detail_pencairan_dana.store', props.id_pencairan_dana), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -79,7 +79,7 @@ function submit() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn v-if="form.hasErrors"
             flat

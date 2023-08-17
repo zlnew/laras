@@ -1,50 +1,50 @@
 <script setup lang="ts">
 // cores
-import { useQuasar } from 'quasar';
+import { useQuasar } from 'quasar'
 
 // utils
-import { isRejected, isApproved, isSubmitted, isEvaluated } from '@/utils/permissions';
+import { isRejected, isApproved, isSubmitted } from '@/utils/permissions'
 
 // comps
-import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
-import TimelineDialog from '@/Components/Dialogs/TimelineDialog.vue';
+import { ProyekDetailDialog } from '@/Components/Main/proyek-page'
+import TimelineDialog from '@/Components/Dialogs/TimelineDialog.vue'
 
 // types
-import { Proyek, Timeline } from '@/types';
+import type { Proyek, Timeline } from '@/types'
 
 interface JoinedWithProyek {
-  status_aktivitas: Timeline['status_aktivitas'];
+  status_aktivitas: Timeline['status_aktivitas']
 }
 
 const props = defineProps<{
   data: {
-    proyek: Proyek & JoinedWithProyek;
-    timeline: Array<Timeline>;
-    status: '100' | '400';
-  },
-  title: string;
-  timelineTitle: string;
-}>();
+    proyek: Proyek & JoinedWithProyek
+    timeline: Timeline[]
+    status: '100' | '400'
+  }
+  title: string
+  timelineTitle: string
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function detailProyek() {
+function detailProyek () {
   $q.dialog({
     component: ProyekDetailDialog,
     componentProps: {
-      proyek: props.data.proyek,
+      proyek: props.data.proyek
     }
-  });
+  })
 }
 
-function timeline() {
+function timeline () {
   $q.dialog({
     component: TimelineDialog,
     componentProps: {
       title: props.timelineTitle,
-      timeline: props.data.timeline,
+      timeline: props.data.timeline
     }
-  });
+  })
 }
 </script>
 
@@ -85,7 +85,7 @@ function timeline() {
           </q-btn>
 
           <q-btn
-            v-if="isSubmitted(data.proyek) || isEvaluated(data.proyek)"
+            v-if="isSubmitted(data.proyek)"
             flat
             dense
             round

@@ -1,86 +1,86 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
-import { DashboardOverview } from '@/Components/Dashboard/dashboard-page';
+import { DashboardOverview } from '@/Components/Dashboard/dashboard-page'
 import {
   SisaDanaRekeningTable,
   ProyeksiInvoiceProyekTable,
   ProyeksiKebutuhanDanaProyekTable,
   ProyeksiPiutangTable,
   ProyeksiUtangTable
-} from '@/Components/Dashboard/Keuangan/dashboard-keuangan-page';
+} from '@/Components/Dashboard/Keuangan/dashboard-keuangan-page'
 
 // types
-import { OverviewProps } from '@/Components/Dashboard/DashboardOverview.vue';
-import { User } from '@/types';
+import type { OverviewProps } from '@/Components/Dashboard/DashboardOverview.vue'
+import type { User } from '@/types'
 
 const breadcrumbs = [
   { label: 'Dashboard', url: '#' },
   { label: 'Overview', url: '#' }
-];
+]
 
 export interface SisaDanaRekening {
-  id_rekening: string;
-  nama_bank: string;
-  nama_rekening: string;
-  nomor_rekening: string;
-  nilai_kontrak: string;
-  total_pengajuan_dana: string;
-  total_pencairan_dana: string;
-  total_penagihan: string;
-  total_penagihan_diterima: string;
+  id_rekening: string
+  nama_bank: string
+  nama_rekening: string
+  nomor_rekening: string
+  nilai_kontrak: string
+  total_pengajuan_dana: string
+  total_pencairan_dana: string
+  total_penagihan: string
+  total_penagihan_diterima: string
 }
 
 export interface ProyeksiInvoiceProyek {
-  id_proyek: string;
-  nama_proyek: string;
-  invoice_sebelumnya: string;
-  invoice_saat_ini: string;
-  sisa_netto_kontrak: string;
+  id_proyek: string
+  nama_proyek: string
+  invoice_sebelumnya: string
+  invoice_saat_ini: string
+  sisa_netto_kontrak: string
 }
 
 export interface ProyeksiKebutuhanDanaProyek {
-  id_proyek: string;
-  nama_proyek: string;
-  total_pengajuan: string;
-  jumlah_belum_dibayar: string;
+  id_proyek: string
+  nama_proyek: string
+  total_pengajuan: string
+  jumlah_belum_dibayar: string
 }
 
 export interface ProyeksiUtang {
-  id_pencairan_dana: string;
-  nama_proyek: string;
-  keperluan: string;
-  jumlah_utang: string;
+  id_pencairan_dana: string
+  nama_proyek: string
+  keperluan: string
+  jumlah_utang: string
 }
 
 export interface ProyeksiPiutang {
-  id_penagihan: string;
-  id_user: number;
-  nama_proyek: string;
-  pengguna_jasa: string;
-  keperluan: string;
-  jumlah_piutang: string;
+  id_penagihan: string
+  id_user: number
+  nama_proyek: string
+  pengguna_jasa: string
+  keperluan: string
+  jumlah_piutang: string
 }
 
 export interface Options {
-  pic: User[];
-  penggunaJasa: string[];
+  pic: User[]
+  penggunaJasa: string[]
 }
 
 defineProps<{
-  sisaDanaRekening: SisaDanaRekening[];
-  proyeksiInvoiceProyek: ProyeksiInvoiceProyek[];
-  proyeksiKebutuhanDanaProyek: ProyeksiKebutuhanDanaProyek[];
-  proyeksiUtang: ProyeksiUtang[];
-  proyeksiPiutang: ProyeksiPiutang[];
-  options: Options;
-  overview: OverviewProps[];
-}>();
+  sisaDanaRekening: SisaDanaRekening[]
+  proyeksiInvoiceProyek: ProyeksiInvoiceProyek[]
+  proyeksiKebutuhanDanaProyek: ProyeksiKebutuhanDanaProyek[]
+  proyeksiUtang: ProyeksiUtang[]
+  proyeksiPiutang: ProyeksiPiutang[]
+  options: Options
+  overview: OverviewProps[]
+}>()
 </script>
 
 <template>
@@ -90,6 +90,7 @@ defineProps<{
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         />
@@ -119,7 +120,7 @@ defineProps<{
             :rows="proyeksiInvoiceProyek"
           />
         </div>
-  
+
         <div class="col-12 col-md-6">
           <proyeksi-utang-table
             :rows="proyeksiUtang"

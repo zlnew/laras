@@ -1,25 +1,25 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
-import { UsersTable } from '@/Components/Master/users-page';
+import { UsersTable } from '@/Components/Master/users-page'
 
 // types
-import { Role, User } from '@/types';
+import type { Role, User } from '@/types'
 
 const breadcrumbs = [
   { label: 'Master', url: '#' },
   { label: 'Users', url: '#' }
-];
+]
 
 defineProps<{
-  users: Array<User>;
-  roles: Array<Role>;
-}>();
+  users: User[]
+  roles: Role[]
+}>()
 </script>
 
 <template>
@@ -30,6 +30,7 @@ defineProps<{
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         />

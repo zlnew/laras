@@ -1,57 +1,57 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { filterOptions, multiFilterOptions } from '@/utils/options';
+import { filterOptions, multiFilterOptions } from '@/utils/options'
 
 // types
-import { Penagihan } from '@/types';
-import { FormOptions } from '@/Pages/Keuangan/PenagihanPage.vue';
+import { type Penagihan } from '@/types'
+import { type FormOptions } from '@/Pages/Keuangan/PenagihanPage.vue'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  options: FormOptions;
-}>();
+  options: FormOptions
+}>()
 
-const kasMasukOptions = ['Utang', 'Setoran Modal'];
+const kasMasukOptions = ['Utang', 'Setoran Modal']
 
-const proyekOptionsRef = ref(props.options.currentProyek);
-const kasMasukOptionsRef = ref(kasMasukOptions);
+const proyekOptionsRef = ref(props.options.currentProyek)
+const kasMasukOptionsRef = ref(kasMasukOptions)
 
-function proyekFilter (val: string, update: Function) {
+function proyekFilter (val: string, update: any) {
   update(() => {
-    proyekOptionsRef.value = multiFilterOptions(val, props.options.currentProyek, ['nama_proyek', 'tahun_anggaran']);
-  });
+    proyekOptionsRef.value = multiFilterOptions(val, props.options.currentProyek, ['nama_proyek', 'tahun_anggaran'])
+  })
 }
 
-function kasMasukFilter (val: string, update: Function) {
+function kasMasukFilter (val: string, update: any) {
   update(() => {
-    kasMasukOptionsRef.value = filterOptions(val, kasMasukOptions);
-  });
+    kasMasukOptionsRef.value = filterOptions(val, kasMasukOptions)
+  })
 }
 
-const page = usePage();
-const params = page.props.query as Penagihan;
+const page = usePage()
+const params = page.props.query as unknown as Penagihan
 
 const form = useForm({
   id_proyek: params.id_proyek,
   kas_masuk: params.kas_masuk,
   status_penagihan: params.status_penagihan,
-  ditolak: false,
-});
+  ditolak: false
+})
 
-function search() {
+function search () {
   form.get(route('penagihan'), {
-    onSuccess: () => onDialogOK()
-  });
+    onSuccess: () => { onDialogOK() }
+  })
 }
 </script>
 
@@ -96,7 +96,7 @@ function search() {
               :error="form.errors.id_proyek ? true : false"
               :error-message="form.errors.id_proyek"
               @filter="proyekFilter"
-            > 
+            >
               <template v-slot:option="{itemProps, opt, selected, toggleOption}">
                 <q-item v-bind="itemProps">
                   <q-item-section side>
@@ -136,7 +136,7 @@ function search() {
               :error="form.errors.kas_masuk ? true : false"
               :error-message="form.errors.kas_masuk"
               @filter="kasMasukFilter"
-            > 
+            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">
@@ -180,7 +180,7 @@ function search() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn
             flat

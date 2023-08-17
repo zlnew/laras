@@ -1,59 +1,60 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 // utils
-import { can, isEditable, isSubmitted } from '@/utils/permissions';
-import { fullDate } from '@/utils/date';
+import { can, isEditable, isSubmitted } from '@/utils/permissions'
+import { fullDate } from '@/utils/date'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
 import {
   PencairanDanaItemTable,
   PencairanDanaSubmissionForm,
-  PencairanDanaApprovalForm,
-} from '@/Components/Keuangan/detail-pencairan-dana-page';
-import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue';
-import { FilesTable } from '@/Components/Files/files-page';
+  PencairanDanaApprovalForm
+} from '@/Components/Keuangan/detail-pencairan-dana-page'
+import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue'
+import { FilesTable } from '@/Components/Files/files-page'
 
 // types
-import { DetailPencairanDana, DetailPengajuanDana, File, PencairanDana, PengajuanDana, Proyek, Timeline } from '@/types'; 
+import type { DetailPencairanDana, DetailPengajuanDana, File, PencairanDana, PengajuanDana, Proyek, Timeline } from '@/types'
 
 export interface JoinedWithDetailPengajuanDana {
-  pembayaran_lalu: string;
-  pembayaran_saat_ini: string;
-  belum_dibayarkan: string;
+  pembayaran_lalu: string
+  pembayaran_saat_ini: string
+  belum_dibayarkan: string
 }
 
 const props = defineProps<{
-  pencairanDana: PencairanDana & Proyek;
-  pengajuanDana: PengajuanDana;
-  detailPencairanDana: Array<DetailPencairanDana>;
-  detailPengajuanDana: Array<DetailPengajuanDana & JoinedWithDetailPengajuanDana>;
-  dokumenPenunjang: Array<File>;
-  timeline: Array<Timeline>;
-}>();
+  pencairanDana: PencairanDana & Proyek
+  pengajuanDana: PengajuanDana
+  detailPencairanDana: DetailPencairanDana[]
+  detailPengajuanDana: Array<DetailPengajuanDana & JoinedWithDetailPengajuanDana>
+  dokumenPenunjang: File[]
+  timeline: Timeline[]
+}>()
 
 const breadcrumbs = [
   { label: 'Keuangan', url: '#' },
   { label: 'Pencairan Dana', url: route('pencairan_dana') },
-  { label: props.pencairanDana.nama_proyek, url: '#' },
-];
+  { label: props.pencairanDana.nama_proyek, url: '#' }
+]
 
-const tab = ref('uraian');
+const tab = ref('uraian')
 </script>
 
 <template>
   <Head title="Pencairan Dana" />
   <layout>
-    
+
     <template #breadcrumbs>
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         >
@@ -106,9 +107,9 @@ const tab = ref('uraian');
           <q-tab no-caps name="uraian" label="Uraian" />
           <q-tab no-caps name="dokumen" label="Dokumen Penunjang" />
         </q-tabs>
-  
+
         <q-separator />
-  
+
         <q-tab-panels v-model="tab">
           <q-tab-panel class="q-pa-none" name="uraian">
             <pencairan-dana-item-table
@@ -120,7 +121,7 @@ const tab = ref('uraian');
               }"
             />
           </q-tab-panel>
-    
+
           <q-tab-panel class="q-pa-none" name="dokumen">
             <files-table
               :rows="dokumenPenunjang"
@@ -143,7 +144,7 @@ const tab = ref('uraian');
     />
 
     <pencairan-dana-approval-form
-      v-if="can('receipt pencairan dana') && isSubmitted(pencairanDana)"
+      v-if="can('confirm pencairan dana') && isSubmitted(pencairanDana)"
       :data="{
         id_pencairan_dana: pencairanDana.id_pencairan_dana,
       }"

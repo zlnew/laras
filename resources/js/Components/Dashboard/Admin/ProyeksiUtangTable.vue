@@ -1,44 +1,45 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref, computed } from 'vue'
+import { router } from '@inertiajs/vue3'
+import { QTable } from 'quasar'
 
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
 
 // types
-import { QTable, QTableColumn } from 'quasar';
-import { ProyeksiUtang } from '@/Pages/Dashboard/KeuanganPage.vue';
+import type { QTableColumn } from 'quasar'
+import type { ProyeksiUtang } from '@/Pages/Dashboard/AdminPage.vue'
 
 defineProps<{
-  rows: Array<ProyeksiUtang>;
-}>();
+  rows: ProyeksiUtang[]
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
-  { name: 'jumlah_utang', label: 'Jumlah Utang', field: 'jumlah_utang', align: 'right', sortable: true },
-];
+  { name: 'jumlah_utang', label: 'Jumlah Utang', field: 'jumlah_utang', align: 'right', sortable: true }
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const table = ref<QTable>();
+const table = ref<QTable>()
 
 const totaAmount = computed(() => {
-  const utang = table.value?.computedRows.reduce((total, item) => {    
-    return total + toFloat(item.jumlah_utang);
-  }, 0);
+  const utang = table.value?.computedRows.reduce((total, item) => {
+    return (total as number) + toFloat((item.jumlah_utang as string))
+  }, 0)
 
   return {
-    utang: utang,
+    utang
   }
-});
+})
 </script>
 
 <template>
@@ -68,7 +69,7 @@ const totaAmount = computed(() => {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          style="font-weight: bold;"
+          style="font-weight: bold"
         >
           {{ col.label }}
         </q-th>
@@ -79,7 +80,7 @@ const totaAmount = computed(() => {
       <q-tr
         :props="props"
         @click="router.visit(route('detail_pencairan_dana', props.row.id_pencairan_dana))"
-        style="cursor: pointer;"
+        style="cursor: pointer"
       >
         <q-td key="index" :props="props">
           {{ ++props.rowIndex }}
@@ -130,7 +131,7 @@ const totaAmount = computed(() => {
   thead tr:first-child th
     top: 0
     z-index: 1
-    
+
   tr:last-child th:last-child
     z-index: 3
 

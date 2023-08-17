@@ -1,46 +1,46 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
-import { ref } from 'vue';
+import { useForm, usePage } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
+import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options';
+import { multiFilterOptions } from '@/utils/options'
 
 // types
-import { RAB } from '@/types';
-import { FormOptions } from '@/Pages/Main/RABPage.vue';
+import type { RAB } from '@/types'
+import type { FormOptions } from '@/Pages/Main/RABPage.vue'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  options: FormOptions;
-}>();
+  options: FormOptions
+}>()
 
-const proyekOptionsRef = ref(props.options.currentProyek);
+const proyekOptionsRef = ref(props.options.currentProyek)
 
-function proyekFilter (val: string, update: Function) {
+function proyekFilter (val: string, update: any) {
   update(() => {
-    proyekOptionsRef.value = multiFilterOptions(val, props.options.currentProyek, ['nama_proyek', 'tahun_anggaran']);
-  });
+    proyekOptionsRef.value = multiFilterOptions(val, props.options.currentProyek, ['nama_proyek', 'tahun_anggaran'])
+  })
 }
 
-const page = usePage();
-const params = page.props.query as RAB;
+const page = usePage()
+const params = page.props.query as unknown as RAB
 
 const form = useForm({
   id_proyek: params.id_proyek,
   status_rab: params.status_rab
-});
+})
 
-function search() {
+function search () {
   form.get(route('rab'), {
-    onSuccess: () => onDialogOK()
-  });
+    onSuccess: () => { onDialogOK() }
+  })
 }
 </script>
 
@@ -85,7 +85,7 @@ function search() {
               :error="form.errors.id_proyek ? true : false"
               :error-message="form.errors.id_proyek"
               @filter="proyekFilter"
-            > 
+            >
               <template v-slot:option="{itemProps, opt, selected, toggleOption}">
                 <q-item v-bind="itemProps">
                   <q-item-section side>
@@ -139,7 +139,7 @@ function search() {
         </q-card-section>
 
         <q-separator />
-  
+
         <q-card-actions align="right">
           <q-btn
             flat

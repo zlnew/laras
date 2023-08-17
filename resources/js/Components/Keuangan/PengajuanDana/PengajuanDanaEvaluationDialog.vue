@@ -1,95 +1,99 @@
+<!-- eslint-disable @typescript-eslint/naming-convention -->
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { QTableColumn, useDialogPluginComponent } from 'quasar';
-import { computed, ref } from 'vue';
+import { useForm } from '@inertiajs/vue3'
+import { type QTableColumn, useDialogPluginComponent } from 'quasar'
+import { computed, ref } from 'vue'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
 
 // types
-import { DetailPengajuanDana, PengajuanDana } from '@/types';
-import { Evaluasi } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue';
-import { ApprovedPengajuanSaatIni } from './PengajuanDanaItem/PengajuanDanaItemTable.vue';
+import { type DetailPengajuanDana, type PengajuanDana } from '@/types'
+import { type Evaluasi } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue'
+import { type ApprovedPengajuanSaatIni } from './PengajuanDanaItem/PengajuanDanaItemTable.vue'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 interface JoinedWithEvaluasi {
-  total_harga: string;
-  pengajuan_lalu: string;
-  pengajuan_saat_ini: string;
-  total_pengajuan: string;
-  sisa_anggaran: string;
+  total_harga: string
+  pengajuan_lalu: string
+  pengajuan_saat_ini: string
+  total_pengajuan: string
+  sisa_anggaran: string
 }
 
 const props = defineProps<{
   data: {
-    id_pengajuan_dana: PengajuanDana['id_pengajuan_dana'];
-    selected_ids_detail_pengajuan_dana: Array<DetailPengajuanDana['id_detail_pengajuan_dana']> | undefined;
-    approvedPengajuanSaatIni: Array<ApprovedPengajuanSaatIni> | undefined;
-    evaluasi: Array<Evaluasi & JoinedWithEvaluasi>;
-  };
-}>();
+    id_pengajuan_dana: PengajuanDana['id_pengajuan_dana']
+    selected_ids_detail_pengajuan_dana: Array<DetailPengajuanDana['id_detail_pengajuan_dana']> | undefined
+    approvedPengajuanSaatIni: ApprovedPengajuanSaatIni[] | undefined
+    evaluasi: Array<Evaluasi & JoinedWithEvaluasi>
+  }
+}>()
 
 const evaluasi = computed(() => {
   return props.data.evaluasi.map((item) => {
-    item.pengajuan_saat_ini = '0';
+    item.pengajuan_saat_ini = '0'
 
-    if (props.data.approvedPengajuanSaatIni) {
+    if (props.data.approvedPengajuanSaatIni != null) {
       const matchedItem = props.data.approvedPengajuanSaatIni.find(
         (approvedItem) => approvedItem.id_detail_rap === item.id_detail_rap
-      );
+      )
 
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (matchedItem) {
-        item.pengajuan_saat_ini += matchedItem.jumlah_pengajuan;
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+        item.pengajuan_saat_ini += matchedItem.jumlah_pengajuan
       }
     }
 
-    const pengajuan_lalu = item.pengajuan_lalu ? item.pengajuan_lalu : '0';
-    const total_pengajuan = toFloat(pengajuan_lalu) + toFloat(item.pengajuan_saat_ini);
-    const sisa_anggaran = toFloat(item.total_harga) - total_pengajuan;
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    const pengajuan_lalu = item.pengajuan_lalu ? item.pengajuan_lalu : '0'
+    const total_pengajuan = toFloat(pengajuan_lalu) + toFloat(item.pengajuan_saat_ini)
+    const sisa_anggaran = toFloat(item.total_harga) - total_pengajuan
 
     return {
       ...item,
-      total_pengajuan: total_pengajuan,
-      sisa_anggaran: sisa_anggaran
-    };
-  });
-});
+      total_pengajuan,
+      sisa_anggaran
+    }
+  })
+})
 
 const form = useForm({
   selected_ids_detail_pengajuan_dana: props.data.selected_ids_detail_pengajuan_dana,
   catatan: null
-});
+})
 
-function evaluate() {  
-  form.post(route('pengajuan_dana.evaluate', props.data.id_pengajuan_dana), {
+function approve () {
+  form.post(route('pengajuan_dana.approve', props.data.id_pengajuan_dana), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 
-function reject() {
+function reject () {
   form.post(route('pengajuan_dana.reject', props.data.id_pengajuan_dana), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'uraian',
@@ -105,10 +109,10 @@ const columns: Array<QTableColumn> = [
   { name: 'pengajuan_lalu', label: 'Pengajuan Sebelumnya', field: 'pengajuan_lalu', align: 'right', sortable: true },
   { name: 'pengajuan_saat_ini', label: 'Pengajuan Saat Ini', field: '', align: 'right', sortable: true },
   { name: 'total_pengajuan', label: 'Total Pengajuan', field: '', align: 'right', sortable: true },
-  { name: 'sisa_anggaran', label: 'Sisa Anggaran', field: '', align: 'right', sortable: true },
-];
+  { name: 'sisa_anggaran', label: 'Sisa Anggaran', field: '', align: 'right', sortable: true }
+]
 
-const filter = ref();
+const filter = ref()
 </script>
 
 <template>
@@ -247,7 +251,7 @@ const filter = ref();
           color="primary"
           :loading="form.processing"
           :disable="data.selected_ids_detail_pengajuan_dana?.length ? false : true"
-          @click="evaluate"
+          @click="approve"
         />
       </q-card-actions>
     </q-card>

@@ -1,50 +1,51 @@
 <script setup lang="ts">
 // cores
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3'
 
 // utils
-import { can, isApprovable, isEditable } from '@/utils/permissions';
+import { can, isApprovable, isEditable } from '@/utils/permissions'
 
 // layout
-import Layout from '@/Layouts/AuthenticatedLayout.vue';
+import Layout from '@/Layouts/AuthenticatedLayout.vue'
 
 // comps
 import {
   RABItemTable,
   RABSubmissionForm,
-  RABApprovalForm,
-} from '@/Components/Main/detail-rab-page';
-import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue';
+  RABApprovalForm
+} from '@/Components/Main/detail-rab-page'
+import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue'
 
 // types
-import { DetailRAB, Proyek, RAB, Satuan, Timeline } from '@/types';
+import type { DetailRAB, Proyek, RAB, Satuan, Timeline } from '@/types'
 
 export interface FormOptions {
-  satuan: Array<Partial<Satuan>>;
+  satuan: Array<Partial<Satuan>>
 }
 
 const props = defineProps<{
-  detailRab: Array<DetailRAB>;
-  formOptions: FormOptions;
-  rab: RAB & Proyek;
-  timeline: Array<Timeline>;
-}>();
+  detailRab: DetailRAB[]
+  formOptions: FormOptions
+  rab: RAB & Proyek
+  timeline: Timeline[]
+}>()
 
 const breadcrumbs = [
   { label: 'Main', url: '#' },
   { label: 'RAB', url: route('rab') },
-  { label: props.rab.nama_proyek, url: '#' },
-];
+  { label: props.rab.nama_proyek, url: '#' }
+]
 </script>
 
 <template>
   <Head title="RAB" />
   <layout>
-    
+
     <template #breadcrumbs>
       <q-breadcrumbs align="left">
         <q-breadcrumbs-el
           v-for="breadcrumb in breadcrumbs"
+          :key="breadcrumb.label"
           :label="breadcrumb.label"
           v-in-link="breadcrumb.url"
         />

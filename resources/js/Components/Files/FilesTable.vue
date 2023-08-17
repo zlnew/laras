@@ -1,33 +1,34 @@
 <script setup lang="ts">
 // cores
-import { ref } from 'vue';
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 // utils
-import { can, isAdmin, isEditable } from '@/utils/permissions';
+import { can, isAdmin, isEditable } from '@/utils/permissions'
 
 // types
-import { File, Timeline, UserPermissions } from '@/types';
-import { QTableColumn, useQuasar } from 'quasar';
+import type { File, Timeline, UserPermissions } from '@/types'
+import type { QTableColumn } from 'quasar'
 
 // comps
 import {
   FileCreateDialog,
   FileEditDialog,
   FileDeleteDialog
-} from '@/Components/Files/files-page';
+} from '@/Components/Files/files-page'
 
 const props = defineProps<{
-  rows: Array<File>;
+  rows: File[]
   data: {
-    model_id: string | number;
-    permissions: UserPermissions;
-    status_aktivitas: Timeline['status_aktivitas'];
+    model_id: string | number
+    permissions: UserPermissions
+    status_aktivitas: Timeline['status_aktivitas']
   }
-}>();
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function uploadFile() {
+function uploadFile () {
   $q.dialog({
     component: FileCreateDialog,
     componentProps: {
@@ -37,27 +38,27 @@ function uploadFile() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editFile(data: File) {
+function editFile (data: File) {
   $q.dialog({
     component: FileEditDialog,
     componentProps: {
-      file: data,
+      file: data
     }
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteFile(id: File['id_file']) {
+function deleteFile (id: File['id_file']) {
   $q.dialog({
     component: FileDeleteDialog,
     componentProps: {
@@ -67,25 +68,25 @@ function deleteFile(id: File['id_file']) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'file', label: 'File', field: 'file_name', align: 'left', sortable: true },
   { name: 'download', label: 'Download', field: 'file_path', align: 'left' },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const filter = ref('');
+const filter = ref('')
 </script>
 
 <template>
@@ -136,7 +137,7 @@ const filter = ref('');
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          style="font-weight: bold;"
+          style="font-weight: bold"
         >
           {{ col.label }}
         </q-th>
@@ -187,7 +188,7 @@ const filter = ref('');
                 </q-item>
 
                 <q-separator />
-                
+
                 <q-item clickable>
                   <q-item-section
                     class="text-red"

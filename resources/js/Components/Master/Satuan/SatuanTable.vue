@@ -1,68 +1,69 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
-import { QTableColumn, useQuasar } from 'quasar';
-import { ref } from 'vue';
+import { router } from '@inertiajs/vue3'
+import { useQuasar } from 'quasar'
+import { ref } from 'vue'
 
 // comps
 import {
   SatuanCreateDialog,
   SatuanEditDialog,
   SatuanDeleteDialog
-} from '@/Components/Master/satuan-page';
+} from '@/Components/Master/satuan-page'
 
 // types
-import { Satuan } from '@/types';
+import type { Satuan } from '@/types'
+import type { QTableColumn } from 'quasar'
 
-const props = defineProps<{
-  rows: Array<Satuan>;
-}>();
+defineProps<{
+  rows: Satuan[]
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function createSatuan() {
+function createSatuan () {
   $q.dialog({
-    component: SatuanCreateDialog,
+    component: SatuanCreateDialog
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editSatuan(data: Satuan) {
+function editSatuan (data: Satuan) {
   $q.dialog({
     component: SatuanEditDialog,
     componentProps: {
-      satuan: data,
+      satuan: data
     }
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteSatuan(id_satuan: Satuan['id_satuan']) {
+function deleteSatuan (idSatuan: Satuan['id_satuan']) {
   $q.dialog({
     component: SatuanDeleteDialog,
     componentProps: {
-      id_satuan: id_satuan
+      idSatuan
     }
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   {
     name: 'index',
     label: '#',
@@ -76,12 +77,12 @@ const columns: Array<QTableColumn> = [
     sortable: true
   },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 </script>
 
@@ -150,7 +151,7 @@ function toggleFullscreen() {
           <q-td key="index" :props="props">
             {{ ++props.rowIndex }}
           </q-td>
-          
+
           <q-td key="nama_satuan" :props="props">
             {{ props.row.nama_satuan }}
           </q-td>
@@ -177,7 +178,7 @@ function toggleFullscreen() {
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 // cores
-import { router, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { router, Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 // utils
-import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions';
+import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions'
 
 // types
-import { Proyek, RAP } from '@/types';
-import { QTableColumn, useQuasar } from 'quasar';
-import { FormOptions } from '@/Pages/Main/RAPPage.vue';
+import type { Proyek, RAP } from '@/types'
+import type { QTableColumn } from 'quasar'
+import type { FormOptions } from '@/Pages/Main/RAPPage.vue'
 
 // comps
 import {
@@ -17,35 +18,35 @@ import {
   RAPCreateDialog,
   RAPEditDialog,
   RAPDeleteDialog
-} from '@/Components/Main/rap-page';
-import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
+} from '@/Components/Main/rap-page'
+import { ProyekDetailDialog } from '@/Components/Main/proyek-page'
 
 const props = defineProps<{
-  rows: Array<RAP>;
-  formOptions: FormOptions; 
-}>();
+  rows: RAP[]
+  formOptions: FormOptions
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function detailProyek(data: Proyek) {
+function detailProyek (data: Proyek) {
   $q.dialog({
     component: ProyekDetailDialog,
     componentProps: {
-      proyek: data,
+      proyek: data
     }
-  });
+  })
 }
 
-function searchRAP() {
+function searchRAP () {
   $q.dialog({
     component: RAPSearchDialog,
     componentProps: {
       options: props.formOptions
     }
-  });
+  })
 }
 
-function createRAP() {
+function createRAP () {
   $q.dialog({
     component: RAPCreateDialog,
     componentProps: {
@@ -55,12 +56,12 @@ function createRAP() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editRAP(data: RAP) {
+function editRAP (data: RAP) {
   $q.dialog({
     component: RAPEditDialog,
     componentProps: {
@@ -71,12 +72,12 @@ function editRAP(data: RAP) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteRAP(id: RAP['id_rap']) {
+function deleteRAP (id: RAP['id_rap']) {
   $q.dialog({
     component: RAPDeleteDialog,
     componentProps: {
@@ -86,12 +87,12 @@ function deleteRAP(id: RAP['id_rap']) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'nama_proyek',
@@ -105,12 +106,12 @@ const columns: Array<QTableColumn> = [
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'status_rap', label: 'Status', field: 'status_rap', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 </script>
 
@@ -135,7 +136,7 @@ function toggleFullscreen() {
           @click="createRAP"
         />
 
-        <div v-else class="text-h6">List RAP</div> 
+        <div v-else class="text-h6">List RAP</div>
       </template>
 
       <template v-slot:top-right>
@@ -170,7 +171,7 @@ function toggleFullscreen() {
             v-for="col in props.cols"
             :key="col.name"
             :props="props"
-            style="font-weight: bold;"
+            style="font-weight: bold"
           >
             {{ col.label }}
           </q-th>
@@ -210,7 +211,7 @@ function toggleFullscreen() {
           <q-td key="tahun_anggaran" :props="props">
             {{ props.row.tahun_anggaran }}
           </q-td>
-          
+
           <q-td key="status_rap" :props="props">
             <q-btn
               v-if="isRejected(props.row.status_aktivitas)"
@@ -255,7 +256,7 @@ function toggleFullscreen() {
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"

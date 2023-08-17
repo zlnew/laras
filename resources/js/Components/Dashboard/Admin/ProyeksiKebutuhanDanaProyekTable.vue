@@ -1,43 +1,44 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
+import { QTable } from 'quasar'
 
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
 
 // types
-import { QTable, QTableColumn } from 'quasar';
-import { ProyeksiKebutuhanDanaProyek } from '@/Pages/Dashboard/KeuanganPage.vue';
+import type { QTableColumn } from 'quasar'
+import type { ProyeksiKebutuhanDanaProyek } from '@/Pages/Dashboard/AdminPage.vue'
 
 defineProps<{
-  rows: Array<ProyeksiKebutuhanDanaProyek>;
-}>();
+  rows: ProyeksiKebutuhanDanaProyek[]
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'total_pengajuan', label: 'Total Pengajuan', field: 'total_pengajuan', align: 'left', sortable: true },
-  { name: 'jumlah_belum_dibayar', label: 'Jumlah Belum Dibayar', field: 'jumlah_belum_dibayar', align: 'right', sortable: true },
-];
+  { name: 'jumlah_belum_dibayar', label: 'Jumlah Belum Dibayar', field: 'jumlah_belum_dibayar', align: 'right', sortable: true }
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const table = ref<QTable>();
+const table = ref<QTable>()
 
 const totaAmount = computed(() => {
-  const jumlah_belum_dibayar = table.value?.computedRows.reduce((total, item) => {    
-    return total + toFloat(item.jumlah_belum_dibayar);
-  }, 0);
+  const jumlahBelumDibayar = table.value?.computedRows.reduce((total, item) => {
+    return (total as number) + toFloat((item.jumlah_belum_dibayar as string))
+  }, 0)
 
   return {
-    jumlah_belum_dibayar: jumlah_belum_dibayar,
+    jumlahBelumDibayar
   }
-});
+})
 </script>
 
 <template>
@@ -67,7 +68,7 @@ const totaAmount = computed(() => {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          style="font-weight: bold;"
+          style="font-weight: bold"
         >
           {{ col.label }}
         </q-th>
@@ -98,7 +99,7 @@ const totaAmount = computed(() => {
       <q-tr no-hover class="text-weight-bold text-right">
         <q-td colspan="3">Total Belum Dibayar</q-td>
         <q-td>
-          {{ toRupiah(totaAmount.jumlah_belum_dibayar) }}
+          {{ toRupiah(totaAmount.jumlahBelumDibayar) }}
         </q-td>
       </q-tr>
     </template>
@@ -123,7 +124,7 @@ const totaAmount = computed(() => {
   thead tr:first-child th
     top: 0
     z-index: 1
-    
+
   tr:last-child th:last-child
     z-index: 3
 

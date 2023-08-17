@@ -1,1 +1,0 @@
-export {default as GuestFooter} from '@/Components/Layouts/Guest/GuestFooter.vue';

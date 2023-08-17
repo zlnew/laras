@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // cores
-import { router } from '@inertiajs/vue3';
-import { QTableColumn, useQuasar } from 'quasar';
-import { ref } from 'vue';
+import { router } from '@inertiajs/vue3'
+import { useQuasar } from 'quasar'
+import { ref } from 'vue'
 
 // comps
 import {
@@ -10,28 +10,29 @@ import {
   UsersCreateDialog,
   UsersEditDialog,
   UsersDeleteDialog
-} from '@/Components/Master/users-page';
+} from '@/Components/Master/users-page'
 
 // types
-import { Role, User } from '@/types';
+import type { Role, User } from '@/types'
+import type { QTableColumn } from 'quasar'
 
 const props = defineProps<{
-  rows: Array<User>;
-  roles: Array<Role>;
-}>();
+  rows: User[]
+  roles: Role[]
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function searchUsers() {
+function searchUsers () {
   $q.dialog({
     component: UsersSearchDialog,
     componentProps: {
       roles: props.roles
     }
-  });
+  })
 }
 
-function createUser() {
+function createUser () {
   $q.dialog({
     component: UsersCreateDialog,
     componentProps: {
@@ -41,12 +42,12 @@ function createUser() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editUser(data: User) {
+function editUser (data: User) {
   $q.dialog({
     component: UsersEditDialog,
     componentProps: {
@@ -57,27 +58,27 @@ function editUser(data: User) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deleteUser(id: User['id']) {
+function deleteUser (id: User['id']) {
   $q.dialog({
     component: UsersDeleteDialog,
     componentProps: {
-      id: id
+      id
     }
   }).onOk((payload) => {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   {
     name: 'index',
     label: '#',
@@ -92,12 +93,12 @@ const columns: Array<QTableColumn> = [
   },
   { name: 'role_name', label: 'Role/Jabatan', field: 'role_name', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 </script>
 
@@ -198,7 +199,7 @@ function toggleFullscreen() {
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"

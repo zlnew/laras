@@ -1,22 +1,22 @@
 <script setup lang="ts">
 // cores
-import { QTableColumn } from 'quasar';
+import { router, usePage } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
+import { filterOptions } from '@/utils/options'
 
 // types
-import { Proyek } from '@/types';
-import { JoinedWithProyek, Options } from '@/Pages/Dashboard/AdminPage.vue';
-import { ref } from 'vue';
-import { filterOptions } from '@/utils/options';
-import { router, usePage } from '@inertiajs/vue3';
+import type { QTableColumn } from 'quasar'
+import type { Proyek } from '@/types'
+import type { JoinedWithProyek, Options } from '@/Pages/Dashboard/AdminPage.vue'
 
 const props = defineProps<{
-  rows: Array<Proyek & JoinedWithProyek>;
-  options: Options;
-}>();
+  rows: Proyek[] & JoinedWithProyek[]
+  options: Options
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
@@ -28,27 +28,27 @@ const columns: QTableColumn[] = [
   { name: 'pengajuan_dalam_proses', label: 'Pengajuan Dalam Proses', field: 'pengajuan_dalam_proses', align: 'right', sortable: true },
   { name: 'total_pengajuan', label: 'Total Pengajuan', field: 'total_pengajuan', align: 'right', sortable: true },
   { name: 'sisa_anggaran', label: 'Sisa Anggaran', field: 'sisa_anggaran', align: 'right', sortable: true },
-  { name: 'estimasi_laba', label: 'Estimasi Laba', field: 'estimasi_laba', align: 'right', sortable: true },
-];
+  { name: 'estimasi_laba', label: 'Estimasi Laba', field: 'estimasi_laba', align: 'right', sortable: true }
+]
 
-const tahunAnggaranOptionsRef = ref(props.options.tahunAnggaran);
+const tahunAnggaranOptionsRef = ref(props.options.tahunAnggaran)
 
-function tahunAnggaranFilter (val: string, update: Function) {
+function tahunAnggaranFilter (val: string, update: any) {
   update(() => {
     tahunAnggaranOptionsRef.value = filterOptions(val, props.options.tahunAnggaran)
-  });
+  })
 }
 
-const page = usePage();
-const params = page.props.query as { tahun_anggaran: string };
+const page = usePage()
+const params = page.props.query as { tahun_anggaran: string }
 
-const tahunAnggaran = ref(params.tahun_anggaran);
+const tahunAnggaran = ref(params.tahun_anggaran)
 
-function search(data: {tahun_anggaran: string}) {
-  router.get(route('dashboard.admin', data), {}, {
+function search (data: { tahun_anggaran: string }) {
+  router.get(route('dashboard.admin', data), undefined, {
     preserveScroll: true,
     preserveState: true
-  });
+  })
 }
 </script>
 
@@ -74,7 +74,7 @@ function search(data: {tahun_anggaran: string}) {
           :options="tahunAnggaranOptionsRef"
           @filter="tahunAnggaranFilter"
           @update:model-value="(val) => search({tahun_anggaran: val})"
-        > 
+        >
           <template v-slot:no-option>
             <q-item>
               <q-item-section class="text-grey">
@@ -84,7 +84,7 @@ function search(data: {tahun_anggaran: string}) {
           </template>
         </q-select>
       </div>
-    </template> 
+    </template>
 
     <template v-slot:header="props">
       <q-tr :props="props">
@@ -92,7 +92,7 @@ function search(data: {tahun_anggaran: string}) {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          style="font-weight: bold;"
+          style="font-weight: bold"
         >
           {{ col.label }}
         </q-th>

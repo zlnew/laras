@@ -31,26 +31,20 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return array_merge(parent::share($request), [
+            'query' => $request->query(),
             'auth' => [
                 'user' => $request->user(),
+                'role' => $request->user() ? $request->user()->roles->first()->name : null,
+                'permissions' => function () use ($request) {
+                    $permissions = [];
+                    if ($request->user()) {
+                        $permissionsViaRoles = $request->user()->getPermissionsViaRoles();
+                        $directPermissions = $request->user()->getDirectPermissions();
+                        $permissions = $permissionsViaRoles->merge($directPermissions)->pluck('name')->toArray();
+                    }
+                    return $permissions;
+                }
             ],
-            'role' => function () use ($request) {
-                if ($request->user()) {
-                    $roleName = $request->user()->roles->first()->name;
-                    return $roleName;
-                }
-            },
-            'permissions' => function () use ($request) {
-                if ($request->user()) {
-                    $permissionsViaRoles = $request->user()->getPermissionsViaRoles();
-                    $directPermissions = $request->user()->getDirectPermissions();
-                    
-                    return $permissionsViaRoles->merge($directPermissions)->pluck('name')->toArray();
-                }
-            },
-            'query' => function () use ($request) {
-                return $request->query();
-            },
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
@@ -60,7 +54,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
-            ],
+            ]
         ]);
     }
 }

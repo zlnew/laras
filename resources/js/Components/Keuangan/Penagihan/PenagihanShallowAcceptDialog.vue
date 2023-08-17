@@ -1,41 +1,41 @@
 <script setup lang="ts">
 // cores
-import { useForm } from '@inertiajs/vue3';
-import { useDialogPluginComponent } from 'quasar';
+import { useForm } from '@inertiajs/vue3'
+import { useDialogPluginComponent } from 'quasar'
 
 // utils
-import { toRupiah } from '@/utils/money';
-import { toFloat } from '@/utils/number';
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
 
 // types
-import { Penagihan } from '@/types';
+import { type Penagihan } from '@/types'
 
 defineEmits([
   ...useDialogPluginComponent.emits
-]);
+])
 
-const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent();
+const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  id_penagihan: Penagihan['id_penagihan'];
-  jumlah_diterima: Penagihan['jumlah_diterima'];
-}>();
+  id_penagihan: Penagihan['id_penagihan']
+  jumlah_diterima: Penagihan['jumlah_diterima']
+}>()
 
 const form = useForm({
   bertahap: true,
   catatan: null,
-  jumlah_diterima: props.jumlah_diterima,
-});
+  jumlah_diterima: props.jumlah_diterima
+})
 
-function confirm() {
+function confirm () {
   form.post(route('penagihan.confirm', props.id_penagihan), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
         message: page.props.flash.success
-      });
+      })
     }
-  });
+  })
 }
 </script>
 
@@ -89,7 +89,7 @@ function confirm() {
             />
           </div>
         </q-card-section>
-  
+
         <q-card-actions align="right">
           <q-btn
             flat

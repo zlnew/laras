@@ -1,15 +1,15 @@
 <script setup lang="ts">
 // cores
-import { router, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { QTableColumn, useQuasar } from 'quasar';
+import { router, Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { type QTableColumn, useQuasar } from 'quasar'
 
 // utils
-import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions';
+import { can, isAdmin, isModuleEditable, isRejected } from '@/utils/permissions'
 
 // types
-import { PengajuanDana, Proyek } from '@/types';
-import { FormOptions } from '@/Pages/Keuangan/PengajuanDanaPage.vue';
+import { type PengajuanDana, type Proyek } from '@/types'
+import { type FormOptions } from '@/Pages/Keuangan/PengajuanDanaPage.vue'
 
 // comps
 import {
@@ -17,35 +17,35 @@ import {
   PengajuanDanaCreateDialog,
   PengajuanDanaEditDialog,
   PengajuanDanaDeleteDialog
-} from '@/Components/Keuangan/pengajuan-dana-page';
-import { ProyekDetailDialog } from '@/Components/Main/proyek-page';
+} from '@/Components/Keuangan/pengajuan-dana-page'
+import { ProyekDetailDialog } from '@/Components/Main/proyek-page'
 
 const props = defineProps<{
-  rows: Array<PengajuanDana>;
-  formOptions: FormOptions; 
-}>();
+  rows: PengajuanDana[]
+  formOptions: FormOptions
+}>()
 
-const $q = useQuasar();
+const $q = useQuasar()
 
-function detailProyek(data: Proyek) {
+function detailProyek (data: Proyek) {
   $q.dialog({
     component: ProyekDetailDialog,
     componentProps: {
-      proyek: data,
+      proyek: data
     }
-  });
+  })
 }
 
-function searchPengajuanDana() {
+function searchPengajuanDana () {
   $q.dialog({
     component: PengajuanDanaSearchDialog,
     componentProps: {
       options: props.formOptions
     }
-  });
+  })
 }
 
-function createPengajuanDana() {
+function createPengajuanDana () {
   $q.dialog({
     component: PengajuanDanaCreateDialog,
     componentProps: {
@@ -55,12 +55,12 @@ function createPengajuanDana() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function editPengajuanDana(data: PengajuanDana) {
+function editPengajuanDana (data: PengajuanDana) {
   $q.dialog({
     component: PengajuanDanaEditDialog,
     componentProps: {
@@ -71,12 +71,12 @@ function editPengajuanDana(data: PengajuanDana) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function deletePengajuanDana(id: PengajuanDana['id_pengajuan_dana']) {
+function deletePengajuanDana (id: PengajuanDana['id_pengajuan_dana']) {
   $q.dialog({
     component: PengajuanDanaDeleteDialog,
     componentProps: {
@@ -86,12 +86,12 @@ function deletePengajuanDana(id: PengajuanDana['id_pengajuan_dana']) {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-const columns: Array<QTableColumn> = [
+const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   {
     name: 'nama_proyek',
@@ -104,12 +104,12 @@ const columns: Array<QTableColumn> = [
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
   { name: 'status_pengajuan', label: 'Status', field: 'status_pengajuan', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
-];
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 </script>
 
@@ -205,7 +205,7 @@ function toggleFullscreen() {
           <q-td key="keperluan" :props="props">
             {{ props.row.keperluan }}
           </q-td>
-          
+
           <q-td key="status_pengajuan" :props="props">
             <q-btn
               v-if="isRejected(props.row.status_aktivitas)"
@@ -250,7 +250,7 @@ function toggleFullscreen() {
                   </q-item>
 
                   <q-separator />
-                  
+
                   <q-item clickable>
                     <q-item-section
                       class="text-red"

@@ -1,65 +1,65 @@
 <script setup lang="ts">
 // cores
-import { useQuasar } from 'quasar';
+import { useQuasar } from 'quasar'
 
 // types
-import { PencairanDana } from '@/types';
-import { useForm } from '@inertiajs/vue3';
+import { type PencairanDana } from '@/types'
+import { useForm } from '@inertiajs/vue3'
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const props = defineProps<{
   data: {
-    id_pencairan_dana: PencairanDana['id_pencairan_dana'];
+    id_pencairan_dana: PencairanDana['id_pencairan_dana']
   }
-}>();
+}>()
 
 const form = useForm({
   catatan: ''
-});
+})
 
-function accept() {
+function accept () {
   form.post(route('pencairan_dana.confirm', props.data.id_pencairan_dana), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function shallowAccept() {
+function shallowAccept () {
   form
-  .transform(form => ({
-    ...form,
-    bertahap: true
-  }))
-  .post(route('pencairan_dana.confirm', props.data.id_pencairan_dana), {
-    onSuccess: (page) => {
-      $q.notify({
-        type: 'positive',
-        message: page.props.flash.success,
-        position: 'top',
-      });
-    }
-  });
+    .transform(form => ({
+      ...form,
+      bertahap: true
+    }))
+    .post(route('pencairan_dana.confirm', props.data.id_pencairan_dana), {
+      onSuccess: (page) => {
+        $q.notify({
+          type: 'positive',
+          message: page.props.flash.success,
+          position: 'top'
+        })
+      }
+    })
 }
 
-function reject() {
+function reject () {
   form.post(route('pencairan_dana.reject', props.data.id_pencairan_dana), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function acceptPengajuanDana() {
+function acceptPengajuanDana () {
   $q.dialog({
     title: 'Receipt Confirmation',
     message: 'Are you sure want to perform this action?',
@@ -74,12 +74,12 @@ function acceptPengajuanDana() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    accept();
-  });
+    form.catatan = payload
+    accept()
+  })
 }
 
-function shallowAcceptPengajuanDana() {
+function shallowAcceptPengajuanDana () {
   $q.dialog({
     title: 'Receipt Confirmation',
     message: 'Are you sure want to perform this action?',
@@ -94,12 +94,12 @@ function shallowAcceptPengajuanDana() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    shallowAccept();
-  });
+    form.catatan = payload
+    shallowAccept()
+  })
 }
 
-function rejectPengajuanDana() {
+function rejectPengajuanDana () {
   $q.dialog({
     title: 'Rejection Confirmation',
     message: 'Are you sure want to perform this action?',
@@ -114,9 +114,9 @@ function rejectPengajuanDana() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    reject();
-  });
+    form.catatan = payload
+    reject()
+  })
 }
 </script>
 

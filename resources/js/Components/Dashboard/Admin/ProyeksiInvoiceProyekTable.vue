@@ -1,54 +1,55 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
+import { QTable } from 'quasar'
 
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
 
 // types
-import { QTable, QTableColumn } from 'quasar';
-import { ProyeksiInvoiceProyek } from '@/Pages/Dashboard/KeuanganPage.vue';
+import type { QTableColumn } from 'quasar'
+import type { ProyeksiInvoiceProyek } from '@/Pages/Dashboard/AdminPage.vue'
 
 defineProps<{
-  rows: Array<ProyeksiInvoiceProyek>;
-}>();
+  rows: ProyeksiInvoiceProyek[]
+}>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'invoice_sebelumnya', label: 'Invoice Sebelumnya', field: 'invoice_sebelumnya', align: 'right', sortable: true },
   { name: 'invoice_saat_ini', label: 'Invoice Saat Ini', field: 'invoice_saat_ini', align: 'right', sortable: true },
-  { name: 'sisa_netto_kontrak', label: 'Sisa Netto Kontrak', field: 'sisa_netto_kontrak', align: 'right', sortable: true },
-];
+  { name: 'sisa_netto_kontrak', label: 'Sisa Netto Kontrak', field: 'sisa_netto_kontrak', align: 'right', sortable: true }
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const table = ref<QTable>();
+const table = ref<QTable>()
 
 const totaAmount = computed(() => {
-  const invoice_sebelumnya = table.value?.computedRows.reduce((total, item) => {    
-    return total + toFloat(item.invoice_sebelumnya);
-  }, 0);
+  const invoiceSebelumnya = table.value?.computedRows.reduce((total, item) => {
+    return (total as number) + toFloat((item.invoice_sebelumnya as string))
+  }, 0)
 
-  const invoice_saat_ini = table.value?.computedRows.reduce((total, item) => {    
-    return total + toFloat(item.invoice_saat_ini);
-  }, 0);
+  const invoiceSaatIni = table.value?.computedRows.reduce((total, item) => {
+    return (total as number) + toFloat((item.invoice_saat_ini as string))
+  }, 0)
 
-  const sisa_netto_kontrak = table.value?.computedRows.reduce((total, item) => {    
-    return total + toFloat(item.sisa_netto_kontrak);
-  }, 0);
+  const sisaNettoKontrak = table.value?.computedRows.reduce((total, item) => {
+    return (total as number) + toFloat((item.sisa_netto_kontrak as string))
+  }, 0)
 
   return {
-    invoice_sebelumnya: invoice_sebelumnya,
-    invoice_saat_ini: invoice_saat_ini,
-    sisa_netto_kontrak: sisa_netto_kontrak
+    invoiceSebelumnya,
+    invoiceSaatIni,
+    sisaNettoKontrak
   }
-});
+})
 </script>
 
 <template>
@@ -78,7 +79,7 @@ const totaAmount = computed(() => {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          style="font-weight: bold;"
+          style="font-weight: bold"
         >
           {{ col.label }}
         </q-th>
@@ -113,21 +114,21 @@ const totaAmount = computed(() => {
       <q-tr no-hover class="text-weight-bold text-right">
         <q-td colspan="4">Total Invoice Sebelumnya</q-td>
         <q-td>
-          {{ toRupiah(totaAmount.invoice_sebelumnya) }}
+          {{ toRupiah(totaAmount.invoiceSebelumnya) }}
         </q-td>
       </q-tr>
 
       <q-tr no-hover class="text-weight-bold text-right">
         <q-td colspan="4">Total Invoice Saat Ini</q-td>
         <q-td>
-          {{ toRupiah(totaAmount.invoice_saat_ini) }}
+          {{ toRupiah(totaAmount.invoiceSaatIni) }}
         </q-td>
       </q-tr>
 
       <q-tr no-hover class="text-weight-bold text-right">
         <q-td colspan="4">Total Sisa Netto Kontrak</q-td>
         <q-td>
-          {{ toRupiah(totaAmount.sisa_netto_kontrak) }}
+          {{ toRupiah(totaAmount.sisaNettoKontrak) }}
         </q-td>
       </q-tr>
     </template>
@@ -152,7 +153,7 @@ const totaAmount = computed(() => {
   thead tr:first-child th
     top: 0
     z-index: 1
-    
+
   tr:last-child th:last-child
     z-index: 3
 

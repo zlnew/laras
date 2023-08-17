@@ -1,52 +1,52 @@
 <script setup lang="ts">
 // cores
-import { useQuasar } from 'quasar';
+import { useQuasar } from 'quasar'
 
 // comps
-import { PenagihanShallowAcceptDialog } from '../detail-penagihan-page';
+import { PenagihanShallowAcceptDialog } from '../detail-penagihan-page'
 
 // types
-import { Penagihan } from '@/types';
-import { useForm } from '@inertiajs/vue3';
+import { type Penagihan } from '@/types'
+import { useForm } from '@inertiajs/vue3'
 
-const $q = useQuasar();
+const $q = useQuasar()
 
 const props = defineProps<{
   data: {
-    id_penagihan: Penagihan['id_penagihan'];
-    jumlah_diterima: Penagihan['jumlah_diterima'];
+    id_penagihan: Penagihan['id_penagihan']
+    jumlah_diterima: Penagihan['jumlah_diterima']
   }
-}>();
+}>()
 
 const form = useForm({
-  catatan: null,
-});
+  catatan: null
+})
 
-function accept() {
+function accept () {
   form.post(route('penagihan.confirm', props.data.id_penagihan), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function reject() {
+function reject () {
   form.post(route('penagihan.reject', props.data.id_penagihan), {
     onSuccess: (page) => {
       $q.notify({
         type: 'positive',
         message: page.props.flash.success,
-        position: 'top',
-      });
+        position: 'top'
+      })
     }
-  });
+  })
 }
 
-function acceptPenagihan() {
+function acceptPenagihan () {
   $q.dialog({
     title: 'Action Confirmation',
     message: 'Are you sure want to perform this action?',
@@ -61,12 +61,12 @@ function acceptPenagihan() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    accept();
-  });
+    form.catatan = payload
+    accept()
+  })
 }
 
-function shallowAcceptPenagihan() {
+function shallowAcceptPenagihan () {
   $q.dialog({
     component: PenagihanShallowAcceptDialog,
     componentProps: {
@@ -77,12 +77,12 @@ function shallowAcceptPenagihan() {
     $q.notify({
       type: payload.type,
       message: payload.message,
-      position: 'top',
-    });
-  });
+      position: 'top'
+    })
+  })
 }
 
-function rejectPenagihan() {
+function rejectPenagihan () {
   $q.dialog({
     title: 'Action Confirmation',
     message: 'Are you sure want to perform this action?',
@@ -97,9 +97,9 @@ function rejectPenagihan() {
     cancel: true,
     persistent: true
   }).onOk((payload) => {
-    form.catatan = payload;
-    reject();
-  });
+    form.catatan = payload
+    reject()
+  })
 }
 </script>
 

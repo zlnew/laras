@@ -1,55 +1,54 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
+import { QTable } from 'quasar'
 
 // utils
-import { toFloat } from '@/utils/number';
-import { toRupiah } from '@/utils/money';
+import { toFloat } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
 
 // types
-import { QTable, QTableColumn } from 'quasar';
-import { SisaDanaRekening } from '@/Pages/Dashboard/KeuanganPage.vue';
+import type { QTableColumn } from 'quasar'
+import type { SisaDanaRekening } from '@/Pages/Dashboard/KeuanganPage.vue'
 
 const props = defineProps<{
-  rows: Array<SisaDanaRekening>;
-}>();
+  rows: SisaDanaRekening[]
+}>()
 
 const rows = computed(() => {
   return props.rows.map(item => {
-    const modal = toFloat(item.nilai_kontrak);
-    const pengeluaran = toFloat(item.total_pengajuan_dana) + toFloat(item.total_penagihan);
-    const pemasukan = toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan_diterima);
+    const modal = toFloat(item.nilai_kontrak)
 
     return {
       ...item,
       sisa_dana: modal - toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan_diterima)
     }
-  });
-});
+  })
+})
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'rekening', label: 'Rekening', field: 'nama_rekening', align: 'left', sortable: true },
-  { name: 'sisa_dana', label: 'Sisa Dana', field: '', align: 'right', sortable: true },
-];
+  { name: 'sisa_dana', label: 'Sisa Dana', field: '', align: 'right', sortable: true }
+]
 
-const tableFullscreen = ref(false);
+const tableFullscreen = ref(false)
 
-function toggleFullscreen() {
-  tableFullscreen.value = !tableFullscreen.value;
+function toggleFullscreen () {
+  tableFullscreen.value = !tableFullscreen.value
 }
 
-const table = ref<QTable>();
+const table = ref<QTable>()
 
 const totaAmount = computed(() => {
-  const sisa_dana = table.value?.computedRows.reduce((total, item) => {    
-    return total + toFloat(item.sisa_dana);
-  }, 0);
+  const sisaDana = table.value?.computedRows.reduce((total, item) => {
+    return (total as number) + toFloat((item.sisa_dana as string))
+  }, 0)
 
   return {
-    sisa_dana: sisa_dana,
+    sisaDana
   }
-});
+})
 </script>
 
 <template>
@@ -79,7 +78,7 @@ const totaAmount = computed(() => {
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          style="font-weight: bold;"
+          style="font-weight: bold"
         >
           {{ col.label }}
         </q-th>
@@ -93,13 +92,7 @@ const totaAmount = computed(() => {
         </q-td>
 
         <q-td key="rekening" :props="props">
-            <span class="text-caption text-weight-bold">
-              {{ props.row.nama_bank }}
-            </span> |
-            <span class="text-caption">
-              {{ props.row.nomor_rekening }}
-            </span> -
-            {{ props.row.nama_rekening }}
+          {{ props.row.nama_rekening }}
         </q-td>
 
         <q-td key="sisa_dana" :props="props">
@@ -112,7 +105,7 @@ const totaAmount = computed(() => {
       <q-tr no-hover class="text-weight-bold text-right">
         <q-td colspan="2">Total Sisa Dana</q-td>
         <q-td>
-          {{ toRupiah(totaAmount.sisa_dana) }}
+          {{ toRupiah(totaAmount.sisaDana) }}
         </q-td>
       </q-tr>
     </template>
@@ -137,7 +130,7 @@ const totaAmount = computed(() => {
   thead tr:first-child th
     top: 0
     z-index: 1
-    
+
   tr:last-child th:last-child
     z-index: 3
 
