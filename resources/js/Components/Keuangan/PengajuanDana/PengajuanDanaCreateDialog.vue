@@ -71,7 +71,6 @@ function submit () {
           <div class="q-gutter-md">
             <q-select
               outlined
-              clearable
               use-input
               use-chips
               emit-value

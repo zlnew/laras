@@ -106,7 +106,10 @@ const overview = computed(() => {
 
   const totalSisaDanaRekening = props.sisaDanaRekening.reduce((total, item) => {
     const modal = toFloat(item.nilai_kontrak)
-    return total + (modal - toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan_diterima))
+    const pemasukan = toFloat(item.total_pengajuan_dana) + toFloat(item.total_penagihan_diterima)
+    const pengeluaran = toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan)
+
+    return total + (modal + pemasukan - pengeluaran)
   }, 0)
 
   const totalProyeksiInvoiceProyek = props.proyeksiInvoiceProyek.reduce((total, item) => {

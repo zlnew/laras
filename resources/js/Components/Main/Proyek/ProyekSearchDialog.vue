@@ -321,10 +321,7 @@ function search () {
               <div class="col-12 col-md-6 q-pr-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
-                  mask="#.##"
-                  fill-mask="0"
                   label="Nilai Kontrak Min"
                   v-model="form.nilai_kontrak_min"
                   :hint="toRupiah(form.nilai_kontrak_min)"
@@ -335,11 +332,8 @@ function search () {
               <div class="col-12 col-md-6 q-pl-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
                   label="Nilai Kontrak Max"
-                  mask="#.##"
-                  fill-mask="0"
                   v-model="form.nilai_kontrak_max"
                   :hint="toRupiah(form.nilai_kontrak_max)"
                   :hide-hint="form.nilai_kontrak_max < 1"

@@ -57,7 +57,7 @@ function submit () {
     :no-backdrop-dismiss="true"
     @hide="onDialogHide"
   >
-    <q-card style="width: 700px max-width: 80vw">
+    <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
           <div class="text-h6">Tambah Uraian RAB</div>
           <q-space />
@@ -87,7 +87,6 @@ function submit () {
 
             <q-select
               outlined
-              clearable
               use-input
               use-chips
               emit-value
@@ -116,11 +115,8 @@ function submit () {
               <div class="col-12 col-md-6 q-pr-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
                   label="Harga Satuan"
-                  mask="#.##"
-                  fill-mask="0"
                   v-model="form.harga_satuan"
                   :hint="toRupiah(form.harga_satuan)"
                   :hide-hint="form.harga_satuan < 1"
@@ -133,11 +129,8 @@ function submit () {
               <div class="col-12 col-md-6 q-pl-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
                   label="Volume"
-                  mask="#.##"
-                  fill-mask="0"
                   v-model="form.volume"
                   :error="form.errors.volume ? true : false"
                   :error-message="form.errors.volume"

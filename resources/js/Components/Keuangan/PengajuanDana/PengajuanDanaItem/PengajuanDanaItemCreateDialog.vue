@@ -93,7 +93,6 @@ function submit () {
           <div class="q-gutter-md">
             <q-select
               outlined
-              clearable
               use-input
               emit-value
               map-options
@@ -131,11 +130,8 @@ function submit () {
               <div class="col-12 col-md-6 q-pr-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
                   label="Jumlah Pengajuan"
-                  mask="#.##"
-                  fill-mask="0"
                   v-model="form.jumlah_pengajuan"
                   :hint="toRupiah(form.jumlah_pengajuan)"
                   :hide-hint="form.jumlah_pengajuan < 1"
@@ -148,7 +144,6 @@ function submit () {
               <div class="col-12 col-md-6 q-pl-sm">
                 <q-select
                   outlined
-                  clearable
                   use-input
                   use-chips
                   hide-bottom-space
@@ -173,7 +168,6 @@ function submit () {
 
             <q-select
               outlined
-              clearable
               use-input
               use-chips
               emit-value

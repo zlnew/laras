@@ -48,7 +48,7 @@ function isApprovable (data: DataActivityStatus) {
 
 function isSubmitted (data: DataActivityStatus) {
   const status = data.status_aktivitas
-  if (status === 'Diajukan' || status === 'Dibayar' || status === 'Diterima Bertahap') return true
+  if (status === 'Diajukan' || status === 'Dibayar') return true
   return false
 }
 

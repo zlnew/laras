@@ -215,7 +215,6 @@ class DashboardController extends Controller
                         AND (
                             dpd.deleted_at IS NULL
                             AND pd.deleted_at IS NULL
-                            AND dpd.status_persetujuan = '400'
                         )
                     ) AS total_pengajuan_dana"
                 ),
@@ -231,7 +230,6 @@ class DashboardController extends Controller
                             dpc.deleted_at IS NULL
                             AND pc.deleted_at IS NULL
                             AND dpd.deleted_at IS NULL
-                            AND dpc.status_pembayaran = '400'
                         )
                     ) AS total_pencairan_dana"
                 ),
@@ -256,7 +254,7 @@ class DashboardController extends Controller
                 )
             )
             ->orderBy('rk.id_rekening', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiInvoiceProyek = DB::table('proyek as p')
             ->where('p.deleted_at', null)
@@ -315,12 +313,13 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('p.id_proyek', 'asc')
-            ->get();
+        ->get();
             
         $proyeksiKebutuhanDanaProyek = DB::table('proyek as p')
             ->where('p.deleted_at', null)
             ->groupBy('p.id_proyek')
-            ->havingRaw('total_pengajuan > 0')
+            ->having('total_pengajuan', '>', 0)
+            ->having('jumlah_belum_dibayar', '>', 0)
             ->select(
                 'p.id_proyek', 'p.nama_proyek',
                 DB::raw("
@@ -367,7 +366,7 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('total_pengajuan', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiUtang = DB::table('pencairan_dana as pc')
             ->leftJoin('pengajuan_dana AS pd', 'pd.id_pengajuan_dana', '=', 'pc.id_pengajuan_dana')
@@ -378,6 +377,7 @@ class DashboardController extends Controller
                 'p.deleted_at' => null
             ])
             ->where('pc.status_pencairan', '100')
+            ->having('jumlah_utang', '>', 0)
             ->groupBy('pc.id_pencairan_dana')
             ->select(
                 'pc.id_pencairan_dana',
@@ -386,18 +386,13 @@ class DashboardController extends Controller
                     CAST((SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         WHERE dpd.deleted_at IS NULL
-                        AND (
-                            dpd.status_persetujuan = '400'
-                            AND dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                        )
+                        AND dpd.id_pengajuan_dana = pd.id_pengajuan_dana
                     ) AS DECIMAL(20, 2)) -
                     IFNULL(CAST((SELECT SUM(dpc.jumlah_pencairan)
                         FROM detail_pengajuan_dana AS dpd
                         LEFT JOIN detail_pencairan_dana as dpc
                         ON dpc.id_detail_pengajuan_dana = dpd.id_detail_pengajuan_dana
                         WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                        AND dpd.status_persetujuan = '400'
-                        AND dpc.status_pembayaran = '400'
                         AND (
                             dpd.deleted_at IS NULL
                             AND dpc.deleted_at IS NULL
@@ -406,7 +401,7 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('pd.id_pengajuan_dana', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiPiutangQuery = DB::table('penagihan AS pg')
             ->leftJoin('proyek as p', 'p.id_proyek', '=', 'pg.id_proyek')
@@ -415,7 +410,8 @@ class DashboardController extends Controller
                 'pg.deleted_at' => null,
                 'pg.status_penagihan' => '100',
             ])
-            ->where('pg.status_aktivitas', '!=', 'Dibuat');
+            ->where('pg.status_aktivitas', '!=', 'Dibuat')
+        ->having('jumlah_piutang', '>', 0);
 
         if ($request->isMethod('get') && $request->get('piutang_query')) {
             $proyeksiPiutangQuery->when($request->get('piutang_pengguna_jasa'), function($query, $input) {
@@ -441,9 +437,8 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('pg.id_penagihan', 'desc')
-            ->get();
+        ->get();
 
-        
         $overview = [
             (Object) [
                 'title' => 'Proyek Selesai',
@@ -664,7 +659,7 @@ class DashboardController extends Controller
                 ),
             )
             ->orderBy('p.id_proyek', 'asc')
-            ->get();
+        ->get();
 
         $reminder = DB::table('pengajuan_dana AS pd')
             ->leftJoin('proyek AS p', 'p.id_proyek', '=', 'pd.id_proyek')
@@ -685,15 +680,16 @@ class DashboardController extends Controller
                 't.catatan'
             )
             ->orderBy('pd.id_pengajuan_dana', 'desc')
-            ->get();
+        ->get();
 
         $proyekAktif = $proyek->count();
+
         $proyekSelesai = DB::table('proyek AS p')
             ->leftJoin('users', 'users.id', '=', 'p.id_user')
             ->where([
                 'p.status_proyek' => '400',
                 'p.id_user' => $request->user()->id
-            ])->count();
+        ])->count();
 
         $overview = [
             (Object) [
@@ -815,7 +811,7 @@ class DashboardController extends Controller
                 ),
             )
             ->orderBy('p.id_proyek', 'asc')
-            ->get();
+        ->get();
 
         $piutangQuery = DB::table('penagihan AS pg')
             ->leftJoin('proyek as p', 'p.id_proyek', '=', 'pg.id_proyek')
@@ -824,7 +820,8 @@ class DashboardController extends Controller
                 'pg.deleted_at' => null,
                 'pg.status_penagihan' => '100',
             ])
-            ->where('pg.status_aktivitas', '!=', 'Dibuat');
+            ->where('pg.status_aktivitas', '!=', 'Dibuat')
+        ->having('jumlah_piutang', '>', 0);
 
         if ($request->isMethod('get') && $request->get('piutang_query')) {
             $piutangQuery->when($request->get('piutang_pengguna_jasa'), function($query, $input) {
@@ -850,7 +847,7 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('pg.id_penagihan', 'desc')
-            ->get();
+        ->get();
 
         $overview = [
             (Object) [
@@ -908,7 +905,6 @@ class DashboardController extends Controller
                         AND (
                             dpd.deleted_at IS NULL
                             AND pd.deleted_at IS NULL
-                            AND dpd.status_persetujuan = '400'
                         )
                     ) AS total_pengajuan_dana"
                 ),
@@ -924,7 +920,6 @@ class DashboardController extends Controller
                             dpc.deleted_at IS NULL
                             AND pc.deleted_at IS NULL
                             AND dpd.deleted_at IS NULL
-                            AND dpc.status_pembayaran = '400'
                         )
                     ) AS total_pencairan_dana"
                 ),
@@ -949,7 +944,7 @@ class DashboardController extends Controller
                 )
             )
             ->orderBy('rk.id_rekening', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiInvoiceProyek = DB::table('proyek as p')
             ->where('p.deleted_at', null)
@@ -1008,12 +1003,13 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('p.id_proyek', 'asc')
-            ->get();
+        ->get();
             
         $proyeksiKebutuhanDanaProyek = DB::table('proyek as p')
             ->where('p.deleted_at', null)
             ->groupBy('p.id_proyek')
-            ->havingRaw('total_pengajuan > 0')
+            ->having('total_pengajuan', '>', 0)
+            ->having('jumlah_belum_dibayar', '>', 0)
             ->select(
                 'p.id_proyek', 'p.nama_proyek',
                 DB::raw("
@@ -1054,14 +1050,13 @@ class DashboardController extends Controller
                             AND dpd.deleted_at IS NULL
                             AND dpc.deleted_at IS NULL
                             AND dpd.status_persetujuan = '400'
-                            AND dpc.status_pembayaran = '400'
                         )
                         GROUP BY pd.id_proyek
                     ) AS DECIMAL(20, 2)), 0) AS jumlah_belum_dibayar
                 ")
             )
             ->orderBy('total_pengajuan', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiUtang = DB::table('pencairan_dana as pc')
             ->leftJoin('pengajuan_dana AS pd', 'pd.id_pengajuan_dana', '=', 'pc.id_pengajuan_dana')
@@ -1072,6 +1067,7 @@ class DashboardController extends Controller
                 'p.deleted_at' => null
             ])
             ->where('pc.status_pencairan', '100')
+            ->having('jumlah_utang', '>', 0)
             ->groupBy('pc.id_pencairan_dana')
             ->select(
                 'pc.id_pencairan_dana',
@@ -1080,18 +1076,13 @@ class DashboardController extends Controller
                     CAST((SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         WHERE dpd.deleted_at IS NULL
-                        AND (
-                            dpd.status_persetujuan = '400'
-                            AND dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                        )
+                        AND dpd.id_pengajuan_dana = pd.id_pengajuan_dana
                     ) AS DECIMAL(20, 2)) -
                     IFNULL(CAST((SELECT SUM(dpc.jumlah_pencairan)
                         FROM detail_pengajuan_dana AS dpd
                         LEFT JOIN detail_pencairan_dana as dpc
                         ON dpc.id_detail_pengajuan_dana = dpd.id_detail_pengajuan_dana
                         WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                        AND dpd.status_persetujuan = '400'
-                        AND dpc.status_pembayaran = '400'
                         AND (
                             dpd.deleted_at IS NULL
                             AND dpc.deleted_at IS NULL
@@ -1100,7 +1091,7 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('pd.id_pengajuan_dana', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiPiutangQuery = DB::table('penagihan AS pg')
             ->leftJoin('proyek as p', 'p.id_proyek', '=', 'pg.id_proyek')
@@ -1109,7 +1100,8 @@ class DashboardController extends Controller
                 'pg.deleted_at' => null,
                 'pg.status_penagihan' => '100',
             ])
-            ->where('pg.status_aktivitas', '!=', 'Dibuat');
+            ->where('pg.status_aktivitas', '!=', 'Dibuat')
+        ->having('jumlah_piutang', '>', 0);
 
         if ($request->isMethod('get') && $request->get('piutang_query')) {
             $proyeksiPiutangQuery->when($request->get('piutang_pengguna_jasa'), function($query, $input) {
@@ -1135,7 +1127,7 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('pg.id_penagihan', 'desc')
-            ->get();
+        ->get();
 
         $overview = [
             (Object) [
@@ -1352,7 +1344,7 @@ class DashboardController extends Controller
             ->orderBy('p.id_proyek', 'asc')
             ->get();
 
-            $sisaDanaRekening = DB::table('rekening as rk')
+        $sisaDanaRekening = DB::table('rekening as rk')
             ->where('rk.deleted_at', null)
             ->groupBy('rk.id_rekening')
             ->select(
@@ -1375,7 +1367,6 @@ class DashboardController extends Controller
                         AND (
                             dpd.deleted_at IS NULL
                             AND pd.deleted_at IS NULL
-                            AND dpd.status_persetujuan = '400'
                         )
                     ) AS total_pengajuan_dana"
                 ),
@@ -1391,7 +1382,6 @@ class DashboardController extends Controller
                             dpc.deleted_at IS NULL
                             AND pc.deleted_at IS NULL
                             AND dpd.deleted_at IS NULL
-                            AND dpc.status_pembayaran = '400'
                         )
                     ) AS total_pencairan_dana"
                 ),
@@ -1416,7 +1406,7 @@ class DashboardController extends Controller
                 )
             )
             ->orderBy('rk.id_rekening', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiInvoiceProyek = DB::table('proyek as p')
             ->where('p.deleted_at', null)
@@ -1475,12 +1465,13 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('p.id_proyek', 'asc')
-            ->get();
-            
+        ->get();
+        
         $proyeksiKebutuhanDanaProyek = DB::table('proyek as p')
             ->where('p.deleted_at', null)
             ->groupBy('p.id_proyek')
-            ->havingRaw('total_pengajuan > 0')
+            ->having('total_pengajuan', '>', 0)
+            ->having('jumlah_belum_dibayar', '>', 0)
             ->select(
                 'p.id_proyek', 'p.nama_proyek',
                 DB::raw("
@@ -1521,14 +1512,13 @@ class DashboardController extends Controller
                             AND dpd.deleted_at IS NULL
                             AND dpc.deleted_at IS NULL
                             AND dpd.status_persetujuan = '400'
-                            AND dpc.status_pembayaran = '400'
                         )
                         GROUP BY pd.id_proyek
                     ) AS DECIMAL(20, 2)), 0) AS jumlah_belum_dibayar
                 ")
             )
             ->orderBy('total_pengajuan', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiUtang = DB::table('pencairan_dana as pc')
             ->leftJoin('pengajuan_dana AS pd', 'pd.id_pengajuan_dana', '=', 'pc.id_pengajuan_dana')
@@ -1539,6 +1529,7 @@ class DashboardController extends Controller
                 'p.deleted_at' => null
             ])
             ->where('pc.status_pencairan', '100')
+            ->having('jumlah_utang', '>', 0)
             ->groupBy('pc.id_pencairan_dana')
             ->select(
                 'pc.id_pencairan_dana',
@@ -1547,18 +1538,13 @@ class DashboardController extends Controller
                     CAST((SELECT SUM(dpd.jumlah_pengajuan)
                         FROM detail_pengajuan_dana AS dpd
                         WHERE dpd.deleted_at IS NULL
-                        AND (
-                            dpd.status_persetujuan = '400'
-                            AND dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                        )
+                        AND dpd.id_pengajuan_dana = pd.id_pengajuan_dana
                     ) AS DECIMAL(20, 2)) -
                     IFNULL(CAST((SELECT SUM(dpc.jumlah_pencairan)
                         FROM detail_pengajuan_dana AS dpd
                         LEFT JOIN detail_pencairan_dana as dpc
                         ON dpc.id_detail_pengajuan_dana = dpd.id_detail_pengajuan_dana
                         WHERE dpd.id_pengajuan_dana = pd.id_pengajuan_dana
-                        AND dpd.status_persetujuan = '400'
-                        AND dpc.status_pembayaran = '400'
                         AND (
                             dpd.deleted_at IS NULL
                             AND dpc.deleted_at IS NULL
@@ -1567,7 +1553,7 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('pd.id_pengajuan_dana', 'desc')
-            ->get();
+        ->get();
 
         $proyeksiPiutangQuery = DB::table('penagihan AS pg')
             ->leftJoin('proyek as p', 'p.id_proyek', '=', 'pg.id_proyek')
@@ -1576,7 +1562,8 @@ class DashboardController extends Controller
                 'pg.deleted_at' => null,
                 'pg.status_penagihan' => '100',
             ])
-            ->where('pg.status_aktivitas', '!=', 'Dibuat');
+            ->where('pg.status_aktivitas', '!=', 'Dibuat')
+        ->having('jumlah_piutang', '>', 0);
 
         if ($request->isMethod('get') && $request->get('piutang_query')) {
             $proyeksiPiutangQuery->when($request->get('piutang_pengguna_jasa'), function($query, $input) {
@@ -1602,8 +1589,7 @@ class DashboardController extends Controller
                 ")
             )
             ->orderBy('pg.id_penagihan', 'desc')
-            ->get();
-
+        ->get();
         
         $overview = [
             (Object) [

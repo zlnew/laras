@@ -189,7 +189,6 @@ function submit () {
               <div class="col-12 col-md-6 q-pr-sm">
                 <q-select
                   outlined
-                  clearable
                   use-input
                   hide-bottom-space
                   input-debounce="500"
@@ -213,7 +212,6 @@ function submit () {
               <div class="col-12 col-md-6 q-pl-sm">
                 <q-select
                   outlined
-                  clearable
                   use-input
                   hide-bottom-space
                   input-debounce="500"
@@ -238,7 +236,6 @@ function submit () {
 
             <q-select
               outlined
-              clearable
               use-input
               use-chips
               hide-bottom-space
@@ -289,7 +286,6 @@ function submit () {
 
             <q-select
               outlined
-              clearable
               use-input
               use-chips
               emit-value
@@ -363,11 +359,8 @@ function submit () {
               <div class="col-12 col-md-6 q-pl-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
                   label="Nilai Kontrak"
-                  mask="#.##"
-                  fill-mask="0"
                   v-model="form.nilai_kontrak"
                   :hint="toRupiah(form.nilai_kontrak)"
                   :hide-hint="form.nilai_kontrak < 1"
@@ -380,7 +373,6 @@ function submit () {
 
             <q-select
               outlined
-              clearable
               use-input
               use-chips
               emit-value

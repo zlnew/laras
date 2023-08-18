@@ -232,9 +232,6 @@ function save (amount: string, id: number) {
               <q-input
                 dense
                 autofocus
-                reverse-fill-mask
-                mask="#.##"
-                fill-mask="0"
                 v-model="scope.value"
                 :hint="toRupiah(scope.value)"
               >

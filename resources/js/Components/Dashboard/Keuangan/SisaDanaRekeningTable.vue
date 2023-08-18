@@ -18,10 +18,12 @@ const props = defineProps<{
 const rows = computed(() => {
   return props.rows.map(item => {
     const modal = toFloat(item.nilai_kontrak)
+    const pemasukan = toFloat(item.total_pengajuan_dana) + toFloat(item.total_penagihan_diterima)
+    const pengeluaran = toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan)
 
     return {
       ...item,
-      sisa_dana: modal - toFloat(item.total_pencairan_dana) + toFloat(item.total_penagihan_diterima)
+      sisa_dana: modal + pemasukan - pengeluaran
     }
   })
 })
