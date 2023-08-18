@@ -9,7 +9,7 @@ import Layout from '@/Layouts/AuthenticatedLayout.vue'
 import { PenagihanTable } from '@/Components/Keuangan/penagihan-page'
 
 // types
-import type { Penagihan, Proyek } from '@/types'
+import type { Penagihan, Proyek, Rekening } from '@/types'
 
 const breadcrumbs = [
   { label: 'Keuangan', url: '#' },
@@ -19,6 +19,7 @@ const breadcrumbs = [
 export interface FormOptions {
   proyek: Array<Partial<Proyek>>
   currentProyek: Proyek[]
+  rekening: Rekening[]
 }
 
 defineProps<{

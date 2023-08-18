@@ -5,7 +5,7 @@ import { useDialogPluginComponent } from 'quasar'
 import { ref } from 'vue'
 
 // utils
-import { filterOptions, multiFilterOptions } from '@/utils/options'
+import { multiFilterOptions } from '@/utils/options'
 
 // types
 import { type Penagihan } from '@/types'
@@ -21,20 +21,11 @@ const props = defineProps<{
   options: FormOptions
 }>()
 
-const kasMasukOptions = ['Utang', 'Setoran Modal']
-
 const proyekOptionsRef = ref(props.options.currentProyek)
-const kasMasukOptionsRef = ref(kasMasukOptions)
 
 function proyekFilter (val: string, update: any) {
   update(() => {
     proyekOptionsRef.value = multiFilterOptions(val, props.options.currentProyek, ['nama_proyek', 'tahun_anggaran'])
-  })
-}
-
-function kasMasukFilter (val: string, update: any) {
-  update(() => {
-    kasMasukOptionsRef.value = filterOptions(val, kasMasukOptions)
   })
 }
 
@@ -43,7 +34,6 @@ const params = page.props.query as unknown as Penagihan
 
 const form = useForm({
   id_proyek: params.id_proyek,
-  kas_masuk: params.kas_masuk,
   status_penagihan: params.status_penagihan,
   ditolak: false
 })
@@ -114,29 +104,6 @@ function search () {
                   </q-item-section>
                 </q-item>
               </template>
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-
-            <q-select
-              outlined
-              clearable
-              use-input
-              use-chips
-              hide-bottom-space
-              input-debounce="500"
-              label="Kas Masuk"
-              v-model="form.kas_masuk"
-              :options="kasMasukOptionsRef"
-              :error="form.errors.kas_masuk ? true : false"
-              :error-message="form.errors.kas_masuk"
-              @filter="kasMasukFilter"
-            >
               <template v-slot:no-option>
                 <q-item>
                   <q-item-section class="text-grey">

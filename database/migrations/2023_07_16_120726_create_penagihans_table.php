@@ -16,17 +16,18 @@ return new class extends Migration
             $table->string('keperluan');
             $table->timestamp('tanggal_pengajuan')->nullable();
 
-            $table->string('nomor_sp2d')->nullable();
-            $table->date('tanggal_sp2d')->nullable();
-            $table->date('tanggal_terbit')->nullable();
-            $table->date('tanggal_cair')->nullable();
+            $table->string('nomor_sp2d');
+            $table->date('tanggal_sp2d');
+            $table->date('tanggal_terbit');
+            $table->date('tanggal_cair');
+            $table->decimal('nilai_netto', 20, 2);
+            $table->binary('faktur')->nullable();
             
             $table->decimal('potongan_ppn', 20, 2)->nullable();
             $table->decimal('potongan_pph', 20, 2)->nullable();
             $table->decimal('potongan_lainnya', 20, 2)->nullable();
             $table->text('keterangan_potongan_lainnya')->nullable();
 
-            $table->enum('kas_masuk', ['Utang', 'Setoran Modal']);
             $table->enum('status_penagihan', [100, 400])->default(100);
             $table->enum('status_aktivitas', ['Dibuat', 'Diajukan', 'Ditolak', 'Diterima Bertahap', 'Diterima'])->default('Dibuat');
             $table->decimal('jumlah_diterima', 20, 2)->default(0);

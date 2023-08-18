@@ -24,7 +24,8 @@ class DetailPenagihanController extends Controller
             ->where('penagihan.deleted_at', null)
             ->where('penagihan.id_penagihan', $penagihan->id_penagihan)
             ->select(
-                'penagihan.id_penagihan', 'penagihan.kas_masuk',
+                'penagihan.id_penagihan',
+                'penagihan.nilai_netto', 'penagihan.faktur',
                 'penagihan.keperluan', 'penagihan.tanggal_pengajuan',
                 'penagihan.status_penagihan', 'penagihan.status_aktivitas',
                 'penagihan.id_rekening as id_rekening_pg', 'penagihan.nomor_sp2d',
@@ -64,15 +65,107 @@ class DetailPenagihanController extends Controller
             ->orderBy('dpg.id_detail_penagihan', 'asc')
             ->get();
 
-        $dokumenPenunjang = DB::table('files')
-            ->leftJoin('penagihan as pg', 'pg.id_penagihan', '=', 'files.model_id')
-            ->where([
-                'files.deleted_at' => null,
-                'pg.deleted_at' => null
-            ])
-            ->where('files.model_id', $penagihan->id_penagihan)
-            ->select('files.id_file', 'files.file_name', 'files.file_path')
-            ->get();
+        $evaluasi = DB::table('proyek as p')
+            ->where('p.deleted_at', null)
+            ->where('p.id_proyek', $penagihan->id_proyek)
+            ->groupBy('p.id_proyek')
+            ->select(
+                'p.id_proyek', 'p.nama_proyek',
+                DB::raw("
+                    IFNULL(
+                        CAST((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
+                            FROM detail_rab as drab
+                            LEFT JOIN rab
+                            ON rab.id_rab = drab.id_rab
+                            WHERE rab.id_proyek = p.id_proyek
+                            AND (
+                                rab.deleted_at IS NULL
+                                AND drab.deleted_at IS NULL
+                                AND rab.status_rab = '400'
+                            )
+                            GROUP BY rab.id_rab
+                        ) AS DECIMAL(20, 2))
+                    , 0) AS nilai_kontrak
+                "),
+                DB::raw("
+                    CAST(
+                        (SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND pg.deleted_at IS NULL
+                        )
+                    AS DECIMAL(20, 2)) AS invoice_sebelumnya
+                "),
+                DB::raw("
+                    CAST(
+                        (SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                            FROM penagihan AS pg
+                            LEFT JOIN detail_penagihan AS dpg
+                            ON dpg.id_penagihan = pg.id_penagihan
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND dpg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ) -
+                        (SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        )
+                    AS DECIMAL(20, 2)) AS invoice_saat_ini
+                "),
+                DB::raw("
+                    CAST(
+                        IFNULL((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
+                            FROM detail_rab as drab
+                            LEFT JOIN rab
+                            ON rab.id_rab = drab.id_rab
+                            WHERE rab.id_proyek = p.id_proyek
+                            AND (
+                                rab.deleted_at IS NULL
+                                AND drab.deleted_at IS NULL
+                                AND rab.status_rab = '400'
+                            )
+                            GROUP BY rab.id_rab
+                        ), 0)
+                        -
+                    (
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND pg.deleted_at IS NULL
+                        ), 0)
+                        +
+                        IFNULL((SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                            FROM penagihan AS pg
+                            LEFT JOIN detail_penagihan AS dpg
+                            ON dpg.id_penagihan = pg.id_penagihan
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND dpg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                        -
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                    ) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
+                ")
+            )
+            ->orderBy('p.id_proyek', 'asc')
+        ->get();
 
         $timeline = DB::table('timeline')
             ->leftJoin('users', 'users.id', '=', 'timeline.user_id')
@@ -92,7 +185,7 @@ class DetailPenagihanController extends Controller
         return Inertia::render('Keuangan/DetailPenagihanPage', [
             'penagihan' => $penagihan,
             'detailPenagihan' => $detailPenagihan,
-            'dokumenPenunjang' => $dokumenPenunjang,
+            'evaluasi' => $evaluasi,
             'timeline' => $timeline,
             'formOptions' => $formOptions
         ]);
@@ -111,18 +204,9 @@ class DetailPenagihanController extends Controller
                 'detail_rab.harga_satuan'
             )
             ->get();
-        
-        $rekening = DB::table('rekening')
-            ->where('deleted_at', null)
-            ->where('tujuan_rekening', 'Penerimaan Invoice')
-            ->select(
-                'id_rekening', 'nama_bank',
-                'nomor_rekening', 'nama_rekening'
-            )->get();
 
         $options = (object) [
-            'detailRab' => $detailRab,
-            'rekening' => $rekening
+            'detailRab' => $detailRab
         ];
 
         return $options;

@@ -2,14 +2,16 @@
 // cores
 import { useForm } from '@inertiajs/vue3'
 import { useDialogPluginComponent } from 'quasar'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 
 // utils
-import { filterOptions, multiFilterOptions } from '@/utils/options'
+import { multiFilterOptions } from '@/utils/options'
 
 // types
 import { type FormOptions } from '@/Pages/Keuangan/PenagihanPage.vue'
-import { type Penagihan } from '@/types'
+import type { Penagihan, Proyek } from '@/types'
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -18,14 +20,12 @@ defineEmits([
 const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginComponent()
 
 const props = defineProps<{
-  penagihan: Penagihan
+  penagihan: Penagihan & { id_rekening_pg: string }
   options: FormOptions
 }>()
 
-const kasMasukOptions = ['Utang', 'Setoran Modal']
-
 const proyekOptionsRef = ref(props.options.proyek)
-const kasMasukOptionsRef = ref(kasMasukOptions)
+const rekeningOptionsRef = ref(props.options.rekening)
 
 function proyekFilter (val: string, update: any) {
   update(() => {
@@ -33,20 +33,44 @@ function proyekFilter (val: string, update: any) {
   })
 }
 
-function kasMasukFilter (val: string, update: any) {
+function rekeningFilter (val: string, update: any) {
   update(() => {
-    kasMasukOptionsRef.value = filterOptions(val, kasMasukOptions)
+    rekeningOptionsRef.value = multiFilterOptions(
+      val, props.options.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
+    )
   })
+}
+
+const penyediaJasa = ref('')
+const penggunaJasa = ref('')
+
+function onChooseProyek (id: Proyek['id_proyek']) {
+  const match = props.options.proyek.find(item => item.id_proyek === id)
+
+  if (match !== undefined) {
+    if (match.penyedia_jasa !== undefined) {
+      penyediaJasa.value = match.penyedia_jasa
+    }
+    if (match.pengguna_jasa !== undefined) {
+      penggunaJasa.value = match.pengguna_jasa
+    }
+  }
 }
 
 const form = useForm({
   id_proyek: props.penagihan.id_proyek,
+  id_rekening: props.penagihan.id_rekening_pg,
   keperluan: props.penagihan.keperluan,
-  kas_masuk: props.penagihan.kas_masuk
+  nomor_sp2d: props.penagihan.nomor_sp2d,
+  tanggal_sp2d: props.penagihan.tanggal_sp2d,
+  tanggal_terbit: props.penagihan.tanggal_terbit,
+  tanggal_cair: props.penagihan.tanggal_cair,
+  nilai_netto: props.penagihan.nilai_netto,
+  faktur: null
 })
 
 function submit () {
-  form.patch(route('penagihan.update', props.penagihan.id_penagihan), {
+  form.post(route('penagihan.update', props.penagihan.id_penagihan), {
     onSuccess: (page) => {
       onDialogOK({
         type: 'positive',
@@ -55,6 +79,10 @@ function submit () {
     }
   })
 }
+
+onMounted(() => {
+  onChooseProyek(form.id_proyek)
+})
 </script>
 
 <template>
@@ -83,7 +111,6 @@ function submit () {
           <div class="q-gutter-md">
             <q-select
               outlined
-              clearable
               use-input
               use-chips
               emit-value
@@ -92,12 +119,13 @@ function submit () {
               input-debounce="500"
               label="Pilih Proyek"
               v-model="form.id_proyek"
-              option-value="id_proyek"
-              :option-label="(opt) => `${opt.nama_proyek} | ${opt.tahun_anggaran}`"
+              :option-value="(opt) => opt.id_proyek"
+              :option-label="(opt) => `${opt.nama_proyek} - ${opt.tahun_anggaran}`"
               :options="proyekOptionsRef"
               :error="form.errors.id_proyek ? true : false"
               :error-message="form.errors.id_proyek"
               @filter="proyekFilter"
+              @update:model-value="(opt) => onChooseProyek(opt)"
             >
               <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps">
@@ -106,6 +134,62 @@ function submit () {
                       {{ scope.opt.nama_proyek }}
                     </strong>
                     {{ scope.opt.tahun_anggaran }}
+                  </q-item-section>
+                </q-item>
+              </template>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+
+            <div class="row">
+              <div class="col-12 col-md-6 q-pr-sm">
+                <q-input
+                  readonly
+                  outlined
+                  label="Penyedia Jasa"
+                  v-model="penyediaJasa"
+                />
+              </div>
+
+              <div class="col-12 col-md-6 q-pl-sm">
+                <q-input
+                  readonly
+                  outlined
+                  label="Pengguna Jasa"
+                  v-model="penggunaJasa"
+                />
+              </div>
+            </div>
+
+            <q-select
+              outlined
+              use-input
+              use-chips
+              emit-value
+              map-options
+              hide-bottom-space
+              input-debounce="500"
+              label="Rekening Pembayaran"
+              v-model="form.id_rekening"
+              option-value="id_rekening"
+              :option-label="(opt) => `${opt.nama_bank} | ${opt.nomor_rekening} - ${opt.nama_rekening}`"
+              :options="rekeningOptionsRef"
+              :error="form.errors.id_rekening ? true : false"
+              :error-message="form.errors.id_rekening"
+              @filter="rekeningFilter"
+            >
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <strong class="text-primary">
+                      {{ scope.opt.nama_bank }}
+                    </strong>
+                    {{ scope.opt.nomor_rekening }} - {{ scope.opt.nama_rekening }}
                   </q-item-section>
                 </q-item>
               </template>
@@ -128,28 +212,79 @@ function submit () {
               :error-message="form.errors.keperluan"
             />
 
-            <q-select
+            <div class="row">
+              <div class="col-12 col-md-6 q-pr-sm">
+                <q-input
+                  outlined
+                  hide-bottom-space
+                  label="Nomor SP2D"
+                  v-model="form.nomor_sp2d"
+                  :error="form.errors.nomor_sp2d ? true : false"
+                  :error-message="form.errors.nomor_sp2d"
+                />
+              </div>
+
+              <div class="col-12 col-md-6 q-pl-sm">
+                <q-input
+                  outlined
+                  hide-bottom-space
+                  label="Tanggal SP2D"
+                  type="date"
+                  v-model="form.tanggal_sp2d"
+                  :error="form.errors.tanggal_sp2d ? true : false"
+                  :error-message="form.errors.tanggal_sp2d"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 col-md-6 q-pr-sm">
+                <q-input
+                  outlined
+                  hide-bottom-space
+                  label="Tanggal Terbit"
+                  type="date"
+                  v-model="form.tanggal_terbit"
+                  :error="form.errors.tanggal_terbit ? true : false"
+                  :error-message="form.errors.tanggal_terbit"
+                />
+              </div>
+
+              <div class="col-12 col-md-6 q-pl-sm">
+                <q-input
+                  outlined
+                  hide-bottom-space
+                  label="Tanggal Cair"
+                  type="date"
+                  v-model="form.tanggal_cair"
+                  :error="form.errors.tanggal_cair ? true : false"
+                  :error-message="form.errors.tanggal_cair"
+                />
+              </div>
+            </div>
+
+            <q-input
               outlined
-              clearable
-              use-input
-              use-chips
               hide-bottom-space
-              input-debounce="500"
-              label="Kas Masuk"
-              v-model="form.kas_masuk"
-              :options="kasMasukOptionsRef"
-              :error="form.errors.kas_masuk ? true : false"
-              :error-message="form.errors.kas_masuk"
-              @filter="kasMasukFilter"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
+              label="Nilai Netto"
+              v-model="form.nilai_netto"
+              :hint="toRupiah(toFloat(form.nilai_netto))"
+              :hide-hint="toFloat(form.nilai_netto) < 1"
+              :error="form.errors.nilai_netto ? true : false"
+              :error-message="form.errors.nilai_netto"
+              input-class="text-right"
+            />
+
+            <q-file
+              outlined
+              counter
+              hide-bottom-space
+              v-model="form.faktur"
+              label="Upload Faktur (Optional)"
+              hint="Format: png, jpeg, jpg, pdf | Size: 100 KB"
+              :error="form.errors.faktur ? true : false"
+              :error-message="form.errors.faktur"
+            />
           </div>
         </q-card-section>
 

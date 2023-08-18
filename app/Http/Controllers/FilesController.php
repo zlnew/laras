@@ -37,8 +37,6 @@ class FilesController extends Controller
         DB::transaction(function () use ($request, $file) {
             $validated = $request->safe();
 
-            $file->file_name = $validated->file_name;
-
             if ($validated->file) {
                 Storage::delete(str_replace('storage' ,'public' ,$file->file_path));
                 

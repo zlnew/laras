@@ -68,11 +68,8 @@ function confirm () {
         <q-card-section class="scroll">
           <div class="q-gutter-md">
             <q-input
-              flat
-              reverse-fill-mask
+              outlined
               hide-bottom-space
-              fill-mask="0"
-              mask="#.##"
               label="Masukkan Jumlah Diterima"
               v-model="form.jumlah_diterima"
               :hint="toRupiah(toFloat(form.jumlah_diterima))"
@@ -81,7 +78,7 @@ function confirm () {
               input-class="text-right"
             />
             <q-input
-              flat
+              outlined
               autogrow
               hide-bottom-space
               label="Tambahkan Catatan"

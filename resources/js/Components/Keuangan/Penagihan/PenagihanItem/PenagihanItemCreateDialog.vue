@@ -85,7 +85,6 @@ function submit () {
           <div class="q-gutter-md">
             <q-select
               outlined
-              clearable
               use-input
               emit-value
               map-options
@@ -117,11 +116,8 @@ function submit () {
               <div class="col-12 col-md-6 q-pr-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
                   label="Harga Satuan"
-                  mask="#.##"
-                  fill-mask="0"
                   v-model="form.harga_satuan_penagihan"
                   :hint="toRupiah(toFloat(form.harga_satuan_penagihan))"
                   :hide-hint="toFloat(form.harga_satuan_penagihan) < 1"
@@ -134,11 +130,8 @@ function submit () {
               <div class="col-12 col-md-6 q-pl-sm">
                 <q-input
                   outlined
-                  reverse-fill-mask
                   hide-bottom-space
                   label="Volume"
-                  mask="#.##"
-                  fill-mask="0"
                   v-model="form.volume_penagihan"
                   :error="form.errors.volume_penagihan ? true : false"
                   :error-message="form.errors.volume_penagihan"

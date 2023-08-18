@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Penagihan\ConfirmRequest;
-use App\Http\Requests\Penagihan\FillRequest;
 use App\Http\Requests\Penagihan\StoreRequest;
 use App\Http\Requests\Penagihan\TaxRequest;
 use App\Http\Requests\Penagihan\UpdateRequest;
@@ -12,6 +11,7 @@ use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use stdClass;
@@ -32,8 +32,10 @@ class PenagihanController extends Controller
 
         $penagihan = $penagihanQuery->groupBy('penagihan.id_penagihan')
             ->select(
-                'penagihan.id_penagihan',
-                'penagihan.kas_masuk', 'penagihan.keperluan',
+                'penagihan.id_penagihan', 'penagihan.id_rekening as id_rekening_pg',
+                'penagihan.keperluan', 'penagihan.nomor_sp2d',
+                'penagihan.tanggal_sp2d', 'penagihan.tanggal_terbit',
+                'penagihan.tanggal_cair', 'penagihan.nilai_netto',
                 'penagihan.status_penagihan', 'penagihan.status_aktivitas',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
@@ -67,7 +69,8 @@ class PenagihanController extends Controller
             ->groupBy('proyek.id_proyek')
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran'
+                'proyek.tahun_anggaran', 'proyek.pengguna_jasa',
+                'proyek.penyedia_jasa'
             )
             ->get();
 
@@ -86,9 +89,19 @@ class PenagihanController extends Controller
             )
             ->get();
 
+        $rekening = DB::table('rekening')
+            ->where('deleted_at', null)
+            ->where('tujuan_rekening', 'Penerimaan Invoice')
+            ->select(
+                'id_rekening', 'nama_bank',
+                'nomor_rekening', 'nama_rekening'
+            )
+            ->get();
+
         $options = (object) [
             'proyek' => $proyek,
-            'currentProyek' => $currentProyek
+            'currentProyek' => $currentProyek,
+            'rekening' => $rekening
         ];
 
         return $options;
@@ -97,10 +110,6 @@ class PenagihanController extends Controller
     public function filter($searchRequest, $penagihanQuery) {
         $penagihanQuery->when($searchRequest->get('id_proyek'), function($query, $input) {
             $query->whereIn('proyek.id_proyek', $input);
-        });
-
-        $penagihanQuery->when($searchRequest->get('kas_masuk'), function($query, $input) {
-            $query->where('penagihan.kas_masuk', $input);
         });
 
         $penagihanQuery->when($searchRequest->get('status_penagihan'), function($query, $input) {
@@ -119,12 +128,20 @@ class PenagihanController extends Controller
         DB::transaction(function() use ($request) {
             $validated = $request->safe();
     
+            $faktur_filepath = Storage::putFile('public/uploads', $validated->faktur);
+
             $penagihan = new Penagihan;
     
             $penagihan->fill([
                 'id_proyek' => $validated->id_proyek,
                 'keperluan' => $validated->keperluan,
-                'kas_masuk' => $validated->kas_masuk
+                'id_rekening' => $validated->id_rekening,
+                'nomor_sp2d' => $validated->nomor_sp2d,
+                'tanggal_sp2d' => $validated->tanggal_sp2d,
+                'tanggal_terbit' => $validated->tanggal_terbit,
+                'tanggal_cair' => $validated->tanggal_cair,
+                'nilai_netto' => $validated->nilai_netto,
+                'faktur' => Storage::url($faktur_filepath)
             ]);
     
             $penagihan->save();
@@ -147,25 +164,24 @@ class PenagihanController extends Controller
     {
         $validated = $request->safe();
 
-        $penagihan->keperluan = $validated->keperluan;
-        $penagihan->kas_masuk = $validated->kas_masuk;
-
-        $penagihan->save();
-
-        return redirect()->back()->with('success', 'Penagihan/Invoice berhasil diperbarui!');
-    }
-
-    public function fill(FillRequest $request, Penagihan $penagihan): RedirectResponse
-    {
-        $validated = $request->safe();
-
         $penagihan->fill([
+            'id_proyek' => $validated->id_proyek,
+            'keperluan' => $validated->keperluan,
             'id_rekening' => $validated->id_rekening,
             'nomor_sp2d' => $validated->nomor_sp2d,
             'tanggal_sp2d' => $validated->tanggal_sp2d,
             'tanggal_terbit' => $validated->tanggal_terbit,
-            'tanggal_cair' => $validated->tanggal_cair
+            'tanggal_cair' => $validated->tanggal_cair,
+            'nilai_netto' => $validated->nilai_netto
         ]);
+
+        if ($validated->faktur) {
+            Storage::delete(str_replace('storage', 'public', $penagihan->faktur));
+            
+            $faktur_filepath = Storage::putFile('public/uploads', $validated->faktur);
+
+            $penagihan->faktur = Storage::url($faktur_filepath);
+        }
 
         $penagihan->save();
 

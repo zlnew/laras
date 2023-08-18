@@ -42,7 +42,7 @@ function lembarEvaluasi () {
     <q-btn
       rounded
       label="Evaluasi"
-      color="green"
+      color="primary"
       icon="keyboard_arrow_left"
       @click="lembarEvaluasi"
     >

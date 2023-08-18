@@ -1,12 +1,9 @@
 <script setup lang="ts">
 // cores
-import { Head, useForm } from '@inertiajs/vue3'
-import { ref } from 'vue'
-import { useQuasar } from 'quasar'
+import { Head } from '@inertiajs/vue3'
 
 // utils
-import { can, isAdmin, isEditable, isSubmitted } from '@/utils/permissions'
-import { multiFilterOptions } from '@/utils/options'
+import { can, isEditable, isSubmitted } from '@/utils/permissions'
 import { fullDate } from '@/utils/date'
 
 // layout
@@ -19,14 +16,14 @@ import {
   PenagihanApprovalForm
 } from '@/Components/Keuangan/detail-penagihan-page'
 import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue'
-import { FilesTable } from '@/Components/Files/files-page'
 
 // types
-import type { DetailPenagihan, DetailRAB, File, Penagihan, Proyek, Rekening, Timeline } from '@/types'
+import type { DetailPenagihan, DetailRAB, Penagihan, Proyek, Timeline } from '@/types'
+import { toRupiah } from '@/utils/money'
+import { toFloat } from '@/utils/number'
 
 export interface FormOptions {
-  detailRab: Array<Partial<DetailRAB>>
-  rekening: Rekening[]
+  detailRab: DetailRAB[]
 }
 
 interface JoinedWithPenagihan {
@@ -36,10 +33,19 @@ interface JoinedWithPenagihan {
   nama_rekening_pg: string
 }
 
+export interface Evaluasi {
+  id_proyek: string
+  nama_proyek: string
+  nilai_kontrak: string
+  invoice_sebelumnya: string
+  invoice_saat_ini: string
+  sisa_netto_kontrak: string
+}
+
 const props = defineProps<{
   penagihan: Penagihan & Proyek & JoinedWithPenagihan
   detailPenagihan: DetailPenagihan[]
-  dokumenPenunjang: File[]
+  evaluasi: Evaluasi[]
   formOptions: FormOptions
   timeline: Timeline[]
 }>()
@@ -49,43 +55,6 @@ const breadcrumbs = [
   { label: 'Penagihan/Invoice', url: route('penagihan') },
   { label: props.penagihan.nama_proyek, url: '#' }
 ]
-
-const tab = ref('uraian')
-
-const $q = useQuasar()
-const editable = ref(false)
-
-const rekeningOptionsRef = ref(props.formOptions.rekening)
-
-function rekeningFilter (val: string, update: any) {
-  update(() => {
-    rekeningOptionsRef.value = multiFilterOptions(
-      val, props.formOptions.rekening, ['nama_bank', 'nomor_rekening', 'nama_rekening']
-    )
-  })
-}
-
-const form = useForm({
-  id_rekening: props.penagihan.id_rekening_pg,
-  nomor_sp2d: props.penagihan.nomor_sp2d,
-  tanggal_sp2d: props.penagihan.tanggal_sp2d,
-  tanggal_terbit: props.penagihan.tanggal_terbit,
-  tanggal_cair: props.penagihan.tanggal_cair
-})
-
-function save () {
-  form.put(route('penagihan.fill', props.penagihan.id_penagihan), {
-    onSuccess: (page) => {
-      $q.notify({
-        type: 'positive',
-        message: page.props.flash.success,
-        position: 'top'
-      })
-
-      editable.value = false
-    }
-  })
-}
 </script>
 
 <template>
@@ -128,178 +97,70 @@ function save () {
                 </div>
 
                 <div class="col-4 text-caption">
-                  Kas Masuk
-                </div>
-                <div class="col-8 text-subtitle2">
-                  : {{ penagihan.kas_masuk }}
-                </div>
-
-                <div class="col-4 text-caption">
                   Tanggal Pengajuan
                 </div>
                 <div class="col-8 text-subtitle2">
                   : {{ fullDate(penagihan.tanggal_pengajuan) || '-' }}
                 </div>
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
 
-        <div class="col-12 col-md-6">
-          <q-card flat bordered>
-            <q-card-section>
-              <div
-                v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(penagihan)"
-                class="text-subtitle2 absolute-top text-right q-pa-sm"
-              >
-                <q-btn
-                  flat
-                  dense
-                  :label="editable ? 'Save' : 'Edit'"
-                  :icon="editable ? 'done' : 'edit_note'"
-                  :color="editable ? 'green' : 'secondary'"
-                  :disable="!can('create & modify penagihan') && !isEditable(penagihan)"
-                  @click="editable ? save() : editable = true"
-                >
-                  <q-tooltip>{{ editable ? 'Save' : 'Edit' }}</q-tooltip>
-                </q-btn>
-              </div>
-
-              <div class="text-h6">Info Penagihan</div>
-            </q-card-section>
-
-            <q-separator></q-separator>
-
-            <q-card-section>
-              <div class="row">
                 <div class="col-4 text-caption">
                   Nomor Rekening Tujuan
                 </div>
-                <div
-                  v-if="!editable"
-                  class="col-8 text-subtitle2"
-                >
+                <div class="col-8 text-subtitle2">
                   : {{ penagihan.nama_bank_pg }} | {{ penagihan.nomor_rekening_pg }} - {{ penagihan.nama_rekening_pg }}
-                </div>
-                <div v-else class="col-8">
-                  <q-select
-                    flat
-                    dense
-                    use-input
-                    emit-value
-                    map-options
-                    hide-bottom-space
-                    input-debounce="500"
-                    label="Rekening Pembayaran"
-                    v-model="form.id_rekening"
-                    option-value="id_rekening"
-                    :option-label="(opt) => `${opt.nama_bank} | ${opt.nomor_rekening} - ${opt.nama_rekening}`"
-                    :options="rekeningOptionsRef"
-                    :error="form.errors.id_rekening ? true : false"
-                    :error-message="form.errors.id_rekening"
-                    @filter="rekeningFilter"
-                  >
-                    <template v-slot:option="scope">
-                      <q-item v-bind="scope.itemProps">
-                        <q-item-section>
-                          <strong class="text-primary">
-                            {{ scope.opt.nama_bank }}
-                          </strong>
-                          {{ scope.opt.nomor_rekening }} - {{ scope.opt.nama_rekening }}
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                    <template v-slot:no-option>
-                      <q-item>
-                        <q-item-section class="text-grey">
-                          No results
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                  </q-select>
                 </div>
 
                 <div class="col-4 text-caption">
                   Nomor SP2D
                 </div>
-                <div
-                  v-if="!editable"
-                  class="col-8 text-subtitle2"
-                >
-                  : {{ form.nomor_sp2d || '-' }}
-                </div>
-                <div v-else class="col-8">
-                  <q-input
-                    flat
-                    dense
-                    hide-bottom-space
-                    v-model="form.nomor_sp2d"
-                    :error="form.errors.nomor_sp2d ? true : false"
-                    :error-message="form.errors.nomor_sp2d"
-                  />
+                <div class="col-8 text-subtitle2">
+                  : {{ penagihan.nomor_sp2d || '-' }}
                 </div>
 
                 <div class="col-4 text-caption">
                   Tanggal SP2D
                 </div>
-                <div
-                  v-if="!editable"
-                  class="col-8 text-subtitle2"
-                >
-                  : {{ fullDate(form.tanggal_sp2d) || '-' }}
-                </div>
-                <div v-else class="col-8 text-subtitle2">
-                  <q-input
-                    flat
-                    dense
-                    hide-bottom-space
-                    type="date"
-                    v-model="form.tanggal_sp2d"
-                    :error="form.errors.tanggal_sp2d ? true : false"
-                    :error-message="form.errors.tanggal_sp2d"
-                  />
+                <div class="col-8 text-subtitle2">
+                  : {{ fullDate(penagihan.tanggal_sp2d) || '-' }}
                 </div>
 
                 <div class="col-4 text-caption">
                   Tanggal Terbit
                 </div>
-                <div
-                  v-if="!editable"
-                  class="col-8 text-subtitle2"
-                >
-                  : {{ fullDate(form.tanggal_terbit) || '-' }}
-                </div>
-                <div v-else class="col-8 text-subtitle2">
-                  <q-input
-                    flat
-                    dense
-                    hide-bottom-space
-                    type="date"
-                    v-model="form.tanggal_terbit"
-                    :error="form.errors.tanggal_terbit ? true : false"
-                    :error-message="form.errors.tanggal_terbit"
-                  />
+                <div class="col-8 text-subtitle2">
+                  : {{ fullDate(penagihan.tanggal_terbit) || '-' }}
                 </div>
 
                 <div class="col-4 text-caption">
                   Tanggal Cair
                 </div>
-                <div
-                  v-if="!editable"
-                  class="col-8 text-subtitle2"
-                >
-                  : {{ fullDate(form.tanggal_cair) || '-' }}
+                <div class="col-8 text-subtitle2">
+                  : {{ fullDate(penagihan.tanggal_cair) || '-' }}
                 </div>
-                <div v-else class="col-8 text-subtitle2">
-                  <q-input
+
+                <div class="col-4 text-caption">
+                  Nilai Netto
+                </div>
+                <div class="col-8 text-subtitle2">
+                  : {{ toRupiah(toFloat(penagihan.nilai_netto)) }}
+                </div>
+
+                <div class="col-4 text-caption">
+                  Faktur
+                </div>
+                <div class="col-8 text-subtitle2">
+                  :
+                  <q-btn
+                    v-if="penagihan.faktur"
                     flat
                     dense
-                    hide-bottom-space
-                    type="date"
-                    v-model="form.tanggal_cair"
-                    :error="form.errors.tanggal_cair ? true : false"
-                    :error-message="form.errors.tanggal_cair"
+                    no-caps
+                    label="Lihat Faktur"
+                    color="primary"
+                    :href="penagihan.faktur"
+                    target="_blank"
                   />
+                  <span v-else>-</span>
                 </div>
               </div>
             </q-card-section>
@@ -308,46 +169,13 @@ function save () {
       </div>
     </div>
 
-    <div class="q-px-md q-pt-md">
-      <q-card flat bordered>
-        <q-tabs
-          v-model="tab"
-          class="text-grey"
-          active-color="primary"
-          indicator-color="primary"
-          align="justify"
-          narrow-indicator
-        >
-          <q-tab no-caps name="uraian" label="Uraian" />
-          <q-tab no-caps name="dokumen" label="Dokumen Penunjang" />
-        </q-tabs>
-
-        <q-separator />
-
-        <q-tab-panels v-model="tab">
-          <q-tab-panel class="q-pa-none" name="uraian">
-            <penagihan-item-table
-              :rows="detailPenagihan"
-              :data="{
-                penagihan: penagihan,
-              }"
-              :form-options="formOptions"
-            />
-          </q-tab-panel>
-
-          <q-tab-panel class="q-pa-none" name="dokumen">
-            <files-table
-              :rows="dokumenPenunjang"
-              :data="{
-                model_id: penagihan.id_penagihan,
-                permissions: 'create & modify penagihan',
-                status_aktivitas: penagihan.status_aktivitas
-              }"
-            />
-          </q-tab-panel>
-        </q-tab-panels>
-      </q-card>
-    </div>
+    <penagihan-item-table
+      :rows="detailPenagihan"
+      :data="{
+        penagihan: penagihan,
+      }"
+      :form-options="formOptions"
+    />
 
     <penagihan-submission-form
       v-if="can('create & modify penagihan') && isEditable(penagihan) && detailPenagihan.length"

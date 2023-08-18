@@ -265,13 +265,21 @@ class DashboardController extends Controller
                     (SELECT SUM(pg.jumlah_diterima)
                         FROM penagihan as pg
                         WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '400'
-                        )
+                        AND pg.deleted_at IS NULL
                     ) AS invoice_sebelumnya
                 "),
                 DB::raw("
+                    (SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                        FROM penagihan AS pg
+                        LEFT JOIN detail_penagihan AS dpg
+                        ON dpg.id_penagihan = pg.id_penagihan
+                        WHERE pg.id_proyek = p.id_proyek
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND dpg.deleted_at IS NULL
+                            AND pg.status_penagihan = '100'
+                        )
+                    ) -
                     (SELECT SUM(pg.jumlah_diterima)
                         FROM penagihan as pg
                         WHERE pg.id_proyek = p.id_proyek
@@ -282,34 +290,48 @@ class DashboardController extends Controller
                     ) AS invoice_saat_ini
                 "),
                 DB::raw("
-                    CAST((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
-                        FROM detail_rab as drab
-                        LEFT JOIN rab
-                        ON rab.id_rab = drab.id_rab
-                        WHERE rab.id_proyek = p.id_proyek
-                        AND (
-                            rab.deleted_at IS NULL
-                            AND drab.deleted_at IS NULL
-                            AND rab.status_rab = '400'
-                        )
-                        GROUP BY rab.id_rab
-                    ) -
-                    ((SELECT SUM(pg.jumlah_diterima)
-                        FROM penagihan as pg
-                        WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '400'
-                        )
-                    ) +
-                    (SELECT SUM(pg.jumlah_diterima)
-                        FROM penagihan as pg
-                        WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '100'
-                        )
-                    )) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
+                    CAST(
+                        IFNULL((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
+                            FROM detail_rab as drab
+                            LEFT JOIN rab
+                            ON rab.id_rab = drab.id_rab
+                            WHERE rab.id_proyek = p.id_proyek
+                            AND (
+                                rab.deleted_at IS NULL
+                                AND drab.deleted_at IS NULL
+                                AND rab.status_rab = '400'
+                            )
+                            GROUP BY rab.id_rab
+                        ), 0)
+                        -
+                    (
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND pg.deleted_at IS NULL
+                        ), 0)
+                        +
+                        IFNULL((SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                            FROM penagihan AS pg
+                            LEFT JOIN detail_penagihan AS dpg
+                            ON dpg.id_penagihan = pg.id_penagihan
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND dpg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                        -
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                    ) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
                 ")
             )
             ->orderBy('p.id_proyek', 'asc')
@@ -955,13 +977,21 @@ class DashboardController extends Controller
                     (SELECT SUM(pg.jumlah_diterima)
                         FROM penagihan as pg
                         WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '400'
-                        )
+                        AND pg.deleted_at IS NULL
                     ) AS invoice_sebelumnya
                 "),
                 DB::raw("
+                    (SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                        FROM penagihan AS pg
+                        LEFT JOIN detail_penagihan AS dpg
+                        ON dpg.id_penagihan = pg.id_penagihan
+                        WHERE pg.id_proyek = p.id_proyek
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND dpg.deleted_at IS NULL
+                            AND pg.status_penagihan = '100'
+                        )
+                    ) -
                     (SELECT SUM(pg.jumlah_diterima)
                         FROM penagihan as pg
                         WHERE pg.id_proyek = p.id_proyek
@@ -972,34 +1002,48 @@ class DashboardController extends Controller
                     ) AS invoice_saat_ini
                 "),
                 DB::raw("
-                    CAST((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
-                        FROM detail_rab as drab
-                        LEFT JOIN rab
-                        ON rab.id_rab = drab.id_rab
-                        WHERE rab.id_proyek = p.id_proyek
-                        AND (
-                            rab.deleted_at IS NULL
-                            AND drab.deleted_at IS NULL
-                            AND rab.status_rab = '400'
-                        )
-                        GROUP BY rab.id_rab
-                    ) -
-                    ((SELECT SUM(pg.jumlah_diterima)
-                        FROM penagihan as pg
-                        WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '400'
-                        )
-                    ) +
-                    (SELECT SUM(pg.jumlah_diterima)
-                        FROM penagihan as pg
-                        WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '100'
-                        )
-                    )) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
+                    CAST(
+                        IFNULL((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
+                            FROM detail_rab as drab
+                            LEFT JOIN rab
+                            ON rab.id_rab = drab.id_rab
+                            WHERE rab.id_proyek = p.id_proyek
+                            AND (
+                                rab.deleted_at IS NULL
+                                AND drab.deleted_at IS NULL
+                                AND rab.status_rab = '400'
+                            )
+                            GROUP BY rab.id_rab
+                        ), 0)
+                        -
+                    (
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND pg.deleted_at IS NULL
+                        ), 0)
+                        +
+                        IFNULL((SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                            FROM penagihan AS pg
+                            LEFT JOIN detail_penagihan AS dpg
+                            ON dpg.id_penagihan = pg.id_penagihan
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND dpg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                        -
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                    ) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
                 ")
             )
             ->orderBy('p.id_proyek', 'asc')
@@ -1417,13 +1461,21 @@ class DashboardController extends Controller
                     (SELECT SUM(pg.jumlah_diterima)
                         FROM penagihan as pg
                         WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '400'
-                        )
+                        AND pg.deleted_at IS NULL
                     ) AS invoice_sebelumnya
                 "),
                 DB::raw("
+                    (SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                        FROM penagihan AS pg
+                        LEFT JOIN detail_penagihan AS dpg
+                        ON dpg.id_penagihan = pg.id_penagihan
+                        WHERE pg.id_proyek = p.id_proyek
+                        AND (
+                            pg.deleted_at IS NULL
+                            AND dpg.deleted_at IS NULL
+                            AND pg.status_penagihan = '100'
+                        )
+                    ) -
                     (SELECT SUM(pg.jumlah_diterima)
                         FROM penagihan as pg
                         WHERE pg.id_proyek = p.id_proyek
@@ -1434,34 +1486,48 @@ class DashboardController extends Controller
                     ) AS invoice_saat_ini
                 "),
                 DB::raw("
-                    CAST((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
-                        FROM detail_rab as drab
-                        LEFT JOIN rab
-                        ON rab.id_rab = drab.id_rab
-                        WHERE rab.id_proyek = p.id_proyek
-                        AND (
-                            rab.deleted_at IS NULL
-                            AND drab.deleted_at IS NULL
-                            AND rab.status_rab = '400'
-                        )
-                        GROUP BY rab.id_rab
-                    ) -
-                    ((SELECT SUM(pg.jumlah_diterima)
-                        FROM penagihan as pg
-                        WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '400'
-                        )
-                    ) +
-                    (SELECT SUM(pg.jumlah_diterima)
-                        FROM penagihan as pg
-                        WHERE pg.id_proyek = p.id_proyek
-                        AND (
-                            pg.deleted_at IS NULL
-                            AND pg.status_penagihan = '100'
-                        )
-                    )) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
+                    CAST(
+                        IFNULL((SELECT SUM(drab.harga_satuan * drab.volume) - ((rab.additional_tax / 100) * SUM(drab.harga_satuan * drab.volume))
+                            FROM detail_rab as drab
+                            LEFT JOIN rab
+                            ON rab.id_rab = drab.id_rab
+                            WHERE rab.id_proyek = p.id_proyek
+                            AND (
+                                rab.deleted_at IS NULL
+                                AND drab.deleted_at IS NULL
+                                AND rab.status_rab = '400'
+                            )
+                            GROUP BY rab.id_rab
+                        ), 0)
+                        -
+                    (
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND pg.deleted_at IS NULL
+                        ), 0)
+                        +
+                        IFNULL((SELECT SUM(dpg.harga_satuan_penagihan * dpg.volume_penagihan)
+                            FROM penagihan AS pg
+                            LEFT JOIN detail_penagihan AS dpg
+                            ON dpg.id_penagihan = pg.id_penagihan
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND dpg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                        -
+                        IFNULL((SELECT SUM(pg.jumlah_diterima)
+                            FROM penagihan as pg
+                            WHERE pg.id_proyek = p.id_proyek
+                            AND (
+                                pg.deleted_at IS NULL
+                                AND pg.status_penagihan = '100'
+                            )
+                        ), 0)
+                    ) AS DECIMAL(20, 2)) AS sisa_netto_kontrak
                 ")
             )
             ->orderBy('p.id_proyek', 'asc')

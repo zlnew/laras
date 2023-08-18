@@ -237,7 +237,7 @@ class LaporanController extends Controller
                 'us.id as id_user', 'us.name as pic',
                 'pr.status_proyek', 'rk.id_rekening',
                 'rk.nama_bank', 'rk.nomor_rekening',
-                'rk.nama_rekening', 'pg.kas_masuk',
+                'rk.nama_rekening',
                 'pg.keperluan', 'pg.tanggal_pengajuan',
                 'pg.status_penagihan', 'pg.status_aktivitas',
                 'pg.jumlah_diterima',

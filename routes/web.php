@@ -187,8 +187,7 @@ Route::middleware('auth')->group(function() {
     
             Route::group(['middleware' => ['permission:create & modify penagihan']], function () {
                 Route::post('/', [PenagihanController::class, 'store'])->name('penagihan.store');
-                Route::patch('/{penagihan}', [PenagihanController::class, 'update'])->name('penagihan.update');
-                Route::put('/{penagihan}', [PenagihanController::class, 'fill'])->name('penagihan.fill');
+                Route::post('/{penagihan}', [PenagihanController::class, 'update'])->name('penagihan.update');
                 Route::put('/tax/{penagihan}', [PenagihanController::class, 'tax'])->name('penagihan.tax');
                 Route::delete('/{penagihan}', [PenagihanController::class, 'destroy'])->name('penagihan.destroy');
                 Route::post('/submit/{penagihan}', [PenagihanController::class, 'submit'])->name('penagihan.submit');

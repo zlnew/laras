@@ -122,11 +122,12 @@ export interface Penagihan {
   tanggal_sp2d: string
   tanggal_terbit: string
   tanggal_cair: string
+  nilai_netto: string
+  faktur: string
   potongan_ppn: string
   potongan_pph: string
   potongan_lainnya: string
   keterangan_potongan_lainnya: string
-  kas_masuk: 'Utang' | 'Setoran Modal'
   status_penagihan: '100' | '400'
   status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Diterima Bertahap' | 'Diterima'
   id_proyek: Proyek['id_proyek']
