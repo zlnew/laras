@@ -30,7 +30,7 @@ function proyekFilter (val: string, update: any) {
 }
 
 const page = usePage()
-const params = page.props.query as PencairanDana
+const params = page.props.query as unknown as PencairanDana
 
 const form = useForm({
   id_proyek: params.id_proyek,

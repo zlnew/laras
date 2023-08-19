@@ -211,10 +211,6 @@ class LaporanController extends Controller
                 $query->whereIn('pg.id_proyek', $input);
             });
 
-            $penagihanQuery->when($request->get('kas_masuk'), function($query, $input) {
-                $query->where('pg.kas_masuk', $input);
-            });
-
             $penagihanQuery->when($request->get('status_penagihan'), function($query, $input) {
                 $query->where('pg.status_penagihan', $input);
             });

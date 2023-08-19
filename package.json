@@ -3,7 +3,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vue-tsc && lint && vite build",
+        "build": "vue-tsc && eslint --ext .ts,.vue resources/js && vite build",
         "lint": "eslint --ext .ts,.vue resources/js"
     },
     "devDependencies": {

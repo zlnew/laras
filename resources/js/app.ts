@@ -19,9 +19,11 @@ import InertiaLink from '@/directives/inertia-link'
 const titleElement = window.document.getElementsByTagName('title')[0]
 const appName = titleElement?.innerText !== undefined ? titleElement?.innerText : 'Laravel'
 
-await createInertiaApp({
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+createInertiaApp({
   title: (title) => `${title} - ${appName}`,
-  resolve: async (name) => await resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
+  // eslint-disable-next-line @typescript-eslint/promise-function-async
+  resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
   setup ({ el, App, props, plugin }) {
     createApp({ render: () => h(App, props) })
       .use(plugin)

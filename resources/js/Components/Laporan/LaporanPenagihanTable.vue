@@ -64,7 +64,6 @@ const columns: QTableColumn[] = [
   { name: 'nama_proyek', label: 'Nama Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
-  { name: 'kas_masuk', label: 'Kas Masuk', field: 'Kas Masuk', align: 'left', sortable: true },
   { name: 'jumlah_penagihan', label: 'Jumlah Penagihan', field: 'jumlah_penagihan', align: 'right', sortable: true },
   { name: 'jumlah_diterima', label: 'Jumlah Diterima', field: 'jumlah_diterima', align: 'right', sortable: true },
   { name: 'sisa_penagihan', label: 'Sisa Penagihan', field: 'sisa_penagihan', align: 'right', sortable: true },
@@ -207,10 +206,6 @@ onMounted(() => {
 
           <q-td key="keperluan" :props="props">
             {{ props.row.keperluan }}
-          </q-td>
-
-          <q-td key="kas_masuk" :props="props">
-            {{ props.row.kas_masuk }}
           </q-td>
 
           <q-td key="jumlah_penagihan" :props="props">
