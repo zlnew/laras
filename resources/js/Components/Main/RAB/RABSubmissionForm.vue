@@ -59,6 +59,7 @@ function submitRAB () {
       label="Submit"
       icon-right="check"
       @click="submitRAB"
+      class="q-pa-md"
     >
       <q-tooltip>Click to submit</q-tooltip>
     </q-btn>

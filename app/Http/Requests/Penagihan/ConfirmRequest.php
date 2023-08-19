@@ -15,11 +15,13 @@ class ConfirmRequest extends FormRequest
     public function rules(): array
     {
         $totalPenagihan = DB::table('detail_penagihan')
-          ->where('deleted_at', null)
-          ->sum(DB::raw('volume_penagihan * harga_satuan_penagihan'));
+            ->where('deleted_at', null)
+            ->where('id_penagihan', $this->id_penagihan)
+            ->selectRaw('SUM(CAST(volume_penagihan * harga_satuan_penagihan AS DECIMAL(20, 2))) as total')
+            ->first();
           
         return [
-            'jumlah_diterima' => ['nullable', 'numeric', 'min:1', "max:$totalPenagihan"],
+            'jumlah_diterima' => ['required_if:bertahap,true', 'numeric', 'min:1', "max:$totalPenagihan->total"],
         ];
     }
 }

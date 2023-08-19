@@ -45,6 +45,7 @@ function lembarEvaluasi () {
       color="primary"
       icon="keyboard_arrow_left"
       @click="lembarEvaluasi"
+      class="q-pa-md"
     >
       <q-tooltip>Evaluasi Pengajuan</q-tooltip>
     </q-btn>

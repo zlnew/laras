@@ -59,6 +59,7 @@ function submitPencairanDana () {
       label="Submit"
       icon-right="check"
       @click="submitPencairanDana"
+      class="q-pa-md"
     >
       <q-tooltip>Click to submit</q-tooltip>
     </q-btn>

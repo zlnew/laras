@@ -13,7 +13,7 @@ import Layout from '@/Layouts/AuthenticatedLayout.vue'
 import {
   PenagihanItemTable,
   PenagihanSubmissionForm,
-  PenagihanApprovalForm
+  PenagihanConfirmForm
 } from '@/Components/Keuangan/detail-penagihan-page'
 import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue'
 
@@ -184,11 +184,12 @@ const breadcrumbs = [
       }"
     />
 
-    <penagihan-approval-form
+    <penagihan-confirm-form
       v-if="can('confirm penagihan') && isSubmitted(penagihan)"
       :data="{
         id_penagihan: penagihan.id_penagihan,
-        jumlah_diterima: penagihan.jumlah_diterima
+        jumlah_diterima: penagihan.jumlah_diterima,
+        evaluasi: evaluasi
       }"
     />
 

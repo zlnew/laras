@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// cores
 import { Link } from '@inertiajs/vue3'
 import { computed } from 'vue'
 
@@ -161,7 +162,6 @@ const menuList = [
 
           <Link
             :preserve-scroll="true"
-            :preserve-state="true"
             :href="menuItem.link"
             style="text-decoration: none"
           >

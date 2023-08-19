@@ -2,7 +2,7 @@ export { default as PenagihanItemTable } from '@/Components/Keuangan/Penagihan/P
 export { default as PenagihanItemCreateDialog } from '@/Components/Keuangan/Penagihan/PenagihanItem/PenagihanItemCreateDialog.vue'
 export { default as PenagihanItemEditDialog } from '@/Components/Keuangan/Penagihan/PenagihanItem/PenagihanItemEditDialog.vue'
 export { default as PenagihanItemDeleteDialog } from '@/Components/Keuangan/Penagihan/PenagihanItem/PenagihanItemDeleteDialog.vue'
+export { default as PenagihanConfirmDialog } from '@/Components/Keuangan/Penagihan/PenagihanConfirmDialog.vue'
 
-export { default as PenagihanShallowAcceptDialog } from '@/Components/Keuangan/Penagihan/PenagihanShallowAcceptDialog.vue'
-export { default as PenagihanApprovalForm } from '@/Components/Keuangan/Penagihan/PenagihanApprovalForm.vue'
+export { default as PenagihanConfirmForm } from '@/Components/Keuangan/Penagihan/PenagihanConfirmForm.vue'
 export { default as PenagihanSubmissionForm } from '@/Components/Keuangan/Penagihan/PenagihanSubmissionForm.vue'
