@@ -60,11 +60,12 @@ class RAPController extends Controller
     }
 
     public function formOptions(): stdClass {
+        $id_rap = RAP::all()->pluck('id_rap')->toArray();
+
         $proyek = DB::table('proyek')
-            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->rightJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
             ->where('proyek.deleted_at', null)
-            ->where('rap.deleted_at', null)
-            ->where('rap.id_proyek', null)
+            ->whereNotIn('rap.id_rap', $id_rap)
             ->groupBy('proyek.id_proyek')
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',

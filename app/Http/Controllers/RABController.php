@@ -61,11 +61,12 @@ class RABController extends Controller
     }
 
     public function formOptions(): stdClass {
+        $id_rab = RAB::all()->pluck('id_rab')->toArray();
+
         $proyek = DB::table('proyek')
-            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
+            ->rightJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->where('proyek.deleted_at', null)
-            ->where('rab.deleted_at', null)
-            ->where('rab.id_proyek', null)
+            ->whereNotIn('rab.id_rab', $id_rab)
             ->groupBy('proyek.id_proyek')
             ->select(
                 'proyek.id_proyek', 'proyek.nama_proyek',
