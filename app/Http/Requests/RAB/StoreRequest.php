@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\RAB;
 
+use App\Models\RAB;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -21,7 +23,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_proyek' => ['required', 'string', 'unique:rab,id_proyek', 'exists:proyek,id_proyek']
+            'id_proyek' => ['required', 'string', Rule::unique(RAB::class, 'id_proyek')->whereNull('deleted_at')]
         ];
     }
 }
