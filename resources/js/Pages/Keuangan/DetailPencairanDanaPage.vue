@@ -84,6 +84,13 @@ const tab = ref('uraian')
             </div>
 
             <div class="col-4 text-caption">
+              Jenis Transaksi
+            </div>
+            <div class="col-8 text-subtitle2">
+              : {{ pengajuanDana.jenis_transaksi }}
+            </div>
+
+            <div class="col-4 text-caption">
               Tanggal Pengajuan
             </div>
             <div class="col-8 text-subtitle2">
