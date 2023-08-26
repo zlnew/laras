@@ -49,7 +49,7 @@ const props = defineProps<{
 
 const breadcrumbs = [
   { label: 'Keuangan', url: '#' },
-  { label: 'Pengajuan Dana', url: route('pengajuan_dana') },
+  { label: 'Setoran/Penarikan', url: route('pengajuan_dana') },
   { label: props.pengajuanDana.nama_proyek, url: '#' }
 ]
 
@@ -62,7 +62,7 @@ const table = ref<{
 </script>
 
 <template>
-  <Head title="Pengajuan Dana" />
+  <Head title="Setoran/Penarikan" />
   <layout>
 
     <template #breadcrumbs>
@@ -78,8 +78,8 @@ const table = ref<{
     </template>
 
     <module-top-section
-      title="Pengajuan Dana"
-      timeline-title="Timeline Pengajuan Dana"
+      title="Setoran/Penarikan"
+      timeline-title="Timeline Setoran/Penarikan"
       :data="{
         proyek: pengajuanDana,
         status: pengajuanDana.status_pengajuan,
@@ -96,6 +96,13 @@ const table = ref<{
             </div>
             <div class="col-8 text-subtitle2">
               : {{ pengajuanDana.keperluan }}
+            </div>
+
+            <div class="col-4 text-caption">
+              Jenis Transaksi
+            </div>
+            <div class="col-8 text-subtitle2">
+              : {{ pengajuanDana.jenis_transaksi }}
             </div>
 
             <div class="col-4 text-caption">

@@ -23,7 +23,7 @@ class DetailPengajuanDanaController extends Controller
             ->where('pengajuan_dana.deleted_at', null)
             ->where('pengajuan_dana.id_pengajuan_dana', $pengajuanDana->id_pengajuan_dana)
             ->select(
-                'pengajuan_dana.id_pengajuan_dana',
+                'pengajuan_dana.id_pengajuan_dana', 'pengajuan_dana.jenis_transaksi',
                 'pengajuan_dana.keperluan', 'pengajuan_dana.tanggal_pengajuan',
                 'pengajuan_dana.status_pengajuan', 'pengajuan_dana.status_aktivitas',
                 'proyek.id_proyek', 'proyek.nama_proyek',

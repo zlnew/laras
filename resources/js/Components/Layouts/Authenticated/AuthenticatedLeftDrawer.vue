@@ -89,7 +89,7 @@ const menuList = [
   },
   {
     icon: 'paid',
-    label: 'Pengajuan Dana',
+    label: 'Setoran/Penarikan',
     link: route('pengajuan_dana'),
     active: route().current('pengajuan_dana') || route().current('detail_pengajuan_dana'),
     separator: false,
@@ -111,7 +111,7 @@ const menuList = [
   },
   {
     icon: 'summarize',
-    label: 'Pengajuan Dana',
+    label: 'Setoran/Penarikan',
     link: route('laporan.pengajuan_dana'),
     active: route().current('laporan.pengajuan_dana'),
     separator: false,

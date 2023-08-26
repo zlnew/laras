@@ -76,7 +76,7 @@ function submit () {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Edit Uraian Pengajuan Dana</div>
+          <div class="text-h6">Edit Uraian Setoran/Penarikan</div>
           <q-space />
           <q-btn
             flat

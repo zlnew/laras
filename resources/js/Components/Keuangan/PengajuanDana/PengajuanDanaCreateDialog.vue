@@ -21,6 +21,7 @@ const props = defineProps<{
 }>()
 
 const proyekOptionsRef = ref(props.options.proyek)
+const jenisTransaksiOptions = ['Setoran Modal', 'Penarikan', 'Utang', 'Piutang']
 
 function proyekFilter (val: string, update: any) {
   update(() => {
@@ -30,7 +31,8 @@ function proyekFilter (val: string, update: any) {
 
 const form = useForm({
   id_proyek: null,
-  keperluan: null
+  keperluan: null,
+  jenis_transaksi: null
 })
 
 function submit () {
@@ -53,7 +55,7 @@ function submit () {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Tambah Pengajuan Dana</div>
+          <div class="text-h6">Tambah Setoran/Penarikan</div>
           <q-space />
           <q-btn
             flat
@@ -113,6 +115,17 @@ function submit () {
               v-model="form.keperluan"
               :error="form.errors.keperluan ? true : false"
               :error-message="form.errors.keperluan"
+            />
+
+            <q-select
+              outlined
+              hide-bottom-space
+              input-debounce="500"
+              label="Pilih Jenis Transaksi"
+              v-model="form.jenis_transaksi"
+              :options="jenisTransaksiOptions"
+              :error="form.errors.jenis_transaksi ? true : false"
+              :error-message="form.errors.jenis_transaksi"
             />
           </div>
         </q-card-section>

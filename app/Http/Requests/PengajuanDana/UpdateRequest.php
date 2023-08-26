@@ -16,6 +16,7 @@ class UpdateRequest extends FormRequest
         return [
             'id_proyek' => ['required', 'exists:proyek,id_proyek'],
             'keperluan' => ['required', 'string', 'max:255'],
+            'jenis_transaksi' => ['required', 'string']
         ];
     }
 }

@@ -102,6 +102,7 @@ const columns: QTableColumn[] = [
   },
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
+  { name: 'jenis_transaksi', label: 'Jenis Transaksi', field: 'jenis_transaksi', align: 'left', sortable: true },
   { name: 'status_pengajuan', label: 'Status', field: 'status_pengajuan', align: 'left', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
 ]
@@ -128,7 +129,7 @@ function toggleFullscreen () {
         <q-btn
           v-if="can('create & modify pengajuan dana')"
           no-caps
-          label="Tambah Pengajuan Dana"
+          label="Tambah Setoran/Penarikan"
           icon="add"
           color="primary"
           @click="createPengajuanDana"
@@ -204,6 +205,10 @@ function toggleFullscreen () {
 
           <q-td key="keperluan" :props="props">
             {{ props.row.keperluan }}
+          </q-td>
+
+          <q-td key="jenis_transaksi" :props="props">
+            {{ props.row.jenis_transaksi }}
           </q-td>
 
           <q-td key="status_pengajuan" :props="props">

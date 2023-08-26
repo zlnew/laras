@@ -61,6 +61,7 @@ const columns: QTableColumn[] = [
   { name: 'nama_proyek', label: 'Nama Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
+  { name: 'jenis_transaksi', label: 'Jenis Transaksi', field: 'jenis_transaksi', align: 'left', sortable: true },
   { name: 'nilai_pengajuan', label: 'Nilai Pengajuan Dana', field: 'nilai_pengajuan', align: 'right', sortable: true },
   { name: 'jumlah_disetujui', label: 'Disetujui', field: 'jumlah_disetujui', align: 'right', sortable: true },
   { name: 'status', label: 'Status', field: 'status_pengajuan', align: 'left', sortable: true }
@@ -81,13 +82,13 @@ onMounted(() => {
     columns: table.value?.columns,
     body: {
       rows: table.value?.computedRows,
-      props: ['index', 'nama_proyek', 'tahun_anggaran', 'keperluan', 'nilai_pengajuan', 'jumlah_disetujui', 'status']
+      props: ['index', 'nama_proyek', 'tahun_anggaran', 'keperluan', 'jenis_transaksi', 'nilai_pengajuan', 'jumlah_disetujui', 'status']
     }
   }
 
   excelTable.value = createBody({
     rows: (table.value?.computedRows as any[]),
-    props: ['nama_proyek', 'tahun_anggaran', 'keperluan', 'nilai_pengajuan', 'jumlah_disetujui', 'status']
+    props: ['nama_proyek', 'tahun_anggaran', 'keperluan', 'jenis_transaksi', 'nilai_pengajuan', 'jumlah_disetujui', 'status']
   })
 })
 </script>
@@ -99,7 +100,7 @@ onMounted(() => {
       flat
       bordered
       row-key="id_rab"
-      title="Laporan Pengajuan Dana"
+      title="Laporan Setoran/Penarikan"
       :rows="rows"
       :columns="columns"
       :rows-per-page-options="[ 10, 15, 20, 25, 50, 0 ]"
@@ -202,6 +203,10 @@ onMounted(() => {
 
           <q-td key="keperluan" :props="props">
             {{ props.row.keperluan }}
+          </q-td>
+
+          <q-td key="jenis_transaksi" :props="props">
+            {{ props.row.jenis_transaksi }}
           </q-td>
 
           <q-td key="nilai_pengajuan" :props="props">

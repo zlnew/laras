@@ -27,6 +27,10 @@ class LaporanController extends Controller
                 $query->whereIn('pd.id_proyek', $input);
             });
 
+            $pengajuanDanaQuery->when($request->get('jenis_transaksi'), function($query, $input) {
+                $query->where('pd.jenis_transaksi', $input);
+            });
+
             $pengajuanDanaQuery->when($request->get('status_pengajuan'), function($query, $input) {
                 $query->where('pd.status_pengajuan', $input);
             });
@@ -49,7 +53,7 @@ class LaporanController extends Controller
                 'us.id as id_user', 'us.name as pic',
                 'pr.status_proyek', 'rk.id_rekening',
                 'rk.nama_bank', 'rk.nomor_rekening',
-                'rk.nama_rekening',
+                'rk.nama_rekening', 'pd.jenis_transaksi',
                 'pd.keperluan', 'pd.tanggal_pengajuan',
                 'pd.status_pengajuan', 'pd.status_aktivitas',
                 DB::raw("SUM(dpd.jumlah_pengajuan) AS nilai_pengajuan"),

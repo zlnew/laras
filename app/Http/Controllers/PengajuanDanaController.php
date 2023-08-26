@@ -38,6 +38,7 @@ class PengajuanDanaController extends Controller
         $pengajuanDana = $pengajuanDanaQuery->groupBy('pengajuan_dana.id_pengajuan_dana')
             ->select(
                 'pengajuan_dana.id_pengajuan_dana', 'pengajuan_dana.status_aktivitas',
+                'pengajuan_dana.jenis_transaksi',
                 'pengajuan_dana.keperluan', 'pengajuan_dana.status_pengajuan',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
@@ -103,6 +104,10 @@ class PengajuanDanaController extends Controller
             $query->whereIn('pengajuan_dana.id_proyek', $input);
         });
 
+        $pengajuanDanaQuery->when($searchRequest->get('jenis_transaksi'), function($query, $input) {
+            $query->where('pengajuan_dana.jenis_transaksi', $input);
+        });
+
         $pengajuanDanaQuery->when($searchRequest->get('status_pengajuan'), function($query, $input) {
             $query->where('pengajuan_dana.status_pengajuan', $input);
         });
@@ -124,6 +129,7 @@ class PengajuanDanaController extends Controller
             $pengajuanDana->fill([
                 'id_proyek' => $validated->id_proyek,
                 'keperluan' => $validated->keperluan,
+                'jenis_transaksi' => $validated->jenis_transaksi
             ]);
             
             $pengajuanDana->save();
@@ -149,6 +155,7 @@ class PengajuanDanaController extends Controller
         $pengajuanDana->fill([
             'id_proyek' => $validated->id_proyek,
             'keperluan' => $validated->keperluan,
+            'jenis_transaksi' => $validated->jenis_transaksi
         ]);
 
         $pengajuanDana->save();
