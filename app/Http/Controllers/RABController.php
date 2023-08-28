@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RAB\StoreRequest;
 use App\Http\Requests\RAB\TaxRequest;
 use App\Http\Requests\RAB\UpdateRequest;
+use App\Models\DetailPengajuanDana;
+use App\Models\Penagihan;
+use App\Models\PencairanDana;
+use App\Models\PengajuanDana;
 use App\Models\RAB;
 use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
@@ -137,7 +141,11 @@ class RABController extends Controller
 
     public function destroy(RAB $rab): RedirectResponse
     {
-        $rab->delete();
+        DB::transaction(function () use ($rab) {
+            Penagihan::where('id_proyek', $rab->id_proyek)->delete();
+
+            $rab->delete();
+        });
 
         return redirect()->back()->with('success', 'RAB berhasil dihapus!');
     }

@@ -25,6 +25,7 @@ class PenagihanController extends Controller
             ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
+            ->where('proyek.deleted_at', NULL)
             ->where('penagihan.deleted_at', NULL)
             ->where('rab.deleted_at', NULL);
 

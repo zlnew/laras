@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RAP\StoreRequest;
 use App\Http\Requests\RAP\UpdateRequest;
+use App\Models\PencairanDana;
+use App\Models\PengajuanDana;
 use App\Models\RAP;
 use App\Models\Timeline;
 use Illuminate\Http\RedirectResponse;
@@ -139,7 +141,11 @@ class RAPController extends Controller
 
     public function destroy(RAP $rap): RedirectResponse
     {
-        $rap->delete();
+        DB::transaction(function () use ($rap) {
+            PengajuanDana::where('id_proyek', $rap->id_proyek)->delete();
+            
+            $rap->delete();
+        });
 
         return redirect()->back()->with('success', 'RAP berhasil dihapus!');
     }
