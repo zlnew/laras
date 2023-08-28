@@ -21,9 +21,11 @@ class PengajuanDanaController extends Controller
     {
         $pengajuanDanaQuery = DB::table('pengajuan_dana')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'pengajuan_dana.id_proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
-            ->where('pengajuan_dana.deleted_at', NULL);
+            ->where('pengajuan_dana.deleted_at', NULL)
+            ->where('rap.deleted_at', NULL);
 
         $role = $request->user()->roles->first()->name;
 

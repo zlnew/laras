@@ -22,9 +22,11 @@ class PenagihanController extends Controller
     {
         $penagihanQuery = DB::table('penagihan')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'penagihan.id_proyek')
+            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
-            ->where('penagihan.deleted_at', NULL);
+            ->where('penagihan.deleted_at', NULL)
+            ->where('rab.deleted_at', NULL);
 
         if ($request->isMethod('get') && $request->all()) {
             $penagihanQuery = $this->filter($request, $penagihanQuery);

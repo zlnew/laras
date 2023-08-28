@@ -14,11 +14,13 @@ class LaporanController extends Controller
         $pengajuanDanaQuery = DB::table('pengajuan_dana as pd')
             ->leftJoin('detail_pengajuan_dana as dpd', 'dpd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
             ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'pd.id_proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'pr.id_proyek')
             ->leftJoin('users as us', 'us.id', '=', 'pr.id_user')
             ->leftJoin('rekening as rk', 'rk.id_rekening', '=', 'pr.id_rekening')
             ->where([
                 'pd.deleted_at' => null,
                 'pr.deleted_at' => null,
+                'rap.deleted_at' => null
             ])
             ->where('pd.tanggal_pengajuan', '!=', null);
 
@@ -92,12 +94,14 @@ class LaporanController extends Controller
         $pencairanDanaQuery = DB::table('pencairan_dana as pc')
             ->leftJoin('pengajuan_dana as pd', 'pd.id_pengajuan_dana', '=', 'pc.id_pengajuan_dana')
             ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'pd.id_proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'pr.id_proyek')
             ->leftJoin('users as us', 'us.id', '=', 'pr.id_user')
             ->leftJoin('rekening as rk', 'rk.id_rekening', '=', 'pr.id_rekening')
             ->where([
                 'pc.deleted_at' => null,
                 'pd.deleted_at' => null,
                 'pr.deleted_at' => null,
+                'rap.deleted_at' => null
             ])
             ->where('pd.tanggal_pengajuan', '!=', null);
 
@@ -189,12 +193,14 @@ class LaporanController extends Controller
         $penagihanQuery = DB::table('penagihan as pg')
             ->leftJoin('detail_penagihan as dpg', 'dpg.id_penagihan', '=', 'pg.id_penagihan')
             ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'pg.id_proyek')
+            ->leftJoin('rab', 'rab.id_proyek', '=', 'pr.id_proyek')
             ->leftJoin('users as us', 'us.id', '=', 'pr.id_user')
             ->leftJoin('rekening as rk', 'rk.id_rekening', '=', 'pr.id_rekening')
             ->where([
                 'pg.deleted_at' => null,
                 'dpg.deleted_at' => null,
                 'pr.deleted_at' => null,
+                'rab.deleted_at' => null
             ])
             ->where('pg.tanggal_pengajuan', '!=', null);
 
