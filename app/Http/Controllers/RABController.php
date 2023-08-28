@@ -72,13 +72,9 @@ class RABController extends Controller
             ->get();
 
         $currentProyek = DB::table('proyek')
-            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
-            ->where('proyek.deleted_at', null)
-            ->where('rab.deleted_at', null)
-            ->groupBy('proyek.id_proyek')
             ->select(
-                'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran'
+                'id_proyek', 'nama_proyek',
+                'tahun_anggaran'
             )
             ->get();
 

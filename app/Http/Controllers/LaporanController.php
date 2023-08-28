@@ -71,17 +71,9 @@ class LaporanController extends Controller
             ->get();
 
         $proyek = DB::table('proyek')
-            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
-            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_proyek', '=', 'proyek.id_proyek')
-            ->where('proyek.deleted_at', null)
-            ->where('rap.deleted_at', null)
-            ->where('pengajuan_dana.deleted_at', null)
-            ->where('rap.status_rap', '400')
-            ->where('pengajuan_dana.id_proyek', '!=', null)
-            ->groupBy('proyek.id_proyek')
             ->select(
-                'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran'
+                'id_proyek', 'nama_proyek',
+                'tahun_anggaran'
             )
             ->get();
 
@@ -176,13 +168,9 @@ class LaporanController extends Controller
             ->get();
 
         $proyek = DB::table('proyek')
-            ->leftJoin('pengajuan_dana', 'pengajuan_dana.id_proyek', '=', 'proyek.id_proyek')
-            ->where('proyek.deleted_at', null)
-            ->where('pengajuan_dana.deleted_at', null)
-            ->groupBy('proyek.id_proyek')
             ->select(
-                'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran'
+                'id_proyek', 'nama_proyek',
+                'tahun_anggaran'
             )
             ->get();
 
@@ -258,17 +246,9 @@ class LaporanController extends Controller
             ->get();
 
         $proyek = DB::table('proyek')
-            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
-            ->leftJoin('penagihan', 'penagihan.id_proyek', '=', 'proyek.id_proyek')
-            ->where('proyek.deleted_at', null)
-            ->where('rab.deleted_at', null)
-            ->where('penagihan.deleted_at', null)
-            ->where('rab.status_rab', '400')
-            ->where('penagihan.id_proyek', '!=', null)
-            ->groupBy('proyek.id_proyek')
             ->select(
-                'proyek.id_proyek', 'proyek.nama_proyek',
-                'proyek.tahun_anggaran'
+                'id_proyek', 'nama_proyek',
+                'tahun_anggaran'
             )
             ->get();
 
