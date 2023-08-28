@@ -26,7 +26,8 @@ class RABController extends Controller
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'rab.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
-            ->where('rab.deleted_at', null);
+            ->where('rab.deleted_at', null)
+            ->where('proyek.deleted_at', null);
 
         $role = $request->user()->roles->first()->name;
 

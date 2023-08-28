@@ -25,7 +25,8 @@ class PengajuanDanaController extends Controller
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->where('pengajuan_dana.deleted_at', NULL)
-            ->where('rap.deleted_at', NULL);
+            ->where('rap.deleted_at', NULL)
+            ->where('proyek.deleted_at', NULL);
 
         $role = $request->user()->roles->first()->name;
 

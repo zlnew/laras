@@ -23,7 +23,8 @@ class RAPController extends Controller
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'rap.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
-            ->where('rap.deleted_at', null);
+            ->where('rap.deleted_at', null)
+            ->where('proyek.deleted_at', null);
 
         $role = $request->user()->roles->first()->name;
 
