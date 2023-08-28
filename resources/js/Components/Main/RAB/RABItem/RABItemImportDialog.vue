@@ -71,7 +71,7 @@ function submit () {
               hide-bottom-space
               v-model="form.file"
               label="Pick file"
-              hint="Format: csv, xls, xlsx"
+              hint="Format: csv, xlsx"
               :error="form.errors.file ? true : false"
               :error-message="form.errors.file"
             />
