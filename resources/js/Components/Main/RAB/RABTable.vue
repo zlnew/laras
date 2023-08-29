@@ -196,18 +196,33 @@ function toggleFullscreen () {
               <q-tooltip anchor="bottom middle" self="top middle">
                 Lihat Detail
               </q-tooltip>
-          </q-btn>
+            </q-btn>
           </q-td>
 
-          <q-td key="pengguna_jasa" :props="props">
+          <q-td
+            key="pengguna_jasa"
+            :props="props"
+            @click.prevent="router.visit(route('detail_rab', props.row.id_rab))"
+            style="cursor: pointer;"
+          >
             {{ props.row.pengguna_jasa }}
           </q-td>
 
-          <q-td key="penyedia_jasa" :props="props">
+          <q-td
+            key="penyedia_jasa"
+            :props="props"
+            @click.prevent="router.visit(route('detail_rab', props.row.id_rab))"
+            style="cursor: pointer;"
+          >
             {{ props.row.penyedia_jasa }}
           </q-td>
 
-          <q-td key="tahun_anggaran" :props="props">
+          <q-td
+            key="tahun_anggaran"
+            :props="props"
+            @click.prevent="router.visit(route('detail_rab', props.row.id_rab))"
+            style="cursor: pointer;"
+          >
             {{ props.row.tahun_anggaran }}
           </q-td>
 

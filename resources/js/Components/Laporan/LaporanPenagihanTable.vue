@@ -200,23 +200,48 @@ onMounted(() => {
           </q-btn>
           </q-td>
 
-          <q-td key="tahun_anggaran" :props="props">
+          <q-td
+            key="tahun_anggaran"
+            :props="props"
+            @click.prevent="router.visit(route('detail_penagihan', props.row.id_penagihan))"
+            style="cursor: pointer;"
+          >
             {{ props.row.tahun_anggaran }}
           </q-td>
 
-          <q-td key="keperluan" :props="props">
+          <q-td
+            key="keperluan"
+            :props="props"
+            @click.prevent="router.visit(route('detail_penagihan', props.row.id_penagihan))"
+            style="cursor: pointer;"
+          >
             {{ props.row.keperluan }}
           </q-td>
 
-          <q-td key="jumlah_penagihan" :props="props">
+          <q-td
+            key="jumlah_penagihan"
+            :props="props"
+            @click.prevent="router.visit(route('detail_penagihan', props.row.id_penagihan))"
+            style="cursor: pointer;"
+          >
             {{ toRupiah(toFloat(props.row.jumlah_penagihan)) }}
           </q-td>
 
-          <q-td key="jumlah_diterima" :props="props">
+          <q-td
+            key="jumlah_diterima"
+            :props="props"
+            @click.prevent="router.visit(route('detail_penagihan', props.row.id_penagihan))"
+            style="cursor: pointer;"
+          >
             {{ toRupiah(toFloat(props.row.jumlah_diterima)) }}
           </q-td>
 
-          <q-td key="sisa_penagihan" :props="props">
+          <q-td
+            key="sisa_penagihan"
+            :props="props"
+            @click.prevent="router.visit(route('detail_penagihan', props.row.id_penagihan))"
+            style="cursor: pointer;"
+          >
             {{ toRupiah(toFloat(props.row.sisa_penagihan)) }}
           </q-td>
 

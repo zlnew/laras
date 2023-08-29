@@ -199,15 +199,30 @@ function toggleFullscreen () {
           </q-btn>
           </q-td>
 
-          <q-td key="tahun_anggaran" :props="props">
+          <q-td
+            key="tahun_anggaran"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ props.row.tahun_anggaran }}
           </q-td>
 
-          <q-td key="keperluan" :props="props">
+          <q-td
+            key="keperluan"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ props.row.keperluan }}
           </q-td>
 
-          <q-td key="jenis_transaksi" :props="props">
+          <q-td
+            key="jenis_transaksi"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ props.row.jenis_transaksi }}
           </q-td>
 

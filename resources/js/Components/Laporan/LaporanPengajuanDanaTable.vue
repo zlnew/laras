@@ -197,23 +197,48 @@ onMounted(() => {
           </q-btn>
           </q-td>
 
-          <q-td key="tahun_anggaran" :props="props">
+          <q-td
+            key="tahun_anggaran"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ props.row.tahun_anggaran }}
           </q-td>
 
-          <q-td key="keperluan" :props="props">
+          <q-td
+            key="keperluan"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ props.row.keperluan }}
           </q-td>
 
-          <q-td key="jenis_transaksi" :props="props">
+          <q-td
+            key="jenis_transaksi"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ props.row.jenis_transaksi }}
           </q-td>
 
-          <q-td key="nilai_pengajuan" :props="props">
+          <q-td
+            key="nilai_pengajuan"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ toRupiah(toFloat(props.row.nilai_pengajuan)) }}
           </q-td>
 
-          <q-td key="jumlah_disetujui" :props="props">
+          <q-td
+            key="jumlah_disetujui"
+            :props="props"
+            @click.prevent="router.visit(route('detail_pengajuan_dana', props.row.id_pengajuan_dana))"
+            style="cursor: pointer;"
+          >
             {{ toRupiah(toFloat(props.row.jumlah_disetujui)) }}
           </q-td>
 
