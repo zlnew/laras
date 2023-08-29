@@ -42,7 +42,7 @@ const totalAmount = computed(() => {
     return total + (toFloat(item.harga_satuan) * toFloat(item.volume))
   }, 0)
 
-  const pph = (toFloat(props.data.rab.additional_tax) / 100) * rab
+  const pph = (toFloat(props.data.rab?.additional_tax) / 100) * rab
   const netto = rab - pph
   const laba = netto - rap
   const labaPercentage = (laba / netto) * 100
