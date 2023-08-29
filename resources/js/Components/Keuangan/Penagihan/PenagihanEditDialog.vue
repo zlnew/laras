@@ -6,12 +6,12 @@ import { onMounted, ref } from 'vue'
 
 // utils
 import { multiFilterOptions } from '@/utils/options'
+import { toRupiah } from '@/utils/money'
+import { sanitizeUsNumber, toFloat } from '@/utils/number'
 
 // types
 import { type FormOptions } from '@/Pages/Keuangan/PenagihanPage.vue'
 import type { Penagihan, Proyek } from '@/types'
-import { toRupiah } from '@/utils/money'
-import { toFloat } from '@/utils/number'
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -57,6 +57,13 @@ function onChooseProyek (id: Proyek['id_proyek']) {
   }
 }
 
+async function onChangeNilaiNetto (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.nilai_netto = formattedAmount
+  }
+}
+
 const form = useForm({
   id_proyek: props.penagihan.id_proyek,
   id_rekening: props.penagihan.id_rekening_pg,
@@ -65,7 +72,7 @@ const form = useForm({
   tanggal_sp2d: props.penagihan.tanggal_sp2d,
   tanggal_terbit: props.penagihan.tanggal_terbit,
   tanggal_cair: props.penagihan.tanggal_cair,
-  nilai_netto: props.penagihan.nilai_netto,
+  nilai_netto: toFloat(props.penagihan.nilai_netto),
   faktur: null
 })
 
@@ -268,11 +275,12 @@ onMounted(() => {
               hide-bottom-space
               label="Nilai Netto"
               v-model="form.nilai_netto"
-              :hint="toRupiah(toFloat(form.nilai_netto))"
-              :hide-hint="toFloat(form.nilai_netto) < 1"
+              :hint="toRupiah(form.nilai_netto)"
+              :hide-hint="form.nilai_netto < 1"
               :error="form.errors.nilai_netto ? true : false"
               :error-message="form.errors.nilai_netto"
               input-class="text-right"
+              @update:model-value="(val) => onChangeNilaiNetto(val)"
             />
 
             <q-file

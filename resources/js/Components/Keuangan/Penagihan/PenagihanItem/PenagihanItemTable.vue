@@ -98,7 +98,6 @@ const columns: QTableColumn[] = [
   { name: 'harga_satuan', label: 'Harga Satuan', field: 'harga_satuan', align: 'right', sortable: true },
   { name: 'volume', label: 'Volume', field: 'volume', align: 'right', sortable: true },
   { name: 'total_harga', label: 'Total Harga', field: 'total_harga', align: 'right', sortable: true },
-  // { name: 'penerimaan', label: 'Penerimaan', field: '', align: 'left' },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
 ]
 
@@ -300,7 +299,7 @@ function saveTax () {
           <q-td class="text-right">
             Potongan PPN
           </q-td>
-          <q-td class="text-right text-weight-bold">
+          <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
             {{ toRupiah(toFloat(form.potongan_ppn)) }}
 
             <q-popup-edit
@@ -312,9 +311,6 @@ function saveTax () {
                 flat
                 dense
                 hide-bottom-space
-                reverse-fill-mask
-                mask="#.##"
-                fill-mask="0"
                 v-model="form.potongan_ppn"
                 :hint="toRupiah(toFloat(form.potongan_ppn))"
                 :error="form.errors.potongan_ppn ? true : false"
@@ -344,7 +340,7 @@ function saveTax () {
           <q-td class="text-right">
             Potongan PPH
           </q-td>
-          <q-td class="text-right text-weight-bold">
+          <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
             {{ toRupiah(toFloat(form.potongan_pph)) }}
 
             <q-popup-edit
@@ -356,9 +352,6 @@ function saveTax () {
                 flat
                 dense
                 hide-bottom-space
-                reverse-fill-mask
-                mask="#.##"
-                fill-mask="0"
                 v-model="form.potongan_pph"
                 :hint="toRupiah(toFloat(form.potongan_pph))"
                 :error="form.errors.potongan_pph ? true : false"
@@ -388,7 +381,7 @@ function saveTax () {
           <q-td class="text-right">
             Potongan Lainnya
           </q-td>
-          <q-td class="text-right text-weight-bold">
+          <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
             {{ toRupiah(toFloat(form.potongan_lainnya)) }}
 
             <q-popup-edit
@@ -400,9 +393,6 @@ function saveTax () {
                 flat
                 dense
                 hide-bottom-space
-                reverse-fill-mask
-                mask="#.##"
-                fill-mask="0"
                 v-model="form.potongan_lainnya"
                 :hint="toRupiah(toFloat(form.potongan_lainnya))"
                 :error="form.errors.potongan_lainnya ? true : false"
@@ -424,8 +414,8 @@ function saveTax () {
               </q-input>
             </q-popup-edit>
           </q-td>
-          <q-td>
-            {{ form.keterangan_potongan_lainnya || 'Tambah Keterangan' }}
+          <q-td class="text-primary" style="cursor: pointer;">
+            {{ form.keterangan_potongan_lainnya || 'Tambah Keterangan Potongan' }}
 
             <q-popup-edit
               v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"

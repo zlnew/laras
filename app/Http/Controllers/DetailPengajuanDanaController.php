@@ -123,6 +123,7 @@ class DetailPengajuanDanaController extends Controller
         $detailRap = DB::table('detail_rap')
             ->leftJoin('rap', 'rap.id_rap', '=', 'detail_rap.id_rap')
             ->where('detail_rap.deleted_at', null)
+            ->where('rap.deleted_at', null)
             ->where('rap.id_proyek', $id_proyek)
             ->groupBy('detail_rap.id_detail_rap')
             ->select(

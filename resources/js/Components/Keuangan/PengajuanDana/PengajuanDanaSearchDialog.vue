@@ -22,7 +22,7 @@ const props = defineProps<{
 }>()
 
 const proyekOptionsRef = ref(props.options.currentProyek)
-const jenisTransaksiOptions = ['Setoran Modal', 'Penarikan', 'Utang', 'Piutang']
+const jenisTransaksiOptions = ['Setoran Modal', 'Penarikan', 'Utang', 'Piutang', 'Pembayaran']
 
 function proyekFilter (val: string, update: any) {
   update(() => {
@@ -54,7 +54,7 @@ function search () {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Pencarian Setoran/Penarikan</div>
+          <div class="text-h6">Pencarian Pengajuan Transaksi</div>
           <q-space />
           <q-btn
             flat
@@ -153,7 +153,7 @@ function search () {
             <q-toggle
               checked-icon="check"
               unchecked-icon="clear"
-              label="Hanya tampilkan Pengajuan Dana yang ditolak"
+              label="Hanya tampilkan Pengajuan Transaksi yang ditolak"
               v-model="form.ditolak"
             />
           </div>

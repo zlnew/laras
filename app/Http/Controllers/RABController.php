@@ -70,6 +70,7 @@ class RABController extends Controller
 
         $proyek = DB::table('proyek')
             ->whereNotIn('id_proyek', $id_proyek)
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'
@@ -142,11 +143,7 @@ class RABController extends Controller
 
     public function destroy(RAB $rab): RedirectResponse
     {
-        DB::transaction(function () use ($rab) {
-            Penagihan::where('id_proyek', $rab->id_proyek)->delete();
-
-            $rab->delete();
-        });
+        $rab->delete();
 
         return redirect()->back()->with('success', 'RAB berhasil dihapus!');
     }

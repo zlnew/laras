@@ -11,6 +11,7 @@ import { toRupiah } from '@/utils/money'
 // types
 import type { FormOptions } from '@/Pages/Main/DetailRABPage.vue'
 import type { RAB } from '@/types'
+import { sanitizeUsNumber } from '@/utils/number'
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -29,6 +30,13 @@ function satuanFilter (val: string, update: any) {
   update(() => {
     satuanOptionsRef.value = multiFilterOptions(val, props.options.satuan, ['nama_satuan'])
   })
+}
+
+async function onChangeHargaSatuan (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.harga_satuan = formattedAmount
+  }
 }
 
 const form = useForm({
@@ -123,6 +131,7 @@ function submit () {
                   :error="form.errors.harga_satuan ? true : false"
                   :error-message="form.errors.harga_satuan"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeHargaSatuan(val)"
                 />
               </div>
 

@@ -7,6 +7,7 @@ import { ref } from 'vue'
 // utils
 import { filterOptions, multiFilterOptions } from '@/utils/options'
 import { toRupiah } from '@/utils/money'
+import { sanitizeUsNumber } from '@/utils/number'
 
 // types
 import { type FormOptions } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue'
@@ -47,6 +48,13 @@ function jenisPembayaranFilter (val: string, update: any) {
   })
 }
 
+async function onChangeJumlahPengajuan (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.jumlah_pengajuan = formattedAmount
+  }
+}
+
 const form = useForm({
   uraian: null,
   jumlah_pengajuan: 0,
@@ -75,7 +83,7 @@ function submit () {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Tambah Uraian Setoran/Penarikan</div>
+          <div class="text-h6">Tambah Uraian Pengajuan Transaksi</div>
           <q-space />
           <q-btn
             flat
@@ -138,6 +146,7 @@ function submit () {
                   :error="form.errors.jumlah_pengajuan ? true : false"
                   :error-message="form.errors.jumlah_pengajuan"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeJumlahPengajuan(val)"
                 />
               </div>
 

@@ -2,6 +2,7 @@
 // cores
 import { ref, computed } from 'vue'
 import { type QTableColumn, useQuasar } from 'quasar'
+import { router } from '@inertiajs/vue3'
 
 // utils
 import { toRupiah } from '@/utils/money'
@@ -11,9 +12,6 @@ import { toFloat } from '@/utils/number'
 // types
 import { type DetailPencairanDana, type DetailPengajuanDana, type PencairanDana, type PengajuanDana } from '@/types'
 import { type JoinedWithDetailPengajuanDana } from '@/Pages/Keuangan/DetailPencairanDanaPage.vue'
-
-// comps
-import { router } from '@inertiajs/vue3'
 
 interface Data {
   pencairanDana: PencairanDana

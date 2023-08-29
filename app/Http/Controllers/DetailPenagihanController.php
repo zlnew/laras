@@ -18,10 +18,13 @@ class DetailPenagihanController extends Controller
     {
         $penagihan = DB::table('penagihan')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'penagihan.id_proyek')
+            ->leftJoin('rab', 'rab.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
             ->leftJoin('rekening as rpg', 'rpg.id_rekening', '=', 'penagihan.id_rekening')
             ->where('penagihan.deleted_at', null)
+            ->where('rab.deleted_at', null)
+            ->where('proyek.deleted_at', null)
             ->where('penagihan.id_penagihan', $penagihan->id_penagihan)
             ->select(
                 'penagihan.id_penagihan',
@@ -196,6 +199,7 @@ class DetailPenagihanController extends Controller
         $detailRab = DB::table('detail_rab')
             ->leftJoin('rab', 'rab.id_rab', '=', 'detail_rab.id_rab')
             ->where('detail_rab.deleted_at', null)
+            ->where('rab.deleted_at', null)
             ->where('rab.status_rab', '400')
             ->where('rab.id_proyek', $id_proyek)
             ->groupBy('detail_rab.id_detail_rab')

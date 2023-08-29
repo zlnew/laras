@@ -100,7 +100,7 @@ onMounted(() => {
       flat
       bordered
       row-key="id_rab"
-      title="Laporan Setoran/Penarikan"
+      title="Laporan Pengajuan Transaksi"
       :rows="rows"
       :columns="columns"
       :rows-per-page-options="[ 10, 15, 20, 25, 50, 0 ]"

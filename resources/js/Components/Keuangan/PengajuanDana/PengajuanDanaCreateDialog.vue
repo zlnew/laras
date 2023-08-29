@@ -21,7 +21,7 @@ const props = defineProps<{
 }>()
 
 const proyekOptionsRef = ref(props.options.proyek)
-const jenisTransaksiOptions = ['Setoran Modal', 'Penarikan', 'Utang', 'Piutang']
+const jenisTransaksiOptions = ['Setoran Modal', 'Penarikan', 'Utang', 'Piutang', 'Pembayaran']
 
 function proyekFilter (val: string, update: any) {
   update(() => {
@@ -55,7 +55,7 @@ function submit () {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Tambah Setoran/Penarikan</div>
+          <div class="text-h6">Tambah Pengajuan Transaksi</div>
           <q-space />
           <q-btn
             flat

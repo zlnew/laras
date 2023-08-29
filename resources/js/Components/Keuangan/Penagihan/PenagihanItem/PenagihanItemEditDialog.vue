@@ -7,7 +7,7 @@ import { ref } from 'vue'
 // utils
 import { multiFilterOptions } from '@/utils/options'
 import { toRupiah } from '@/utils/money'
-import { toFloat } from '@/utils/number'
+import { sanitizeUsNumber, toFloat } from '@/utils/number'
 
 // types
 import { type FormOptions } from '@/Pages/Keuangan/DetailPenagihanPage.vue'
@@ -37,14 +37,21 @@ function getHargaSatuan (id: number) {
 
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/prefer-optional-chain
   if (matchedItem && matchedItem.harga_satuan) {
-    form.harga_satuan_penagihan = matchedItem.harga_satuan
+    form.harga_satuan_penagihan = toFloat(matchedItem.harga_satuan)
+  }
+}
+
+async function onChangeHargaSatuan (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.harga_satuan_penagihan = formattedAmount
   }
 }
 
 const form = useForm({
   id_detail_rab: props.detailPenagihan.id_detail_rab,
-  volume_penagihan: props.detailPenagihan.volume_penagihan,
-  harga_satuan_penagihan: props.detailPenagihan.harga_satuan_penagihan
+  volume_penagihan: toFloat(props.detailPenagihan.volume_penagihan),
+  harga_satuan_penagihan: toFloat(props.detailPenagihan.harga_satuan_penagihan)
 })
 
 function submit () {
@@ -119,11 +126,12 @@ function submit () {
                   hide-bottom-space
                   label="Harga Satuan"
                   v-model="form.harga_satuan_penagihan"
-                  :hint="toRupiah(toFloat(form.harga_satuan_penagihan))"
-                  :hide-hint="toFloat(form.harga_satuan_penagihan) < 1"
+                  :hint="toRupiah(form.harga_satuan_penagihan)"
+                  :hide-hint="form.harga_satuan_penagihan < 1"
                   :error="form.errors.harga_satuan_penagihan ? true : false"
                   :error-message="form.errors.harga_satuan_penagihan"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeHargaSatuan(val)"
                 />
               </div>
 
@@ -146,7 +154,7 @@ function submit () {
 
               <div class="col-12 col-md-6 q-pl-sm text-right">
                 <div class="text-secondary text-caption">Total Harga</div>
-                <div class="text-weight-bold text-subtitle1">{{ toRupiah(toFloat(form.harga_satuan_penagihan) * toFloat(form.volume_penagihan)) }}</div>
+                <div class="text-weight-bold text-subtitle1">{{ toRupiah(form.harga_satuan_penagihan * form.volume_penagihan) }}</div>
               </div>
             </div>
           </div>

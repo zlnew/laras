@@ -11,6 +11,7 @@ import { daysDiff, endOfDate } from '@/utils/date'
 
 // types
 import type { FormOptions } from '@/Pages/Main/ProyekPage.vue'
+import { sanitizeUsNumber } from '@/utils/number'
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -88,6 +89,13 @@ function updateDaysDiff () {
   const days = daysDiff(form.tanggal_mulai, form.tanggal_selesai)
   if (days >= 0) {
     form.durasi = days
+  }
+}
+
+async function onChangeNilaiKontrak (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.nilai_kontrak = formattedAmount
   }
 }
 
@@ -367,6 +375,7 @@ function submit () {
                   :error="form.errors.nilai_kontrak ? true : false"
                   :error-message="form.errors.nilai_kontrak"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeNilaiKontrak(val)"
                 />
               </div>
             </div>

@@ -8,7 +8,7 @@ import { ref } from 'vue'
 import { toRupiah } from '@/utils/money'
 import { filterOptions, multiFilterOptions } from '@/utils/options'
 import { daysDiff, endOfDate } from '@/utils/date'
-import { toFloat } from '@/utils/number'
+import { sanitizeUsNumber, toFloat } from '@/utils/number'
 
 // types
 import type { FormOptions } from '@/Pages/Main/ProyekPage.vue'
@@ -94,6 +94,13 @@ function updateDaysDiff () {
   }
 }
 
+async function onChangeNilaiKontrak (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.nilai_kontrak = formattedAmount
+  }
+}
+
 const form = useForm({
   nama_proyek: props.proyek.nama_proyek,
   nomor_kontrak: props.proyek.nomor_kontrak,
@@ -103,7 +110,7 @@ const form = useForm({
   tahun_anggaran: props.proyek.tahun_anggaran,
   nomor_spmk: props.proyek.nomor_spmk,
   tanggal_spmk: props.proyek.tanggal_spmk,
-  nilai_kontrak: props.proyek.nilai_kontrak,
+  nilai_kontrak: toFloat(props.proyek.nilai_kontrak),
   tanggal_mulai: props.proyek.tanggal_mulai,
   durasi: props.proyek.durasi,
   tanggal_selesai: props.proyek.tanggal_selesai,
@@ -365,11 +372,12 @@ function submit () {
                   hide-bottom-space
                   label="Nilai Kontrak"
                   v-model="form.nilai_kontrak"
-                  :hint="toRupiah(toFloat(form.nilai_kontrak))"
-                  :hide-hint="toFloat(form.nilai_kontrak) < 1"
+                  :hint="toRupiah(form.nilai_kontrak)"
+                  :hide-hint="form.nilai_kontrak < 1"
                   :error="form.errors.nilai_kontrak ? true : false"
                   :error-message="form.errors.nilai_kontrak"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeNilaiKontrak(val)"
                 />
               </div>
             </div>

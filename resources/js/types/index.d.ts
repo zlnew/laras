@@ -81,7 +81,7 @@ export interface DetailRAP {
 export interface PengajuanDana {
   id_pengajuan_dana: string
   keperluan: string
-  jenis_transaksi: 'Setoran Modal' | 'Penarikan' | 'Utang' | 'Piutang'
+  jenis_transaksi: 'Setoran Modal' | 'Penarikan' | 'Utang' | 'Piutang' | 'Pembayaran'
   tanggal_pengajuan: string
   status_pengajuan: '100' | '400'
   status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Disetujui'

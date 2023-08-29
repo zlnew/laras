@@ -80,6 +80,7 @@ class PengajuanDanaController extends Controller
             ->get();
 
         $currentProyek = DB::table('proyek')
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'

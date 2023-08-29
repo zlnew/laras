@@ -129,7 +129,7 @@ function toggleFullscreen () {
         <q-btn
           v-if="can('create & modify pengajuan dana')"
           no-caps
-          label="Tambah Setoran/Penarikan"
+          label="Tambah Pengajuan Transaksi"
           icon="add"
           color="primary"
           @click="createPengajuanDana"

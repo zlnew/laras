@@ -67,6 +67,7 @@ class RAPController extends Controller
 
         $proyek = DB::table('proyek')
             ->whereNotIn('id_proyek', $id_proyek)
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'
@@ -142,11 +143,7 @@ class RAPController extends Controller
 
     public function destroy(RAP $rap): RedirectResponse
     {
-        DB::transaction(function () use ($rap) {
-            PengajuanDana::where('id_proyek', $rap->id_proyek)->delete();
-            
-            $rap->delete();
-        });
+        $rap->delete();
 
         return redirect()->back()->with('success', 'RAP berhasil dihapus!');
     }

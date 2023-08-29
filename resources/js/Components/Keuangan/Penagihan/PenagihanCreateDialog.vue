@@ -6,11 +6,12 @@ import { ref } from 'vue'
 
 // utils
 import { multiFilterOptions } from '@/utils/options'
+import { sanitizeUsNumber } from '@/utils/number'
+import { toRupiah } from '@/utils/money'
 
 // types
 import { type FormOptions } from '@/Pages/Keuangan/PenagihanPage.vue'
 import type { Proyek } from '@/types'
-import { toRupiah } from '@/utils/money'
 
 defineEmits([
   ...useDialogPluginComponent.emits
@@ -52,6 +53,13 @@ function onChooseProyek (id: Proyek['id_proyek']) {
     if (match.pengguna_jasa !== undefined) {
       penggunaJasa.value = match.pengguna_jasa
     }
+  }
+}
+
+async function onChangeNilaiNetto (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.nilai_netto = formattedAmount
   }
 }
 
@@ -267,6 +275,7 @@ function submit () {
               :error="form.errors.nilai_netto ? true : false"
               :error-message="form.errors.nilai_netto"
               input-class="text-right"
+              @update:model-value="(val) => onChangeNilaiNetto(val)"
             />
 
             <q-file

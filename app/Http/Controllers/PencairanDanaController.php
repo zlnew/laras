@@ -33,8 +33,9 @@ class PencairanDanaController extends Controller
 
         $pencairanDana = $pencairanDana->groupBy('pencairan_dana.id_pencairan_dana')
             ->select(
-                'pencairan_dana.id_pencairan_dana', 'pencairan_dana.status_aktivitas',
-                'pengajuan_dana.keperluan', 'pencairan_dana.status_pencairan',
+                'pencairan_dana.id_pencairan_dana',
+                'pengajuan_dana.keperluan', 'pengajuan_dana.jenis_transaksi',
+                'pencairan_dana.status_pencairan', 'pencairan_dana.status_aktivitas',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
                 'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
@@ -60,6 +61,7 @@ class PencairanDanaController extends Controller
     public function formOptions(): stdClass
     {
         $currentProyek = DB::table('proyek')
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'

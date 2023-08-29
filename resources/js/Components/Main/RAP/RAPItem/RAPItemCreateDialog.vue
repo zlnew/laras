@@ -7,6 +7,7 @@ import { ref } from 'vue'
 // utils
 import { filterOptions, multiFilterOptions } from '@/utils/options'
 import { toRupiah } from '@/utils/money'
+import { sanitizeUsNumber } from '@/utils/number'
 
 // types
 import type { FormOptions } from '@/Pages/Main/DetailRAPPage.vue'
@@ -38,6 +39,13 @@ function statusFilter (val: string, update: any) {
   update(() => {
     statusOptionsRef.value = filterOptions(val, statusOptions)
   })
+}
+
+async function onChangeHargaSatuan (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.harga_satuan = formattedAmount
+  }
 }
 
 const form = useForm({
@@ -154,6 +162,7 @@ function submit () {
                   :error="form.errors.harga_satuan ? true : false"
                   :error-message="form.errors.harga_satuan"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeHargaSatuan(val)"
                 />
               </div>
 

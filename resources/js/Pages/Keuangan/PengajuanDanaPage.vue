@@ -13,7 +13,7 @@ import type { PengajuanDana, Proyek } from '@/types'
 
 const breadcrumbs = [
   { label: 'Keuangan', url: '#' },
-  { label: 'Setoran/Penarikan', url: '#' }
+  { label: 'Pengajuan Transaksi', url: '#' }
 ]
 
 export interface FormOptions {
@@ -28,7 +28,7 @@ defineProps<{
 </script>
 
 <template>
-  <Head title="Setoran/Penarikan" />
+  <Head title="Pengajuan Transaksi" />
   <layout>
 
     <template #breadcrumbs>

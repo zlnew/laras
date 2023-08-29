@@ -12,7 +12,15 @@ function toFloat (string: string): number {
   return parseFloat(string)
 }
 
+async function sanitizeUsNumber (amount: string): Promise<number> {
+  const input = amount.replace(/,/g, '')
+  const formattedAmount = parseFloat(input).toFixed(2)
+
+  return toFloat(formattedAmount)
+}
+
 export {
   toInt,
-  toFloat
+  toFloat,
+  sanitizeUsNumber
 }

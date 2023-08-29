@@ -73,6 +73,7 @@ class LaporanController extends Controller
             ->get();
 
         $proyek = DB::table('proyek')
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'
@@ -172,6 +173,7 @@ class LaporanController extends Controller
             ->get();
 
         $proyek = DB::table('proyek')
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'
@@ -252,6 +254,7 @@ class LaporanController extends Controller
             ->get();
 
         $proyek = DB::table('proyek')
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'

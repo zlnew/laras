@@ -7,7 +7,7 @@ import { ref } from 'vue'
 // utils
 import { filterOptions, multiFilterOptions } from '@/utils/options'
 import { toRupiah } from '@/utils/money'
-import { toFloat } from '@/utils/number'
+import { sanitizeUsNumber, toFloat } from '@/utils/number'
 
 // types
 import type { FormOptions } from '@/Pages/Main/DetailRAPPage.vue'
@@ -41,11 +41,18 @@ function statusFilter (val: string, update: any) {
   })
 }
 
+async function onChangeHargaSatuan (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.harga_satuan = formattedAmount
+  }
+}
+
 const form = useForm({
   uraian: props.detailRap.uraian,
   status_uraian: props.detailRap.status_uraian,
-  harga_satuan: props.detailRap.harga_satuan,
-  volume: props.detailRap.volume,
+  harga_satuan: toFloat(props.detailRap.harga_satuan),
+  volume: toFloat(props.detailRap.volume),
   keterangan: props.detailRap.keterangan,
   id_satuan: props.detailRap.id_satuan
 })
@@ -152,11 +159,12 @@ function submit () {
                   hide-bottom-space
                   label="Harga Satuan"
                   v-model="form.harga_satuan"
-                  :hint="toRupiah(toFloat(form.harga_satuan))"
-                  :hide-hint="toFloat(form.harga_satuan) < 1"
+                  :hint="toRupiah(form.harga_satuan)"
+                  :hide-hint="form.harga_satuan < 1"
                   :error="form.errors.harga_satuan ? true : false"
                   :error-message="form.errors.harga_satuan"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeHargaSatuan(val)"
                 />
               </div>
 
@@ -188,7 +196,7 @@ function submit () {
 
               <div class="col-12 col-md-6 q-pl-sm text-right">
                 <div class="text-secondary text-caption">Total Harga</div>
-                <div class="text-weight-bold text-subtitle1">{{ toRupiah(toFloat(form.harga_satuan) * toFloat(form.volume)) }}</div>
+                <div class="text-weight-bold text-subtitle1">{{ toRupiah(form.harga_satuan * form.volume) }}</div>
               </div>
             </div>
           </div>

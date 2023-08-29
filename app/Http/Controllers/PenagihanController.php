@@ -78,6 +78,7 @@ class PenagihanController extends Controller
             ->get();
 
         $currentProyek = DB::table('proyek')
+            ->where('deleted_at', null)
             ->select(
                 'id_proyek', 'nama_proyek',
                 'tahun_anggaran'
@@ -122,8 +123,6 @@ class PenagihanController extends Controller
     {
         DB::transaction(function() use ($request) {
             $validated = $request->safe();
-    
-            $faktur_filepath = Storage::putFile('public/uploads', $validated->faktur);
 
             $penagihan = new Penagihan;
     
@@ -135,9 +134,14 @@ class PenagihanController extends Controller
                 'tanggal_sp2d' => $validated->tanggal_sp2d,
                 'tanggal_terbit' => $validated->tanggal_terbit,
                 'tanggal_cair' => $validated->tanggal_cair,
-                'nilai_netto' => $validated->nilai_netto,
-                'faktur' => Storage::url($faktur_filepath)
+                'nilai_netto' => $validated->nilai_netto
             ]);
+
+            if ($request->hasFile('faktur')) { 
+                $faktur_filepath = Storage::putFile('public/uploads', $validated->faktur);
+    
+                $penagihan->faktur = Storage::url($faktur_filepath);
+            }
     
             $penagihan->save();
 

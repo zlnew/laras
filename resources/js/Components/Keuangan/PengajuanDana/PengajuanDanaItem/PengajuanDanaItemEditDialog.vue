@@ -7,7 +7,7 @@ import { ref } from 'vue'
 // utils
 import { filterOptions, multiFilterOptions } from '@/utils/options'
 import { toRupiah } from '@/utils/money'
-import { toFloat } from '@/utils/number'
+import { sanitizeUsNumber, toFloat } from '@/utils/number'
 
 // types
 import { type FormOptions } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue'
@@ -48,9 +48,16 @@ function jenisPembayaranFilter (val: string, update: any) {
   })
 }
 
+async function onChangeJumlahPengajuan (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.jumlah_pengajuan = formattedAmount
+  }
+}
+
 const form = useForm({
   uraian: props.detailPengajuanDana.uraian,
-  jumlah_pengajuan: props.detailPengajuanDana.jumlah_pengajuan,
+  jumlah_pengajuan: toFloat(props.detailPengajuanDana.jumlah_pengajuan),
   jenis_pembayaran: props.detailPengajuanDana.jenis_pembayaran,
   id_detail_rap: props.detailPengajuanDana.id_detail_rap,
   id_rekening: props.detailPengajuanDana.id_rekening
@@ -76,7 +83,7 @@ function submit () {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Edit Uraian Setoran/Penarikan</div>
+          <div class="text-h6">Edit Uraian Pengajuan Transaksi</div>
           <q-space />
           <q-btn
             flat
@@ -134,11 +141,12 @@ function submit () {
                   hide-bottom-space
                   label="Jumlah Pengajuan"
                   v-model="form.jumlah_pengajuan"
-                  :hint="toRupiah(toFloat(form.jumlah_pengajuan))"
-                  :hide-hint="toFloat(form.jumlah_pengajuan) < 1"
+                  :hint="toRupiah(form.jumlah_pengajuan)"
+                  :hide-hint="form.jumlah_pengajuan < 1"
                   :error="form.errors.jumlah_pengajuan ? true : false"
                   :error-message="form.errors.jumlah_pengajuan"
                   input-class="text-right"
+                  @update:model-value="(val) => onChangeJumlahPengajuan(val)"
                 />
               </div>
 

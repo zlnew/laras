@@ -64,6 +64,7 @@ const columns: QTableColumn[] = [
   },
   { name: 'tahun_anggaran', label: 'Tahun Anggaran', field: 'tahun_anggaran', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
+  { name: 'jenis_transaksi', label: 'Jenis Transaksi', field: 'jenis_transaksi', align: 'left', sortable: true },
   { name: 'status', label: 'Status', field: 'status', align: 'left', sortable: true }
 ]
 
@@ -159,6 +160,10 @@ function toggleFullscreen () {
 
           <q-td key="keperluan" :props="props">
             {{ props.row.keperluan }}
+          </q-td>
+
+          <q-td key="jenis_transaksi" :props="props">
+            {{ props.row.jenis_transaksi }}
           </q-td>
 
           <q-td key="status" :props="props">

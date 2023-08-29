@@ -5,6 +5,7 @@ import { useDialogPluginComponent } from 'quasar'
 
 // utils
 import { toRupiah } from '@/utils/money'
+import { sanitizeUsNumber } from '@/utils/number'
 
 // types
 import { type DetailPencairanDana, type PencairanDana } from '@/types'
@@ -19,6 +20,13 @@ const props = defineProps<{
   id_pencairan_dana: PencairanDana['id_pencairan_dana']
   id_detail_pengajuan_dana: DetailPencairanDana['id_detail_pencairan_dana']
 }>()
+
+async function onChangeJumlahPencairan (amount: string | number | null) {
+  if (typeof amount === 'string') {
+    const formattedAmount = await sanitizeUsNumber(amount)
+    form.jumlah_pencairan = formattedAmount
+  }
+}
 
 const form = useForm({
   id_detail_pengajuan_dana: props.id_detail_pengajuan_dana,
@@ -63,17 +71,15 @@ function submit () {
           <div class="q-gutter-md">
             <q-input
               outlined
-              reverse-fill-mask
               hide-bottom-space
               label="Masukkan Jumlah Pencairan"
-              mask="#.##"
-              fill-mask="0"
               v-model="form.jumlah_pencairan"
               :hint="toRupiah(form.jumlah_pencairan)"
               :hide-hint="form.jumlah_pencairan < 1"
               :error="form.errors.jumlah_pencairan ? true : false"
               :error-message="form.errors.jumlah_pencairan"
               input-class="text-right"
+              @update:model-value="(val) => onChangeJumlahPencairan(val)"
             />
           </div>
         </q-card-section>
