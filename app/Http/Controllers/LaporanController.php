@@ -9,7 +9,7 @@ use Inertia\Response;
 
 class LaporanController extends Controller
 {
-    public function pengajuan_dana(Request $request): Response
+    public function pengajuan_direct(Request $request): Response
     {
         $pengajuanDanaQuery = DB::table('pengajuan_dana as pd')
             ->leftJoin('detail_pengajuan_dana as dpd', 'dpd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
@@ -22,6 +22,7 @@ class LaporanController extends Controller
                 'pr.deleted_at' => null,
                 'rap.deleted_at' => null
             ])
+            ->where('pd.kategori', 'Direct')
             ->where('pd.tanggal_pengajuan', '!=', null);
 
         if ($request->isMethod('get') && $request->all()) {
@@ -84,7 +85,85 @@ class LaporanController extends Controller
             'proyek' => $proyek
         ];
         
-        return Inertia::render('Laporan/LaporanPengajuanDanaPage', [
+        return Inertia::render('Laporan/LaporanPengajuanDirectPage', [
+            'pengajuanDana' => $pengajuanDana,
+            'formOptions' => $formOptions
+        ]);
+    }
+
+    public function pengajuan_proyek(Request $request): Response
+    {
+        $pengajuanDanaQuery = DB::table('pengajuan_dana as pd')
+            ->leftJoin('detail_pengajuan_dana as dpd', 'dpd.id_pengajuan_dana', '=', 'pd.id_pengajuan_dana')
+            ->leftJoin('proyek as pr', 'pr.id_proyek', '=', 'pd.id_proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'pr.id_proyek')
+            ->leftJoin('users as us', 'us.id', '=', 'pr.id_user')
+            ->leftJoin('rekening as rk', 'rk.id_rekening', '=', 'pr.id_rekening')
+            ->where([
+                'pd.deleted_at' => null,
+                'pr.deleted_at' => null,
+                'rap.deleted_at' => null
+            ])
+            ->where('pd.kategori', 'Proyek')
+            ->where('pd.tanggal_pengajuan', '!=', null);
+
+        if ($request->isMethod('get') && $request->all()) {
+            $pengajuanDanaQuery->when($request->get('id_proyek'), function($query, $input) {
+                $query->whereIn('pd.id_proyek', $input);
+            });
+
+            $pengajuanDanaQuery->when($request->get('status_pengajuan'), function($query, $input) {
+                $query->where('pd.status_pengajuan', $input);
+            });
+
+            $pengajuanDanaQuery->when($request->get('ditolak') === 'true', function($query) {
+                $query->where('pd.status_aktivitas', 'Ditolak');
+            });
+        }
+
+        $pengajuanDana = $pengajuanDanaQuery
+            ->groupBy('pd.id_pengajuan_dana')
+            ->select(
+                'pd.id_pengajuan_dana', 'pr.nilai_kontrak',
+                'pr.id_proyek', 'pr.nama_proyek',
+                'pr.nomor_kontrak', 'pr.tanggal_kontrak',
+                'pr.pengguna_jasa', 'pr.penyedia_jasa',
+                'pr.tahun_anggaran', 'pr.nomor_spmk',
+                'pr.tanggal_spmk', 'pr.tanggal_mulai',
+                'pr.durasi', 'pr.tanggal_selesai',
+                'us.id as id_user', 'us.name as pic',
+                'pr.status_proyek', 'rk.id_rekening',
+                'rk.nama_bank', 'rk.nomor_rekening',
+                'rk.nama_rekening', 'pd.jenis_transaksi',
+                'pd.keperluan', 'pd.tanggal_pengajuan',
+                'pd.status_pengajuan', 'pd.status_aktivitas',
+                DB::raw("SUM(dpd.jumlah_pengajuan) AS nilai_pengajuan"),
+                DB::raw("
+                    CAST(SUM(
+                        CASE
+                            WHEN dpd.status_persetujuan = '400'
+                            AND dpd.deleted_at IS NULL
+                            THEN dpd.jumlah_pengajuan
+                        END
+                    ) AS DECIMAL(20, 2)) AS jumlah_disetujui"
+                ),
+            )
+            ->orderBy('pd.id_pengajuan_dana', 'asc')
+            ->get();
+
+        $proyek = DB::table('proyek')
+            ->where('deleted_at', null)
+            ->select(
+                'id_proyek', 'nama_proyek',
+                'tahun_anggaran'
+            )
+            ->get();
+
+        $formOptions = (object) [
+            'proyek' => $proyek
+        ];
+        
+        return Inertia::render('Laporan/LaporanPengajuanProyekPage', [
             'pengajuanDana' => $pengajuanDana,
             'formOptions' => $formOptions
         ]);

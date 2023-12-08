@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('jenis_pembayaran', ['Cash', 'Transfer']);
             $table->enum('status_persetujuan', [100, 400])->default(100);
             $table->foreignUlid('id_pengajuan_dana');
-            $table->foreignUlid('id_detail_rap');
+            $table->foreignUlid('id_detail_rap')->nullable();
             $table->foreignUlid('id_rekening');
             $table->timestamps();
             $table->softDeletes();

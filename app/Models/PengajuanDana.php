@@ -14,6 +14,7 @@ class PengajuanDana extends Model
     protected $table = 'pengajuan_dana';
     protected $primaryKey = 'id_pengajuan_dana';
     protected $fillable = [
+        'kategori',
         'keperluan',
         'tanggal_pengajuan',
         'jenis_transaksi',

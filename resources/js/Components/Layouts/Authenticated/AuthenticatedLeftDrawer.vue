@@ -88,12 +88,19 @@ const menuList = [
     separator: true
   },
   {
-    icon: 'paid',
-    label: 'Pengajuan Transaksi',
-    link: route('pengajuan_dana'),
-    active: route().current('pengajuan_dana') || route().current('detail_pengajuan_dana'),
+    icon: 'request_page',
+    label: 'Pengajuan Direct',
+    link: route('pengajuan_dana_direct'),
+    active: route().current('pengajuan_dana_direct') || route().current('detail_pengajuan_dana_direct'),
     separator: false,
     sectionTitle: 'Keuangan'
+  },
+  {
+    icon: 'request_page',
+    label: 'Pengajuan Proyek',
+    link: route('pengajuan_dana_proyek'),
+    active: route().current('pengajuan_dana_proyek') || route().current('detail_pengajuan_dana_proyek'),
+    separator: false
   },
   {
     icon: 'paid',
@@ -111,11 +118,18 @@ const menuList = [
   },
   {
     icon: 'summarize',
-    label: 'Pengajuan Transaksi',
-    link: route('laporan.pengajuan_dana'),
-    active: route().current('laporan.pengajuan_dana'),
+    label: 'Pengajuan Direct',
+    link: route('laporan.pengajuan_direct'),
+    active: route().current('laporan.pengajuan_direct'),
     separator: false,
     sectionTitle: 'Reports'
+  },
+  {
+    icon: 'summarize',
+    label: 'Pengajuan Proyek',
+    link: route('laporan.pengajuan_proyek'),
+    active: route().current('laporan.pengajuan_proyek'),
+    separator: false
   },
   {
     icon: 'summarize',

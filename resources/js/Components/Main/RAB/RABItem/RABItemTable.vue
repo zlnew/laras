@@ -297,24 +297,32 @@ const filter = ref('')
           <q-td class="text-right">
             PPN
           </q-td>
-          <q-td class="text-right">
-            <q-input
+          <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
+            {{ form.tax }} %
+            <q-popup-edit
               v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab)"
-              dense
-              reverse-fill-mask
-              hide-bottom-space
-              mask="#.##"
-              fill-mask="0"
-              v-model="form.tax"
-              hint="Click the button on the right to save"
-              :hide-hint="!form.isDirty"
+              v-model.number="form.tax"
+              v-slot="scope"
+              title="PPN"
+              @hide="updateTax"
             >
-              <template v-if="form.isDirty" v-slot:append>
-                <q-btn flat dense icon="check" @click="updateTax">
-                  <q-tooltip>Click to update</q-tooltip>
-                </q-btn>
-              </template>
-            </q-input>
+              <q-input
+                flat
+                dense
+                autofocus
+                hide-bottom-space
+                v-model="form.tax"
+                :error="form.errors.tax ? true : false"
+                :error-message="form.errors.tax"
+                input-class="text-right"
+                @keyup.enter="() => {
+                  updateTax()
+                  scope.set()
+                }"
+              >
+                <template #append>%</template>
+              </q-input>
+            </q-popup-edit>
             <span v-else>{{ data.rab.tax }}%</span>
           </q-td>
           <q-td colspan="2" style="border: none"></q-td>
@@ -325,24 +333,32 @@ const filter = ref('')
           <q-td class="text-right">
             PPH
           </q-td>
-          <q-td class="text-right">
-            <q-input
+          <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
+            {{ form.additional_tax }} %
+            <q-popup-edit
               v-if="isAdmin() ? true : can('create & modify rab') && isEditable(data.rab)"
-              dense
-              reverse-fill-mask
-              hide-bottom-space
-              mask="#.##"
-              fill-mask="0"
-              v-model="form.additional_tax"
-              hint="Click the button on the right to save"
-              :hide-hint="!form.isDirty"
+              v-model.number="form.additional_tax"
+              v-slot="scope"
+              title="PPH"
+              @hide="updateTax"
             >
-              <template v-if="form.isDirty" v-slot:append>
-                <q-btn flat dense icon="check" @click="updateTax">
-                  <q-tooltip>Click to update</q-tooltip>
-                </q-btn>
-              </template>
-            </q-input>
+              <q-input
+                flat
+                dense
+                autofocus
+                hide-bottom-space
+                v-model="form.additional_tax"
+                :error="form.errors.additional_tax ? true : false"
+                :error-message="form.errors.additional_tax"
+                input-class="text-right"
+                @keyup.enter="() => {
+                  updateTax()
+                  scope.set()
+                }"
+              >
+                <template #append>%</template>
+              </q-input>
+            </q-popup-edit>
             <span v-else>{{ data.rab.additional_tax }}%</span>
           </q-td>
           <q-td colspan="2" style="border: none"></q-td>

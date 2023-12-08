@@ -17,13 +17,14 @@ use stdClass;
 
 class PengajuanDanaController extends Controller
 {
-    public function index(Request $request): Response
+    public function proyek(Request $request): Response
     {
         $pengajuanDanaQuery = DB::table('pengajuan_dana')
             ->leftJoin('proyek', 'proyek.id_proyek', '=', 'pengajuan_dana.id_proyek')
             ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
             ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
             ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
+            ->where('pengajuan_dana.kategori', 'Proyek')
             ->where('pengajuan_dana.deleted_at', NULL)
             ->where('rap.deleted_at', NULL)
             ->where('proyek.deleted_at', NULL);
@@ -59,7 +60,56 @@ class PengajuanDanaController extends Controller
 
         $formOptions = $this->formOptions();
             
-        return Inertia::render('Keuangan/PengajuanDanaPage', [
+        return Inertia::render('Keuangan/PengajuanProyekPage', [
+            'pengajuanDana' => $pengajuanDana,
+            'formOptions' => $formOptions
+        ]);
+    }
+
+    public function direct(Request $request): Response
+    {
+        $pengajuanDanaQuery = DB::table('pengajuan_dana')
+            ->leftJoin('proyek', 'proyek.id_proyek', '=', 'pengajuan_dana.id_proyek')
+            ->leftJoin('rap', 'rap.id_proyek', '=', 'proyek.id_proyek')
+            ->leftJoin('users', 'users.id', '=', 'proyek.id_user')
+            ->leftJoin('rekening', 'rekening.id_rekening', '=', 'proyek.id_rekening')
+            ->where('pengajuan_dana.kategori', 'Direct')
+            ->where('pengajuan_dana.deleted_at', NULL)
+            ->where('rap.deleted_at', NULL)
+            ->where('proyek.deleted_at', NULL);
+
+        $role = $request->user()->roles->first()->name;
+
+        if ($role === 'manajer proyek') {
+            $pengajuanDanaQuery->where('proyek.id_user', $request->user()->id);
+        }
+
+        if ($request->isMethod('get') && $request->all()) {
+            $pengajuanDanaQuery = $this->filter($request, $pengajuanDanaQuery);
+        }
+
+        $pengajuanDana = $pengajuanDanaQuery->groupBy('pengajuan_dana.id_pengajuan_dana')
+            ->select(
+                'pengajuan_dana.id_pengajuan_dana', 'pengajuan_dana.status_aktivitas',
+                'pengajuan_dana.jenis_transaksi',
+                'pengajuan_dana.keperluan', 'pengajuan_dana.status_pengajuan',
+                'proyek.id_proyek', 'proyek.nama_proyek',
+                'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
+                'proyek.pengguna_jasa', 'proyek.penyedia_jasa',
+                'proyek.tahun_anggaran', 'proyek.nomor_spmk',
+                'proyek.tanggal_spmk', 'proyek.nilai_kontrak',
+                'proyek.tanggal_mulai', 'proyek.durasi',
+                'proyek.tanggal_selesai', 'users.id as id_user',
+                'users.name as pic', 'proyek.status_proyek',
+                'rekening.id_rekening', 'rekening.nama_bank',
+                'rekening.nomor_rekening', 'rekening.nama_rekening' 
+            )
+            ->orderBy('pengajuan_dana.id_pengajuan_dana', 'desc')
+            ->get();
+
+        $formOptions = $this->formOptions();
+            
+        return Inertia::render('Keuangan/PengajuanDirectPage', [
             'pengajuanDana' => $pengajuanDana,
             'formOptions' => $formOptions
         ]);
@@ -124,6 +174,7 @@ class PengajuanDanaController extends Controller
 
             $pengajuanDana->fill([
                 'id_proyek' => $validated->id_proyek,
+                'kategori' => $request->kategori,
                 'keperluan' => $validated->keperluan,
                 'jenis_transaksi' => $validated->jenis_transaksi
             ]);

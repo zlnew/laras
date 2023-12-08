@@ -195,7 +195,11 @@ class PenagihanController extends Controller
             'potongan_pph' => $validated->potongan_pph,
             'potongan_ppn' => $validated->potongan_ppn,
             'potongan_lainnya' => $validated->potongan_lainnya,
-            'keterangan_potongan_lainnya' => $validated->keterangan_potongan_lainnya
+            'potongan_lainnya2' => $validated->potongan_lainnya2,
+            'potongan_lainnya3' => $validated->potongan_lainnya3,
+            'keterangan_potongan_lainnya' => $validated->keterangan_potongan_lainnya,
+            'keterangan_potongan_lainnya2' => $validated->keterangan_potongan_lainnya2,
+            'keterangan_potongan_lainnya3' => $validated->keterangan_potongan_lainnya3
         ]);
 
         $penagihan->save();

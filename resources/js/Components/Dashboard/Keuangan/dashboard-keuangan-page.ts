@@ -3,3 +3,5 @@ export { default as ProyeksiInvoiceProyekTable } from '@/Components/Dashboard/Ke
 export { default as ProyeksiKebutuhanDanaProyekTable } from '@/Components/Dashboard/Keuangan/ProyeksiKebutuhanDanaProyekTable.vue'
 export { default as ProyeksiUtangTable } from '@/Components/Dashboard/Keuangan/ProyeksiUtangTable.vue'
 export { default as ProyeksiPiutangTable } from '@/Components/Dashboard/Keuangan/ProyeksiPiutangTable.vue'
+export { default as ProyeksiSetoranModalTable } from '@/Components/Dashboard/Keuangan/ProyeksiSetoranModalTable.vue'
+export { default as ProyeksiPenarikanTable } from '@/Components/Dashboard/Keuangan/ProyeksiPenarikanTable.vue'

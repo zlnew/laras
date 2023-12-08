@@ -21,8 +21,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id_detail_rab' => ['required', 'exists:detail_rab,id_detail_rab'],
-            'volume_penagihan' => ['required', 'numeric', 'min:1'],
+            'uraian' => ['required', 'string', 'max:255'],
+            'volume_penagihan' => ['required', 'numeric', 'min:0.1'],
             'harga_satuan_penagihan' => ['required', 'numeric', 'min:1']
         ];
     }

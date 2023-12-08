@@ -94,7 +94,7 @@ export interface DetailPengajuanDana {
   jumlah_pengajuan: string
   jenis_pembayaran: 'Cash' | 'Transfer'
   id_pengajuan_dana: PengajuanDana['id_pengajuan_dana']
-  id_detail_rap: DetailRAP['id_detail_rap']
+  id_detail_rap: DetailRAP['id_detail_rap'] | null
   id_rekening: Rekening['id_rekening']
 }
 
@@ -128,7 +128,11 @@ export interface Penagihan {
   potongan_ppn: string
   potongan_pph: string
   potongan_lainnya: string
+  potongan_lainnya2: string
+  potongan_lainnya3: string
   keterangan_potongan_lainnya: string
+  keterangan_potongan_lainnya2: string
+  keterangan_potongan_lainnya3: string
   status_penagihan: '100' | '400'
   status_aktivitas: 'Dibuat' | 'Diajukan' | 'Ditolak' | 'Diterima Bertahap' | 'Diterima'
   id_proyek: Proyek['id_proyek']
@@ -137,11 +141,11 @@ export interface Penagihan {
 
 export interface DetailPenagihan {
   id_detail_penagihan: number
+  uraian: string
   volume_penagihan: string
   harga_satuan_penagihan: string
   status_diterima: '100' | '400'
   id_penagihan: Penagihan['id_penagihan']
-  id_detail_rab: DetailRAB['id_detail_rab']
 }
 
 export interface Timeline {

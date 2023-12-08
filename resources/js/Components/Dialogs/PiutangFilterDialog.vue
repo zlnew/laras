@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // cores
-import { useForm, usePage } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
 import { useDialogPluginComponent } from 'quasar'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 
 // utils
 import { filterOptions, multiFilterOptions } from '@/utils/options'
@@ -43,31 +43,22 @@ function penggunaJasaFilter (val: string, update: any) {
   })
 }
 
-const page = usePage()
-
-interface SearchQuery {
-  piutang_pic: any
-  piutang_pengguna_jasa: string
-}
-
-const params = page.props.query as unknown as SearchQuery
-
-const pic = computed(() => {
-  return props.options.pic.find(item => item.id === params.piutang_pic)
-})
-
 const form = useForm({
-  piutang_query: true,
-  piutang_pic: pic.value,
-  piutang_pengguna_jasa: params.piutang_pengguna_jasa
+  piutang_pic: null,
+  piutang_pengguna_jasa: null
 })
 
 function search () {
-  form.get(props.data.route, {
-    preserveScroll: true,
-    preserveState: true,
-    onSuccess: () => { onDialogOK() }
-  })
+  form
+    .transform((data) => ({
+      ...data,
+      piutang_query: true
+    }))
+    .get(props.data.route, {
+      preserveScroll: true,
+      preserveState: true,
+      onSuccess: () => { onDialogOK() }
+    })
 }
 </script>
 

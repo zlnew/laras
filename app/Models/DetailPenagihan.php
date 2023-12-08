@@ -13,10 +13,10 @@ class DetailPenagihan extends Model
     protected $table = 'detail_penagihan';
     protected $primaryKey = 'id_detail_penagihan';
     protected $fillable = [
+        'uraian',
         'volume_penagihan',
         'harga_satuan_penagihan',
         'status_diterima',
-        'id_penagihan',
-        'id_detail_rab'
+        'id_penagihan'
     ];
 }

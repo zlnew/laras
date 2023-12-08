@@ -2,15 +2,12 @@
 // cores
 import { useForm } from '@inertiajs/vue3'
 import { useDialogPluginComponent } from 'quasar'
-import { ref } from 'vue'
 
 // utils
-import { multiFilterOptions } from '@/utils/options'
 import { toRupiah } from '@/utils/money'
-import { sanitizeUsNumber, toFloat } from '@/utils/number'
+import { sanitizeUsNumber } from '@/utils/number'
 
 // types
-import { type FormOptions } from '@/Pages/Keuangan/DetailPenagihanPage.vue'
 import { type Penagihan } from '@/types'
 
 defineEmits([
@@ -21,25 +18,7 @@ const { dialogRef, onDialogOK, onDialogCancel, onDialogHide } = useDialogPluginC
 
 const props = defineProps<{
   penagihan: Penagihan
-  options: FormOptions
 }>()
-
-const rabOptionsRef = ref(props.options.detailRab)
-
-function rabFilter (val: string, update: any) {
-  update(() => {
-    rabOptionsRef.value = multiFilterOptions(val, props.options.detailRab, ['uraian'])
-  })
-}
-
-function getHargaSatuan (id: number) {
-  const matchedItem = props.options.detailRab.find(drab => drab.id_detail_rab === id)
-
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions, @typescript-eslint/prefer-optional-chain
-  if (matchedItem && matchedItem.harga_satuan) {
-    form.harga_satuan_penagihan = toFloat(matchedItem.harga_satuan)
-  }
-}
 
 async function onChangeHargaSatuan (amount: string | number | null) {
   if (typeof amount === 'string') {
@@ -49,7 +28,7 @@ async function onChangeHargaSatuan (amount: string | number | null) {
 }
 
 const form = useForm({
-  id_detail_rab: null,
+  uraian: '',
   volume_penagihan: 0,
   harga_satuan_penagihan: 0
 })
@@ -74,50 +53,31 @@ function submit () {
   >
     <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Tambah Uraian Penagihan</div>
-          <q-space />
-          <q-btn
-            flat
-            round
-            dense
-            icon="close"
-            @click="onDialogCancel"
-          />
-        </q-card-section>
+        <div class="text-h6">Tambah Uraian Penagihan</div>
+        <q-space />
+        <q-btn
+          flat
+          round
+          dense
+          icon="close"
+          @click="onDialogCancel"
+        />
+      </q-card-section>
 
       <q-separator />
 
       <q-form @submit.prevent="submit">
         <q-card-section class="scroll">
           <div class="q-gutter-md">
-            <q-select
+            <q-input
               outlined
-              use-input
-              emit-value
-              map-options
+              autogrow
               hide-bottom-space
-              input-debounce="500"
-              label="Uraian RAB"
-              option-value="id_detail_rab"
-              option-label="uraian"
-              :model-value="form.id_detail_rab"
-              :options="rabOptionsRef"
-              :error="form.errors.id_detail_rab ? true : false"
-              :error-message="form.errors.id_detail_rab"
-              @filter="rabFilter"
-              @update:model-value="(value) => {
-                form.id_detail_rab = value;
-                getHargaSatuan(value);
-              }"
-            >
-              <template v-slot:no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    No results
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
+              label="Uraian"
+              v-model="form.uraian"
+              :error="form.errors.uraian ? true : false"
+              :error-message="form.errors.uraian"
+            />
 
             <div class="row">
               <div class="col-12 col-md-6 q-pr-sm">

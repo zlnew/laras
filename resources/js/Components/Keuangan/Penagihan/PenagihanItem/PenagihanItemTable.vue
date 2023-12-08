@@ -10,7 +10,6 @@ import { toFloat } from '@/utils/number'
 
 // types
 import { type DetailPenagihan, type Penagihan } from '@/types'
-import { type FormOptions } from '@/Pages/Keuangan/DetailPenagihanPage.vue'
 
 // comps
 import {
@@ -27,7 +26,6 @@ interface Data {
 const props = defineProps<{
   rows: DetailPenagihan[]
   data: Data
-  formOptions: FormOptions
 }>()
 
 const totalAmount = computed(() => {
@@ -35,7 +33,7 @@ const totalAmount = computed(() => {
     return total + (toFloat(item.harga_satuan_penagihan) * toFloat(item.volume_penagihan))
   }, 0)
 
-  const pencairan = penagihan - toFloat(form.potongan_ppn) - toFloat(form.potongan_pph) - toFloat(form.potongan_lainnya)
+  const pencairan = penagihan - toFloat(form.potongan_ppn) - toFloat(form.potongan_pph) - toFloat(form.potongan_lainnya) - toFloat(form.potongan_lainnya2) - toFloat(form.potongan_lainnya3)
 
   return {
     penagihan,
@@ -49,8 +47,7 @@ function createPenagihanItem () {
   $q.dialog({
     component: PenagihanItemCreateDialog,
     componentProps: {
-      penagihan: props.data.penagihan,
-      options: props.formOptions
+      penagihan: props.data.penagihan
     }
   }).onOk((payload) => {
     $q.notify({
@@ -65,8 +62,7 @@ function editPenagihanItem (data: DetailPenagihan) {
   $q.dialog({
     component: PenagihanItemEditDialog,
     componentProps: {
-      detailPenagihan: data,
-      options: props.formOptions
+      detailPenagihan: data
     }
   }).onOk((payload) => {
     $q.notify({
@@ -95,8 +91,8 @@ function deletePenagihanItem (id: DetailPenagihan['id_detail_penagihan']) {
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
   { name: 'uraian', label: 'Uraian', field: 'uraian', align: 'left', sortable: true },
-  { name: 'harga_satuan', label: 'Harga Satuan', field: 'harga_satuan', align: 'right', sortable: true },
-  { name: 'volume', label: 'Volume', field: 'volume', align: 'right', sortable: true },
+  { name: 'harga_satuan_penagihan', label: 'Harga Satuan', field: 'harga_satuan_penagihan', align: 'right', sortable: true },
+  { name: 'volume_penagihan', label: 'Volume', field: 'volume_penagihan', align: 'right', sortable: true },
   { name: 'total_harga', label: 'Total Harga', field: 'total_harga', align: 'right', sortable: true },
   { name: 'actions', label: 'Actions', field: '', align: 'left' }
 ]
@@ -114,7 +110,11 @@ const form = useForm({
   potongan_ppn: props.data.penagihan.potongan_ppn,
   potongan_pph: props.data.penagihan.potongan_pph,
   potongan_lainnya: props.data.penagihan.potongan_lainnya,
-  keterangan_potongan_lainnya: props.data.penagihan.keterangan_potongan_lainnya
+  potongan_lainnya2: props.data.penagihan.potongan_lainnya2,
+  potongan_lainnya3: props.data.penagihan.potongan_lainnya3,
+  keterangan_potongan_lainnya: props.data.penagihan.keterangan_potongan_lainnya,
+  keterangan_potongan_lainnya2: props.data.penagihan.keterangan_potongan_lainnya2,
+  keterangan_potongan_lainnya3: props.data.penagihan.keterangan_potongan_lainnya3
 })
 
 function saveTax () {
@@ -206,11 +206,11 @@ function saveTax () {
             {{ props.row.uraian }}
           </q-td>
 
-          <q-td key="harga_satuan" :props="props">
+          <q-td key="harga_satuan_penagihan" :props="props">
             {{ toRupiah(toFloat(props.row.harga_satuan_penagihan)) }}
           </q-td>
 
-          <q-td key="volume" :props="props">
+          <q-td key="volume_penagihan" :props="props">
             {{ toFloat(props.row.volume_penagihan) }}
           </q-td>
 
@@ -236,21 +236,16 @@ function saveTax () {
                 transition-hide="scale"
               >
                 <q-list dense style="min-width: 100px">
-                  <q-item clickable>
-                    <q-item-section
-                      @click="editPenagihanItem(props.row)"
-                    >
+                  <q-item clickable @click="editPenagihanItem(props.row)">
+                    <q-item-section>
                       Edit
                     </q-item-section>
                   </q-item>
 
                   <q-separator />
 
-                  <q-item clickable>
-                    <q-item-section
-                      class="text-red"
-                      @click="deletePenagihanItem(props.row.id_detail_penagihan)"
-                    >
+                  <q-item clickable @click="deletePenagihanItem(props.row.id_detail_penagihan)">
+                    <q-item-section class="text-red">
                       Delete
                     </q-item-section>
                   </q-item>
@@ -306,30 +301,24 @@ function saveTax () {
               v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
               v-model.number="form.potongan_ppn"
               v-slot="scope"
+              title="Potongan PPN"
+              @hide="saveTax"
             >
               <q-input
                 flat
                 dense
+                autofocus
                 hide-bottom-space
                 v-model="form.potongan_ppn"
                 :hint="toRupiah(toFloat(form.potongan_ppn))"
                 :error="form.errors.potongan_ppn ? true : false"
                 :error-message="form.errors.potongan_ppn"
                 input-class="text-right"
-              >
-                <template v-slot:after>
-                  <q-btn
-                    flat dense color="negative" icon="cancel"
-                    @click.stop.prevent="scope.cancel"
-                  />
-                  <q-btn
-                    flat dense color="positive" icon="check_circle"
-                    :disable="!form.isDirty"
-                    @click.stop.prevent="saveTax()"
-                    @click="scope.set"
-                  />
-                </template>
-              </q-input>
+                @keyup.enter="() => {
+                  saveTax()
+                  scope.set()
+                }"
+              />
             </q-popup-edit>
           </q-td>
           <q-td style="border: none;"></q-td>
@@ -347,30 +336,24 @@ function saveTax () {
               v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
               v-model.number="form.potongan_pph"
               v-slot="scope"
+              title="Potongan PPH"
+              @hide="saveTax"
             >
               <q-input
                 flat
                 dense
+                autofocus
                 hide-bottom-space
                 v-model="form.potongan_pph"
                 :hint="toRupiah(toFloat(form.potongan_pph))"
                 :error="form.errors.potongan_pph ? true : false"
                 :error-message="form.errors.potongan_pph"
                 input-class="text-right"
-              >
-                <template v-slot:after>
-                  <q-btn
-                    flat dense color="negative" icon="cancel"
-                    @click.stop.prevent="scope.cancel"
-                  />
-                  <q-btn
-                    flat dense color="positive" icon="check_circle"
-                    :disable="!form.isDirty"
-                    @click.stop.prevent="saveTax()"
-                    @click="scope.set"
-                  />
-                </template>
-              </q-input>
+                @keyup.enter="() => {
+                  saveTax()
+                  scope.set()
+                }"
+              />
             </q-popup-edit>
           </q-td>
           <q-td style="border: none;"></q-td>
@@ -379,7 +362,7 @@ function saveTax () {
         <q-tr no-hover>
           <q-td colspan="3" style="border: none;"></q-td>
           <q-td class="text-right">
-            Potongan Lainnya
+            Potongan Lainnya #1
           </q-td>
           <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
             {{ toRupiah(toFloat(form.potongan_lainnya)) }}
@@ -388,63 +371,155 @@ function saveTax () {
               v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
               v-model.number="form.potongan_lainnya"
               v-slot="scope"
+              title="Potongan Lainnya #1"
+              @hide="saveTax"
             >
               <q-input
                 flat
                 dense
+                autofocus
                 hide-bottom-space
                 v-model="form.potongan_lainnya"
                 :hint="toRupiah(toFloat(form.potongan_lainnya))"
                 :error="form.errors.potongan_lainnya ? true : false"
                 :error-message="form.errors.potongan_lainnya"
                 input-class="text-right"
-              >
-                <template v-slot:after>
-                  <q-btn
-                    flat dense color="negative" icon="cancel"
-                    @click.stop.prevent="scope.cancel"
-                  />
-                  <q-btn
-                    flat dense color="positive" icon="check_circle"
-                    :disable="!form.isDirty"
-                    @click.stop.prevent="saveTax()"
-                    @click="scope.set"
-                  />
-                </template>
-              </q-input>
+                @keyup.enter="() => {
+                  saveTax()
+                  scope.set()
+                }"
+              />
             </q-popup-edit>
           </q-td>
           <q-td class="text-primary" style="cursor: pointer;">
-            {{ form.keterangan_potongan_lainnya || 'Tambah Keterangan Potongan' }}
+            {{ form.keterangan_potongan_lainnya || 'Tambah Keterangan' }}
 
             <q-popup-edit
               v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
               v-model="form.keterangan_potongan_lainnya"
-              v-slot="scope"
+              title="Keterangan Potongan Lainnya #1"
+              @hide="saveTax"
             >
               <q-input
                 flat
                 dense
                 autogrow
+                autofocus
                 hide-bottom-space
-                label="Tambah Keterangan"
                 v-model="form.keterangan_potongan_lainnya"
                 :error="form.errors.keterangan_potongan_lainnya ? true : false"
                 :error-message="form.errors.keterangan_potongan_lainnya"
-              >
-                <template v-slot:after>
-                  <q-btn
-                    flat dense color="negative" icon="cancel"
-                    @click.stop.prevent="scope.cancel"
-                  />
-                  <q-btn
-                    flat dense color="positive" icon="check_circle"
-                    :disable="!form.isDirty"
-                    @click.stop.prevent="saveTax()"
-                    @click="scope.set"
-                  />
-                </template>
-              </q-input>
+              />
+            </q-popup-edit>
+          </q-td>
+        </q-tr>
+
+        <q-tr no-hover>
+          <q-td colspan="3" style="border: none;"></q-td>
+          <q-td class="text-right">
+            Potongan Lainnya #2
+          </q-td>
+          <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
+            {{ toRupiah(toFloat(form.potongan_lainnya2)) }}
+
+            <q-popup-edit
+              v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
+              v-model.number="form.potongan_lainnya2"
+              v-slot="scope"
+              title="Potongan Lainnya #2"
+              @hide="saveTax"
+            >
+              <q-input
+                flat
+                dense
+                autofocus
+                hide-bottom-space
+                v-model="form.potongan_lainnya2"
+                :hint="toRupiah(toFloat(form.potongan_lainnya2))"
+                :error="form.errors.potongan_lainnya2 ? true : false"
+                :error-message="form.errors.potongan_lainnya2"
+                input-class="text-right"
+                @keyup.enter="() => {
+                  saveTax()
+                  scope.set()
+                }"
+              />
+            </q-popup-edit>
+          </q-td>
+          <q-td class="text-primary" style="cursor: pointer;">
+            {{ form.keterangan_potongan_lainnya2 || 'Tambah Keterangan' }}
+
+            <q-popup-edit
+              v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
+              v-model="form.keterangan_potongan_lainnya2"
+              title="Keterangan Potongan Lainnya #2"
+              @hide="saveTax"
+            >
+              <q-input
+                flat
+                dense
+                autogrow
+                autofocus
+                hide-bottom-space
+                v-model="form.keterangan_potongan_lainnya2"
+                :error="form.errors.keterangan_potongan_lainnya2 ? true : false"
+                :error-message="form.errors.keterangan_potongan_lainnya2"
+              />
+            </q-popup-edit>
+          </q-td>
+        </q-tr>
+
+        <q-tr no-hover>
+          <q-td colspan="3" style="border: none;"></q-td>
+          <q-td class="text-right">
+            Potongan Lainnya #3
+          </q-td>
+          <q-td class="text-right text-weight-bold text-primary" style="cursor: pointer;">
+            {{ toRupiah(toFloat(form.potongan_lainnya3)) }}
+
+            <q-popup-edit
+              v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
+              v-model.number="form.potongan_lainnya3"
+              v-slot="scope"
+              title="Potongan Lainnya #3"
+              @hide="saveTax"
+            >
+              <q-input
+                flat
+                dense
+                autofocus
+                hide-bottom-space
+                v-model="form.potongan_lainnya3"
+                :hint="toRupiah(toFloat(form.potongan_lainnya3))"
+                :error="form.errors.potongan_lainnya3 ? true : false"
+                :error-message="form.errors.potongan_lainnya3"
+                input-class="text-right"
+                @keyup.enter="() => {
+                  saveTax()
+                  scope.set()
+                }"
+              />
+            </q-popup-edit>
+          </q-td>
+          <q-td class="text-primary" style="cursor: pointer;">
+            {{ form.keterangan_potongan_lainnya3 || 'Tambah Keterangan' }}
+
+            <q-popup-edit
+              v-if="isAdmin() ? true : can('create & modify penagihan') && isEditable(data.penagihan)"
+              v-model="form.keterangan_potongan_lainnya3"
+              title="Keterangan Potongan Lainnya #3"
+              @hide="saveTax"
+            >
+              <q-input
+                flat
+                dense
+                autogrow
+                autofocus
+                hide-bottom-space
+                v-model="form.keterangan_potongan_lainnya3"
+                :error="form.errors.keterangan_potongan_lainnya3 ? true : false"
+                :error-message="form.errors.keterangan_potongan_lainnya3"
+              />
             </q-popup-edit>
           </q-td>
         </q-tr>

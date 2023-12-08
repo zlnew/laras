@@ -128,15 +128,16 @@ onMounted(() => {
           />
 
           <q-btn
-              flat dense
-              label="xls"
-              color="green"
-              @click="excelParser().exportDataFromJSON({
-                data: excelTable,
-                name:'pencairan-dana', type: 'xls'
-              })"
-            >
-              <q-tooltip>Export to xls</q-tooltip>
+            flat dense
+            label="xls"
+            color="green"
+            @click="excelParser().exportDataFromJSON({
+              data: excelTable,
+              name:'pencairan-dana',
+              type: 'xls'
+            })"
+          >
+            <q-tooltip>Export to xls</q-tooltip>
           </q-btn>
 
           <q-btn

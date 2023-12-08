@@ -4,7 +4,11 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\PasswordController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Dashboard\AdminController;
+use App\Http\Controllers\Dashboard\DirekturUtamaController;
+use App\Http\Controllers\Dashboard\KepalaDivisiController;
+use App\Http\Controllers\Dashboard\KeuanganController;
+use App\Http\Controllers\Dashboard\ManajerProyekController;
 use App\Http\Controllers\Master\UsersController;
 use App\Http\Controllers\Master\SatuanController;
 use App\Http\Controllers\Master\RekeningController;
@@ -39,11 +43,11 @@ Route::get('/', function() {
 })->middleware('guest');
 
 Route::middleware('auth')->group(function() {
-    Route::get('/dashboard/admin', [DashboardController::class, 'admin'])->name('dashboard.admin');
-    Route::get('/dashboard/manajer-proyek', [DashboardController::class, 'manajer_proyek'])->name('dashboard.manajer_proyek');
-    Route::get('/dashboard/kepala-divisi', [DashboardController::class, 'kepala_divisi'])->name('dashboard.kepala_divisi');
-    Route::get('/dashboard/keuangan', [DashboardController::class, 'keuangan'])->name('dashboard.keuangan');
-    Route::get('/dashboard/direktur-utama', [DashboardController::class, 'direktur_utama'])->name('dashboard.direktur_utama');
+    Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
+    Route::get('/dashboard/manajer-proyek', [ManajerProyekController::class, 'index'])->name('dashboard.manajer_proyek');
+    Route::get('/dashboard/kepala-divisi', [KepalaDivisiController::class, 'index'])->name('dashboard.kepala_divisi');
+    Route::get('/dashboard/keuangan', [KeuanganController::class, 'index'])->name('dashboard.keuangan');
+    Route::get('/dashboard/direktur-utama', [DirekturUtamaController::class, 'index'])->name('dashboard.direktur_utama');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -140,8 +144,11 @@ Route::middleware('auth')->group(function() {
     Route::prefix('keuangan')->group(function () {
         Route::prefix('pengajuan-dana')->group(function() {
             Route::group(['middleware' => ['permission:view pengajuan dana']], function () {
-                Route::get('/', [PengajuanDanaController::class, 'index'])->name('pengajuan_dana');
-                Route::get('/detail/{pengajuanDana}', [DetailPengajuanDanaController::class, 'index'])->name('detail_pengajuan_dana');
+                Route::get('/proyek', [PengajuanDanaController::class, 'proyek'])->name('pengajuan_dana_proyek');
+                Route::get('/proyek/detail/{pengajuanDana}', [DetailPengajuanDanaController::class, 'proyek'])->name('detail_pengajuan_dana_proyek');
+
+                Route::get('/direct', [PengajuanDanaController::class, 'direct'])->name('pengajuan_dana_direct');
+                Route::get('/direct/detail/{pengajuanDana}', [DetailPengajuanDanaController::class, 'direct'])->name('detail_pengajuan_dana_direct');
             });
     
             Route::group(['middleware' => ['permission:create & modify pengajuan dana']], function () {
@@ -205,7 +212,8 @@ Route::middleware('auth')->group(function() {
     });
 
     Route::prefix('laporan')->group(function () {
-        Route::get('/pengajuan-dana', [LaporanController::class, 'pengajuan_dana'])->name('laporan.pengajuan_dana');
+        Route::get('/pengajuan-direct', [LaporanController::class, 'pengajuan_direct'])->name('laporan.pengajuan_direct');
+        Route::get('/pengajuan-proyek', [LaporanController::class, 'pengajuan_proyek'])->name('laporan.pengajuan_proyek');
         Route::get('/pencairan-dana', [LaporanController::class, 'pencairan_dana'])->name('laporan.pencairan_dana');
         Route::get('/penagihan', [LaporanController::class, 'penagihan'])->name('laporan.penagihan');
     });

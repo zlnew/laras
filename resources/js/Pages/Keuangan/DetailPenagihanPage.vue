@@ -18,13 +18,9 @@ import {
 import ModuleTopSection from '@/Components/Sections/ModuleTopSection.vue'
 
 // types
-import type { DetailPenagihan, DetailRAB, Penagihan, Proyek, Timeline } from '@/types'
+import type { DetailPenagihan, Penagihan, Proyek, Timeline } from '@/types'
 import { toRupiah } from '@/utils/money'
 import { toFloat } from '@/utils/number'
-
-export interface FormOptions {
-  detailRab: DetailRAB[]
-}
 
 interface JoinedWithPenagihan {
   id_rekening_pg: string
@@ -46,7 +42,6 @@ const props = defineProps<{
   penagihan: Penagihan & Proyek & JoinedWithPenagihan
   detailPenagihan: DetailPenagihan[]
   evaluasi: Evaluasi[]
-  formOptions: FormOptions
   timeline: Timeline[]
 }>()
 
@@ -174,7 +169,6 @@ const breadcrumbs = [
       :data="{
         penagihan: penagihan,
       }"
-      :form-options="formOptions"
     />
 
     <penagihan-submission-form

@@ -44,8 +44,11 @@ const params = page.props.query as { tahun_anggaran: string }
 
 const tahunAnggaran = ref(params.tahun_anggaran)
 
-function search (data: { tahun_anggaran: string }) {
-  router.get(route('dashboard.admin', data), undefined, {
+function filter (tahunAnggaran: string) {
+  router.get(route('dashboard.admin', {
+    proyek_query: 'true',
+    proyek_tahun_anggaran: tahunAnggaran
+  }), undefined, {
     preserveScroll: true,
     preserveState: true
   })
@@ -73,7 +76,7 @@ function search (data: { tahun_anggaran: string }) {
           v-model="tahunAnggaran"
           :options="tahunAnggaranOptionsRef"
           @filter="tahunAnggaranFilter"
-          @update:model-value="(val) => search({tahun_anggaran: val})"
+          @update:model-value="filter"
         >
           <template v-slot:no-option>
             <q-item>

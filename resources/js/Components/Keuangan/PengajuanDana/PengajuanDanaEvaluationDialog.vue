@@ -11,8 +11,8 @@ import { toFloat } from '@/utils/number'
 
 // types
 import { type DetailPengajuanDana, type PengajuanDana } from '@/types'
-import { type Evaluasi } from '@/Pages/Keuangan/DetailPengajuanDanaPage.vue'
-import { type ApprovedPengajuanSaatIni } from './PengajuanDanaItem/PengajuanDanaItemTable.vue'
+import { type Evaluasi } from '@/Pages/Keuangan/DetailPengajuanProyekPage.vue'
+import { type ApprovedPengajuanSaatIni } from './PengajuanDanaItem/PengajuanProyekItemTable.vue'
 
 defineEmits([
   ...useDialogPluginComponent.emits

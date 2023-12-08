@@ -37,6 +37,8 @@ class DetailPenagihanController extends Controller
                 'rpg.nomor_rekening as nomor_rekening_pg', 'rpg.nama_rekening as nama_rekening_pg',
                 'penagihan.potongan_ppn', 'penagihan.potongan_pph',
                 'penagihan.potongan_lainnya', 'penagihan.keterangan_potongan_lainnya',
+                'penagihan.potongan_lainnya2', 'penagihan.keterangan_potongan_lainnya2',
+                'penagihan.potongan_lainnya3', 'penagihan.keterangan_potongan_lainnya3',
                 'penagihan.jumlah_diterima',
                 'proyek.id_proyek', 'proyek.nama_proyek',
                 'proyek.nomor_kontrak', 'proyek.tanggal_kontrak',
@@ -52,18 +54,12 @@ class DetailPenagihanController extends Controller
             ->first();
 
         $detailPenagihan = DB::table('detail_penagihan as dpg')
-            ->leftJoin('detail_rab as drab', 'drab.id_detail_rab', '=', 'dpg.id_detail_rab')
-            ->leftJoin('satuan', 'satuan.id_satuan', '=', 'drab.id_satuan')
-            ->where([
-                'dpg.deleted_at' => null,
-                'drab.deleted_at' => null
-            ])
+            ->where('dpg.deleted_at', null)
             ->where('dpg.id_penagihan', $penagihan->id_penagihan)
             ->select(
                 'dpg.id_detail_penagihan', 'dpg.id_penagihan',
-                'drab.uraian', 'satuan.nama_satuan',
-                'dpg.harga_satuan_penagihan', 'dpg.volume_penagihan',
-                'drab.id_detail_rab', 'dpg.status_diterima'
+                'dpg.uraian', 'dpg.harga_satuan_penagihan',
+                'dpg.volume_penagihan', 'dpg.status_diterima'
             )
             ->orderBy('dpg.id_detail_penagihan', 'asc')
             ->get();
@@ -183,37 +179,12 @@ class DetailPenagihanController extends Controller
             )
             ->get();
 
-        $formOptions = $this->formOptions($penagihan->id_proyek);
-
         return Inertia::render('Keuangan/DetailPenagihanPage', [
             'penagihan' => $penagihan,
             'detailPenagihan' => $detailPenagihan,
             'evaluasi' => $evaluasi,
-            'timeline' => $timeline,
-            'formOptions' => $formOptions
+            'timeline' => $timeline
         ]);
-    }
-
-    public function formOptions($id_proyek): stdClass
-    {
-        $detailRab = DB::table('detail_rab')
-            ->leftJoin('rab', 'rab.id_rab', '=', 'detail_rab.id_rab')
-            ->where('detail_rab.deleted_at', null)
-            ->where('rab.deleted_at', null)
-            ->where('rab.status_rab', '400')
-            ->where('rab.id_proyek', $id_proyek)
-            ->groupBy('detail_rab.id_detail_rab')
-            ->select(
-                'detail_rab.id_detail_rab', 'detail_rab.uraian',
-                'detail_rab.harga_satuan'
-            )
-            ->get();
-
-        $options = (object) [
-            'detailRab' => $detailRab
-        ];
-
-        return $options;
     }
 
     public function store(StoreRequest $request, Penagihan $penagihan): RedirectResponse
@@ -224,7 +195,7 @@ class DetailPenagihanController extends Controller
 
         $detailPenagihan->fill([
             'id_penagihan' => $penagihan->id_penagihan,
-            'id_detail_rab' => $validated->id_detail_rab,
+            'uraian' => $validated->uraian,
             'volume_penagihan' => $validated->volume_penagihan,
             'harga_satuan_penagihan' => $validated->harga_satuan_penagihan
         ]);
@@ -239,7 +210,7 @@ class DetailPenagihanController extends Controller
         $validated = $request->safe();
 
         $detailPenagihan->fill([
-            'id_detail_rab' => $validated->id_detail_rab,
+            'uraian' => $validated->uraian,
             'volume_penagihan' => $validated->volume_penagihan,
             'harga_satuan_penagihan' => $validated->harga_satuan_penagihan
         ]);

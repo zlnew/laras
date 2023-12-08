@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // cores
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { router } from '@inertiajs/vue3'
-import { QTable } from 'quasar'
+import { QTable, useQuasar } from 'quasar'
 
 // utils
 import { toFloat } from '@/utils/number'
@@ -10,15 +10,19 @@ import { toRupiah } from '@/utils/money'
 
 // types
 import type { QTableColumn } from 'quasar'
-import type { ProyeksiUtang } from '@/Pages/Dashboard/KeuanganPage.vue'
+import type { ProyeksiUtang, Options } from '@/Pages/Dashboard/KeuanganPage.vue'
+import UtangFilterDialog from '@/Components/Dialogs/UtangFilterDialog.vue'
+import { excelParser } from '@/utils/excel'
+import { createBody, tableToPdf } from '@/utils/pdf'
 
-defineProps<{
+const props = defineProps<{
   rows: ProyeksiUtang[]
+  options: Options
 }>()
 
 const columns: QTableColumn[] = [
   { name: 'index', label: '#', field: 'index' },
-  { name: 'proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
+  { name: 'nama_proyek', label: 'Proyek', field: 'nama_proyek', align: 'left', sortable: true },
   { name: 'keperluan', label: 'Keperluan', field: 'keperluan', align: 'left', sortable: true },
   { name: 'jumlah_utang', label: 'Jumlah Utang', field: 'jumlah_utang', align: 'right', sortable: true }
 ]
@@ -30,6 +34,8 @@ function toggleFullscreen () {
 }
 
 const table = ref<QTable>()
+const pdfTable = ref()
+const excelTable = ref()
 
 const totaAmount = computed(() => {
   const utang = table.value?.computedRows.reduce((total, item) => {
@@ -39,6 +45,35 @@ const totaAmount = computed(() => {
   return {
     utang
   }
+})
+
+const $q = useQuasar()
+
+function search () {
+  $q.dialog({
+    component: UtangFilterDialog,
+    componentProps: {
+      options: props.options,
+      data: {
+        route: route('dashboard.keuangan')
+      }
+    }
+  })
+}
+
+onMounted(() => {
+  pdfTable.value = {
+    columns: table.value?.columns,
+    body: {
+      rows: table.value?.computedRows,
+      props: ['index', 'nama_proyek', 'keperluan', 'jumlah_utang']
+    }
+  }
+
+  excelTable.value = createBody({
+    rows: (table.value?.computedRows as any[]),
+    props: ['nama_proyek', 'keperluan', 'jumlah_utang']
+  })
 })
 </script>
 
@@ -55,6 +90,42 @@ const totaAmount = computed(() => {
     class="table"
   >
     <template v-slot:top-right>
+      <q-btn
+        flat
+        no-caps
+        label="Pencarian"
+        icon="search"
+        color="primary"
+        @click="search"
+      />
+
+      <q-btn
+        flat dense
+        label="xls"
+        color="green"
+        @click="excelParser().exportDataFromJSON({
+          data: excelTable,
+          name:'proyeksi-utang',
+          type: 'xls'
+        })"
+      >
+        <q-tooltip>Export to xls</q-tooltip>
+      </q-btn>
+
+      <q-btn
+        flat dense
+        label="pdf"
+        color="red-8"
+        @click="tableToPdf({
+          filename: 'proyeksi_utang',
+          header: 'Proyeksi Utang',
+          columns: pdfTable.columns,
+          body: pdfTable.body
+        })"
+      >
+        <q-tooltip>Export to pdf</q-tooltip>
+      </q-btn>
+
       <q-btn
         flat dense
         :icon="tableFullscreen ? 'fullscreen_exit' : 'fullscreen'"
@@ -86,7 +157,7 @@ const totaAmount = computed(() => {
           {{ ++props.rowIndex }}
         </q-td>
 
-        <q-td key="proyek" :props="props">
+        <q-td key="nama_proyek" :props="props">
           {{ props.row.nama_proyek }}
         </q-td>
 

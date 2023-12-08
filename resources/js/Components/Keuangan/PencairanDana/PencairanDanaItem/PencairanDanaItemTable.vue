@@ -228,24 +228,16 @@ function save (amount: string, id: number) {
               v-slot="scope"
             >
               <q-input
+                flat
                 dense
                 autofocus
                 v-model="scope.value"
                 :hint="toRupiah(scope.value)"
-              >
-                <template v-slot:after>
-                  <q-btn
-                    flat dense color="negative" icon="cancel"
-                    @click.stop.prevent="scope.cancel"
-                  />
-                  <q-btn
-                    flat dense color="positive" icon="check_circle"
-                    :disable="scope.validate(scope.value) === false || scope.initialValue === scope.value"
-                    @click.stop.prevent="save(scope.value, props.row.id_detail_pengajuan_dana)"
-                    @click="scope.set"
-                  />
-                </template>
-              </q-input>
+                @keyup.enter="() => {
+                  save(scope.value, props.row.id_detail_pengajuan_dana)
+                  scope.set()
+                }"
+              />
             </q-popup-edit>
           </div>
 

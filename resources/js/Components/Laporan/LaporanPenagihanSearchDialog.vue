@@ -9,7 +9,7 @@ import { multiFilterOptions } from '@/utils/options'
 
 // types
 import type { Penagihan } from '@/types'
-import type { FormOptions } from '@/Pages/Laporan/LaporanPengajuanDanaPage.vue'
+import type { FormOptions } from '@/Pages/Laporan/LaporanPenagihanPage.vue'
 
 defineEmits([
   ...useDialogPluginComponent.emits

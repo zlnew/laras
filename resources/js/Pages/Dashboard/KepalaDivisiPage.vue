@@ -27,10 +27,12 @@ export interface JoinedWithProyek {
 }
 
 export interface Piutang {
-  id_penagihan: string
-  keperluan: string
-  pengguna_jasa: string
+  id_pencairan_dana: string | undefined
+  id_penagihan: string | undefined
   id_user: number
+  nama_proyek: string
+  pengguna_jasa: string
+  keperluan: string
   jumlah_piutang: string
 }
 

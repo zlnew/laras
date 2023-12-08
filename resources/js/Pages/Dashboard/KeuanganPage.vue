@@ -12,7 +12,9 @@ import {
   ProyeksiInvoiceProyekTable,
   ProyeksiKebutuhanDanaProyekTable,
   ProyeksiPiutangTable,
-  ProyeksiUtangTable
+  ProyeksiUtangTable,
+  ProyeksiSetoranModalTable,
+  ProyeksiPenarikanTable
 } from '@/Components/Dashboard/Keuangan/dashboard-keuangan-page'
 
 // types
@@ -59,12 +61,27 @@ export interface ProyeksiUtang {
 }
 
 export interface ProyeksiPiutang {
-  id_penagihan: string
+  id_pencairan_dana: string | undefined
+  id_penagihan: string | undefined
   id_user: number
   nama_proyek: string
   pengguna_jasa: string
   keperluan: string
   jumlah_piutang: string
+}
+
+export interface ProyeksiSetoranModal {
+  id_pencairan_dana: string
+  nama_proyek: string
+  keperluan: string
+  jumlah_setoran_modal: string
+}
+
+export interface ProyeksiPenarikan {
+  id_pencairan_dana: string
+  nama_proyek: string
+  keperluan: string
+  jumlah_penarikan: string
 }
 
 export interface Options {
@@ -78,6 +95,8 @@ defineProps<{
   proyeksiKebutuhanDanaProyek: ProyeksiKebutuhanDanaProyek[]
   proyeksiUtang: ProyeksiUtang[]
   proyeksiPiutang: ProyeksiPiutang[]
+  proyeksiSetoranModal: ProyeksiSetoranModal[]
+  proyeksiPenarikan: ProyeksiPenarikan[]
   options: Options
   overview: OverviewProps[]
 }>()
@@ -124,12 +143,27 @@ defineProps<{
         <div class="col-12 col-md-6">
           <proyeksi-utang-table
             :rows="proyeksiUtang"
+            :options="options"
           />
         </div>
 
         <div class="col-12 col-md-6">
           <proyeksi-piutang-table
             :rows="proyeksiPiutang"
+            :options="options"
+          />
+        </div>
+
+        <div class="col-12 col-md-6">
+          <proyeksi-setoran-modal-table
+            :rows="proyeksiSetoranModal"
+            :options="options"
+          />
+        </div>
+
+        <div class="col-12 col-md-6">
+          <proyeksi-penarikan-table
+            :rows="proyeksiPenarikan"
             :options="options"
           />
         </div>
